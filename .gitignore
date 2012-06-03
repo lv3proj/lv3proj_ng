@@ -17,4 +17,9 @@
 *.tmp
 *.fam
 *.aps
+*.exe
+
 temp/*
+
+*_log.txt
+
