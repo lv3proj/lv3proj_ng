@@ -23,6 +23,7 @@ _reset(false),
 _fpsMin(60), _fpsMax(70),
 virtualOffX(0),
 virtualOffY(0),
+_recursionDepth(-1),
 render(NULL)
 {
     log("Game Engine start.");
@@ -155,6 +156,7 @@ void EngineBase::_InitJoystick(void)
 
 void EngineBase::Run(float runtime /* = -1 */)
 {
+    ++_recursionDepth;
     uint32 ms;
     uint32 diff;
     float diff_scaled;
@@ -193,6 +195,7 @@ void EngineBase::Run(float runtime /* = -1 */)
                 break;
         }
     }
+    --_recursionDepth;
 }
 
 void EngineBase::_ProcessEvents(void)
@@ -386,7 +389,7 @@ void EngineBase::_Render(void)
 {
     render->clear();
     render->setupRenderPositionAndScale();
-    ro.render();
+    render->renderObject(&ro);
 
     render->show();
 }

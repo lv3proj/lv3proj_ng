@@ -20,7 +20,6 @@ protected:
 public:
     ~RenderObject();
 
-    void render();
     void update(float dt);
 
     InterpolatedVector position;
@@ -39,9 +38,12 @@ public:
     InterpolatedVector velocity;
     InterpolatedVector gravity;
 
+
+    virtual void onRender() const {}
+
+
 protected:
 
-    virtual void onRender() {}
     virtual void onUpdate(float dt) {};
 
     BlendType _blend;

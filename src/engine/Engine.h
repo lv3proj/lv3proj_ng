@@ -104,6 +104,7 @@ protected:
     uint32 _sleeptime;
     bool _paused;
     bool _reset;
+    int32 _recursionDepth;
 
     static std::vector<SDL_Joystick*> s_joysticks;
     static uint32 s_curFrameTime; // game time (scaled by speed)

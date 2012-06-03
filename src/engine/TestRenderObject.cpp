@@ -16,7 +16,7 @@ TestRenderObject::~TestRenderObject()
 }
 
 
-void TestRenderObject::onRender()
+void TestRenderObject::onRender() const
 {
     glColor3f(0, 0, 0.5f); // yellow
 

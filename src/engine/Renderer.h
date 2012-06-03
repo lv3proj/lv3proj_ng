@@ -5,6 +5,7 @@
 #include "Vector.h"
 
 struct SDL_Surface;
+class RenderObject;
 
 struct RenderSettings
 {
@@ -42,6 +43,8 @@ public:
     void clear();
     void show();
     void setupRenderPositionAndScale();
+
+    void renderObject(const RenderObject *);
 
 protected:
 

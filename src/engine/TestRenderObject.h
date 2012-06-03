@@ -9,9 +9,9 @@ public:
     TestRenderObject();
     virtual ~TestRenderObject();
 
-protected:
+    virtual void onRender() const;
 
-    void onRender();
+protected:
 
 };
 

@@ -232,3 +232,46 @@ void Renderer::show()
     SDL_GL_SwapBuffers();
 }
 
+
+const bool DEBUG_RENDER = true;
+
+void Renderer::renderObject(const RenderObject *ro)
+{
+    const Vector renderPos = ro->position + ro->offset;
+    const Vector renderRot = ro->rotation + ro->rotation2;
+    const float renderAlpha = ro->alpha.x + ro->alpha2.x;
+    const Vector renderCol = ro->color;
+
+    glPushMatrix();
+    glTranslatef(renderPos.x, renderPos.y, renderPos.z);
+
+    glRotatef(renderRot.x, 0, 0, 1); 
+    /*if (isfh())
+    {
+    glDisable(GL_CULL_FACE);
+    glRotatef(180, 0, 1, 0);
+    }*/
+
+    glScalef(ro->scale.x, ro->scale.y, 1);
+
+    glColor4f(renderCol.x, renderCol.y, renderCol.z, renderAlpha);
+
+
+    ro->onRender();
+
+    // TODO: render children
+
+
+    if(DEBUG_RENDER)
+    {
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glLineWidth(4);
+        glEnable(GL_BLEND);
+
+        int i = 0;
+        glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+        glVertex2f(renderPos.x, renderPos.y);
+    }
+
+    glPopMatrix();
+}
