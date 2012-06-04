@@ -3,6 +3,7 @@
 
 RenderObject::RenderObject()
 {
+    _blend = BLEND_DEFAULT;
     scale = Vector(1, 1, 1);
     color = Vector(1, 1, 1);
     alpha = 1;
@@ -28,4 +29,3 @@ void RenderObject::update(float dt)
 
     onUpdate(dt);
 }
-

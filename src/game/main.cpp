@@ -2,6 +2,7 @@
 #include "common.h"
 #include "Bootstrap.h"
 #include "Engine.h"
+#include "FileAPI.h"
 
 int main(int argc, char **argv)
 {
@@ -12,6 +13,13 @@ int main(int argc, char **argv)
     log_prepare("game_log.txt", "w");
     log_setloglevel(4);
     Bootstrap::PrintSystemSpecs();
+
+    // this should be checked, especially in larger projects
+    if(!ttvfs::checkCompat())
+        return 1;
+
+    vfs.LoadFileSysRoot(false);
+    vfs.Prepare();
 
     EngineBase that;
     if(!that.Setup())

@@ -1,12 +1,12 @@
-#include <stdarg.h>
-#include "tools.h"
-#include "log.h"
 
 #if PLATFORM == PLATFORM_WIN32
 #include <windows.h>
-#include "UndefUselessCrap.h"
+#undef DBG
 #endif
 
+#include <stdarg.h>
+#include "tools.h"
+#include "log.h"
 
 static FILE *logfile = NULL;
 static uint8 loglevel = 0;

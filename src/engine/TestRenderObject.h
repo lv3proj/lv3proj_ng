@@ -1,18 +1,20 @@
 #ifndef TEST_RENDEROBJECT_H
 #define TEST_RENDEROBJECT_H
 
-#include "RenderObject.h"
+#include "Quad.h"
 
-class TestRenderObject : public RenderObject
+class TestRenderObject : public Quad
 {
 public:
     TestRenderObject();
     virtual ~TestRenderObject();
 
+    virtual void onUpdate(float dt);
     virtual void onRender() const;
 
 protected:
 
+    bool loadtex;
 };
 
 #endif

@@ -163,6 +163,14 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\engine\AnimatedTexture.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\AnimatedTexture.h"
+				>
+			</File>
+			<File
 				RelativePath=".\engine\Bootstrap.cpp"
 				>
 			</File>
@@ -195,40 +203,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\engine\glpng.c"
+				RelativePath=".\engine\MemResource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\engine\glpng.h"
+				RelativePath=".\engine\Quad.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\engine\OpenGLAPI.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						GeneratePreprocessedFile="0"
-						KeepComments="false"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\engine\OpenGLAPI.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\OpenGLStubs.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\Renderer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\Renderer.h"
+				RelativePath=".\engine\Quad.h"
 				>
 			</File>
 			<File
@@ -237,6 +220,14 @@
 			</File>
 			<File
 				RelativePath=".\engine\RenderObject.h"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\ResourceMgr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\ResourceMgr.h"
 				>
 			</File>
 			<File
@@ -255,11 +246,104 @@
 					>
 				</File>
 				<File
-					RelativePath=".\engine\GL\gles.h"
+					RelativePath=".\engine\GL\glext.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="OpenGL"
+				>
+				<File
+					RelativePath=".\engine\GLTexture.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\engine\GL\glext.h"
+					RelativePath=".\engine\GLTexture.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\OpenGLAPI.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							GeneratePreprocessedFile="0"
+							KeepComments="false"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\engine\OpenGLAPI.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\OpenGLStubs.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\Renderer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\Renderer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="SDL"
+				>
+				<File
+					RelativePath=".\engine\SDL_func.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\SDL_func.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\SDLMusicResource.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\SDLMusicResource.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\SDLSoundResource.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\SDLSoundResource.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\SDLSurfaceResource.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\SDLSurfaceResource.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="PureVirtual"
+				>
+				<File
+					RelativePath=".\engine\Resource.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\Resource.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\Texture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\Texture.h"
 					>
 				</File>
 			</Filter>

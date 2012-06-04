@@ -554,7 +554,7 @@ void Gzip_File_Reader::close()
 
 #endif
 
-
+/*
 // Gzip_Mem_File_Reader
 #include "DeflateCompressor.h"
 
@@ -582,3 +582,4 @@ Gzip_Mem_File_Reader::~Gzip_Mem_File_Reader()
     if(gz)
         delete gz;
 }
+*/

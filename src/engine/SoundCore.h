@@ -38,8 +38,8 @@ private:
 class SoundCore
 {
 public:
-    void Init(void);
-    void Destroy(void);
+    bool Init(void);
+    void Shutdown(void);
     SoundFile *GetSound(const char *fn); // do NOT forget to decRef the returned ptr !!
     bool PlayMusic(const char *fn);
     void PauseMusic(void);

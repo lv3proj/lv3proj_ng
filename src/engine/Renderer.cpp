@@ -4,6 +4,9 @@
 #include "OpenGLAPI.h"
 #include "GL/gl.h"
 #include "Engine.h"
+#include "SDLSurfaceResource.h"
+#include "GLTexture.h"
+#include "Quad.h"
 
 
 Renderer::Renderer()
@@ -81,6 +84,20 @@ void Renderer::SetVsync(bool on)
 void Renderer::SetFullscreen(bool on)
 {
     settings.full = on;
+}
+
+Texture *Renderer::createTexture(const char *name)
+{
+    GLTexture *tex = new GLTexture(name);
+    if(!tex->reload())
+    {
+        logerror("Failed to create OpenGL texture %s", name);
+        delete tex;
+        return NULL;
+    }
+
+    logdebug("Created OpenGL texture %s", name);
+    return tex;
 }
 
 
@@ -256,13 +273,14 @@ void Renderer::renderObject(const RenderObject *ro)
 
     glColor4f(renderCol.x, renderCol.y, renderCol.z, renderAlpha);
 
+    _applyBlendType(ro->getBlendType());
 
     ro->onRender();
 
     // TODO: render children
 
 
-    if(DEBUG_RENDER)
+    /*if(DEBUG_RENDER)
     {
         glBindTexture(GL_TEXTURE_2D, 0);
         glLineWidth(4);
@@ -271,7 +289,62 @@ void Renderer::renderObject(const RenderObject *ro)
         int i = 0;
         glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
         glVertex2f(renderPos.x, renderPos.y);
-    }
+    }*/
 
     glPopMatrix();
+}
+
+void Renderer::_applyBlendType(BlendType blend)
+{
+    switch (blend)
+    {
+    case BLEND_NONE:
+        glDisable(GL_BLEND);
+        glDisable(GL_ALPHA_TEST);
+    case BLEND_DEFAULT:
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        break;
+    case BLEND_ADD:
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+        break;
+    case BLEND_SUB:
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ZERO, GL_SRC_ALPHA);
+        break;
+    case BLEND_MULT:
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+        break;
+    }
+}
+
+void Renderer::renderQuad(const Quad *q)
+{
+    Texture *tex = q->getTexture();
+    if(!tex)
+        return;
+
+    tex->apply();
+    const float w2 = q->width / 2.0f;
+    const float h2 = q->height / 2.0f;
+    const Vector& upperLeftTextureCoordinates = q->upperLeftTextureCoordinates;
+    const Vector &lowerRightTextureCoordinates = q->lowerRightTextureCoordinates;
+
+    glBegin(GL_QUADS);
+    {
+        glTexCoord2f(upperLeftTextureCoordinates.x, 1.0f-upperLeftTextureCoordinates.y);
+        glVertex2f(-w2, +h2);
+
+        glTexCoord2f(lowerRightTextureCoordinates.x, 1.0f-upperLeftTextureCoordinates.y);
+        glVertex2f(+w2, +h2);
+
+        glTexCoord2f(lowerRightTextureCoordinates.x, 1.0f-lowerRightTextureCoordinates.y);
+        glVertex2f(+w2, -h2);
+
+        glTexCoord2f(upperLeftTextureCoordinates.x, 1.0f-lowerRightTextureCoordinates.y);
+        glVertex2f(-w2, -h2);
+    }
+    glEnd();
 }

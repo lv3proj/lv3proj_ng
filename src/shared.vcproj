@@ -223,10 +223,6 @@
 					RelativePath=".\shared\SysDefs.h"
 					>
 				</File>
-				<File
-					RelativePath=".\shared\UndefUselessCrap.h"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter

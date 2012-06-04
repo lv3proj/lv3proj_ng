@@ -1,5 +1,10 @@
 #include "Engine.h"
 #include "Renderer.h"
+//#include "SoundCore.h"
+#include "ResourceMgr.h"
+#include "SDLSurfaceResource.h"
+#include "Quad.h"
+#include "Texture.h"
 
 // global, static
 EngineBase *engine = NULL;
@@ -24,7 +29,8 @@ _fpsMin(60), _fpsMax(70),
 virtualOffX(0),
 virtualOffY(0),
 _recursionDepth(-1),
-render(NULL)
+render(NULL),
+sound(NULL)
 {
     log("Game Engine start.");
     engine = this;
@@ -49,6 +55,7 @@ EngineBase::~EngineBase()
 {
     engine = NULL;
     delete render;
+    //delete sound;
 }
 
 void EngineBase::s_OnLog(const char *s, int color, int level, void *user)
@@ -62,6 +69,9 @@ bool EngineBase::Setup(void)
     render = new Renderer();
     if(!render->Init())
         return false;
+    //sound = new SoundCore();
+    //if(!sound->Init())
+    //    return false;
     log_setcallback(&s_OnLog, true, NULL); // TODO: param? newline?
 
     if(!OnInit())
@@ -73,6 +83,7 @@ bool EngineBase::Setup(void)
 void EngineBase::Shutdown(void)
 {
     render->Shutdown();
+    //sound->Shutdown();
     engine = NULL;
     // this should not be called from inside EngineBase::Run()
 
@@ -107,6 +118,14 @@ void EngineBase::InitScreen(uint32 sizex, uint32 sizey, uint8 bpp /* = 0 */, uin
     render->SetFullscreen(false);
     render->SetVsync(false);
     render->ApplySettings();
+
+    const ResourceStore& rs = resMgr.GetResourcesOfType(RESOURCE_TEXTURE);
+    logdetail("Reloading %u textures...", (unsigned int)rs.size());
+    for(ResourceStore::const_iterator it = rs.begin(); it != rs.end(); ++it)
+    {
+        logdev("Reloading texture: %s", it->second->name());
+        ((Texture*)(it->second))->reload();
+    }
 
     /*
     if(sizex == GetResX() && sizey == GetResY() && (!bpp || bpp == GetBPP()) && ((_screen->flags | extraflags) == _screen->flags))
@@ -302,6 +321,8 @@ void EngineBase::_Process(void)
         resMgr.pool.Cleanup();
     }*/
 
+    resMgr.Update(dt);
+
     camera.update(dt);
 
     OnUpdate(dt);
@@ -416,39 +437,15 @@ void EngineBase::ResetTime(void)
     s_accuTime = 0;
     s_curFrameTime = 0;
 }
-/*
-void EngineBase::SetFullscreen(bool b)
+
+Texture *EngineBase::GetTexture(const char *name)
 {
-    if(b == IsFullscreen())
-        return; // no change required
-
-    uint32 flags = _screen->flags | _screenFlags;
-
-    // toggle between fullscreen, preserving other flags
-    if(b)
-        flags |= SDL_FULLSCREEN; // add fullscreen flag
-    else
-        flags &= ~SDL_FULLSCREEN; // remove fullscreen flag
-
-    InitScreen(GetResX(), GetResY(), GetBPP(), flags);
+    Texture *tex = resMgr._GetTexture(name);
+    if(!tex)
+    {
+        tex = render->createTexture(name);
+        if(tex)
+            resMgr.Add(tex);
+    }
+    return tex;
 }
-
-void EngineBase::SetResizable(bool b)
-{
-    if(b == IsResizable())
-        return; // no change required
-
-    uint32 flags = _screen->flags | _screenFlags;
-
-    // toggle between fullscreen, preserving other flags
-    if(b)
-        flags |= SDL_RESIZABLE; // add resizable flag
-    else
-        flags &= ~SDL_RESIZABLE; // remove resizable flag
-
-    InitScreen(GetResX(), GetResY(), GetBPP(), flags);
-}
-*/
-
-
-

@@ -161,6 +161,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ttvfs\VFSArchiveLoader.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ttvfs\VFSAtomic.cpp"
 				>
 			</File>
@@ -197,6 +201,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ttvfs\VFSFileFuncs.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ttvfs\VFSFileFuncs.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ttvfs\VFSHashmap.h"
 				>
 			</File>
@@ -222,6 +234,14 @@
 			</File>
 			<File
 				RelativePath=".\ttvfs\VFSSelfRefCounter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ttvfs\VFSSystemPaths.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ttvfs\VFSSystemPaths.h"
 				>
 			</File>
 			<File

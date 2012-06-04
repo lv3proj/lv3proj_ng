@@ -262,7 +262,8 @@ private:
 
 #endif
 
-
+// FG: FIXME: reactivate this!
+/*
 class GzipCompressor;
 
 // Reads mem compressed with gzip (or uncompressed)
@@ -275,7 +276,7 @@ public:
 private:
     GzipCompressor *gz;
 };
-
+*/
 
 char* blargg_to_utf8( const wchar_t* );
 wchar_t* blargg_to_wide( const char* );

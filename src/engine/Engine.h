@@ -7,6 +7,8 @@
 #include "Camera.h"
 
 class Renderer;
+class SoundCore;
+class Texture;
 
 class EngineBase
 {
@@ -70,6 +72,11 @@ public:
     Camera camera;
     float virtualOffX;
     float virtualOffY;
+
+    SoundCore *sound;
+
+    Texture *GetTexture(const char *name);
+    inline Renderer *GetRenderer() const { return render; }
 
 protected:
 

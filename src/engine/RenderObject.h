@@ -7,6 +7,7 @@
 enum BlendType
 {
     BLEND_NONE,
+    BLEND_DEFAULT,
     BLEND_ADD,
     BLEND_SUB,
     BLEND_MULT,
@@ -40,6 +41,8 @@ public:
 
 
     virtual void onRender() const {}
+
+    inline BlendType getBlendType() const { return _blend; }
 
 
 protected:

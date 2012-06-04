@@ -26,7 +26,11 @@ struct memblock
 
 #define compile_assert(pred) {switch(0) { case 0: case (pred): ;}}
 
-#include "UndefUselessCrap.h"
+#ifndef NDEBUG
+#  define DBG if(1)
+#else
+#  define DBG if(0)
+#endif
 
 
 #endif

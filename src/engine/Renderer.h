@@ -3,9 +3,13 @@
 
 #include "common.h"
 #include "Vector.h"
+#include "RenderObject.h"
 
 struct SDL_Surface;
 class RenderObject;
+class Texture;
+class SDLSurfaceResource;
+class Quad;
 
 struct RenderSettings
 {
@@ -45,10 +49,13 @@ public:
     void setupRenderPositionAndScale();
 
     void renderObject(const RenderObject *);
+    void renderQuad(const Quad *);
+    Texture *createTexture(const char *name);
 
 protected:
 
     void _Enable2D(uint32 x, uint32 y);
+    void _applyBlendType(BlendType blend);
     SDL_Surface *screen;
     float aspect;
     Vector globalResolutionScale;

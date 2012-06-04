@@ -2,8 +2,8 @@
 #include <SDL/SDL_mixer.h>
 
 // Game_Music_Emu
-#include "gme.h"
-#include "Music_Emu.h"
+#include "gme/gme.h"
+#include "gme/Music_Emu.h"
 
 #include "common.h"
 #include "ResourceMgr.h"
@@ -14,7 +14,7 @@ static void musicFinished(void)
     // from the manual:
     // NOTE: NEVER call SDL_Mixer functions, nor SDL_LockAudio, from a callback function. 
     // oh well... works. bah.
-    DEBUG(logdebug("SoundCore: Music finished, looppoint = %f", (float)sndCore.GetLoopPoint()));
+    logdev("SoundCore: Music finished, looppoint = %f", (float)sndCore.GetLoopPoint());
     if(sndCore._GetMusicPtr() && sndCore.GetLoopPoint() >= 0)
     {
         Mix_PlayMusic(sndCore._GetMusicPtr(), 0);
@@ -30,7 +30,7 @@ static void play_music_gme(void *udata, Uint8 *stream, int len)
 
 static void stop_music_gme(void *userdata)
 {
-    DEBUG(logdebug("SoundCore: delete GME, mem ptr "PTRFMT, userdata));
+    logdev("SoundCore: delete GME, mem ptr "PTRFMT, userdata);
     memblock *mb = (memblock*)userdata;
     resMgr.Drop(mb);
 }
@@ -90,7 +90,7 @@ void SoundFile::SetDelete(void)
     Stop();
 }
 
-void SoundCore::Init(void)
+bool SoundCore::Init(void)
 {
     _music = NULL;
     _gme = NULL;
@@ -118,9 +118,11 @@ void SoundCore::Init(void)
     }
     else
         logdetail("SoundCore: %d Hz, %d channels [%s]", _sampleRate, _channels, fmt);
+
+    return true;
 }
 
-void SoundCore::Destroy(void)
+void SoundCore::Shutdown(void)
 {
     StopMusic();
     Mix_CloseAudio();
