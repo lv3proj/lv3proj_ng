@@ -191,6 +191,38 @@
 				RelativePath=".\game\main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\game\ScriptedEngine.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\game\ScriptedEngine.h"
+				>
+			</File>
+			<Filter
+				Name="Lua"
+				>
+				<File
+					RelativePath=".\game\LuaDefines.h"
+					>
+				</File>
+				<File
+					RelativePath=".\game\LuaEngine.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\game\LuaEngine.h"
+					>
+				</File>
+				<File
+					RelativePath=".\game\LuaInterface.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\game\LuaInterface.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

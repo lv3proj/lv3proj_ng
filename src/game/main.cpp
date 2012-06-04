@@ -1,7 +1,7 @@
 #include <SDL/SDL.h>
 #include "common.h"
 #include "Bootstrap.h"
-#include "Engine.h"
+#include "ScriptedEngine.h"
 #include "FileAPI.h"
 
 int main(int argc, char **argv)
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     vfs.LoadFileSysRoot(false);
     vfs.Prepare();
 
-    EngineBase that;
+    ScriptedEngine that;
     if(!that.Setup())
     {
         logerror("Failed to setup engine. Exiting.");
