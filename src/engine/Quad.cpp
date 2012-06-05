@@ -3,13 +3,24 @@
 #include "Renderer.h"
 #include "Texture.h"
 
-Quad::Quad()
- : _texture(NULL)
+
+Quad::Quad(const char *tex /* = NULL */, int w /* = 0 */, int h /* = 0 */)
+ : upperLeftTextureCoordinates(0, 0)
+ , lowerRightTextureCoordinates(1, 1)
+ , _texture(NULL)
  , width(0)
  , height(0)
- , upperLeftTextureCoordinates(0, 0)
- , lowerRightTextureCoordinates(1, 1)
 {
+    if(tex && *tex)
+        setTexture(tex);
+    if(w > 0)
+    {
+        width = w;
+        if(h > 0)
+            height = h;
+        else
+            height = w;
+    }
 }
 
 Quad::~Quad()
@@ -18,21 +29,12 @@ Quad::~Quad()
         _texture->decref();
 }
 
-Quad::Quad(const char *tex, int w /* = -1 */, int h /* = -1 */)
-{
-    setTexture(tex);
-    if(w >= 0)
-    {
-        width = w;
-        if(h >= 0)
-            height = h;
-        else
-            height = w;
-    }
-}
-
 bool Quad::setTexture(const char *tex)
 {
+    // Not necessary to set texture if already set to same
+    if(_texture && !strcmp(tex, _texture->name()))
+        return true;
+
     Texture *newtex = engine->GetTexture(tex); // increases refcount
     if(!newtex)
         return false;

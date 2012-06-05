@@ -5,6 +5,8 @@
 #include "SDLSurfaceResource.h"
 #include "Quad.h"
 #include "Texture.h"
+#include "ObjectMgr.h"
+
 
 // global, static
 EngineBase *engine = NULL;
@@ -55,6 +57,7 @@ EngineBase::~EngineBase()
 {
     engine = NULL;
     delete render;
+    delete objmgr;
     //delete sound;
 }
 
@@ -66,6 +69,8 @@ void EngineBase::s_OnLog(const char *s, int color, int level, void *user)
 
 bool EngineBase::Setup(void)
 {
+    objmgr = new ObjectMgr();
+
     render = new Renderer();
     if(!render->Init())
         return false;
@@ -82,7 +87,11 @@ bool EngineBase::Setup(void)
 
 void EngineBase::Shutdown(void)
 {
+    objmgr->ClearAll();
+    ClearGarbage(true);
     render->Shutdown();
+
+
     //sound->Shutdown();
     engine = NULL;
     // this should not be called from inside EngineBase::Run()
@@ -100,6 +109,8 @@ void EngineBase::Shutdown(void)
     for(uint32 i = 0; i < s_joysticks.size(); ++i)
         if(s_joysticks[i] && SDL_JoystickOpened(SDL_JoystickIndex(s_joysticks[i]))) // this is maybe a bit overcomplicated, but safe at least
             SDL_JoystickClose(s_joysticks[i]);
+
+
 
     // be sure we did a clean shutdown
     //resMgr.DbgCheckEmpty();
@@ -321,11 +332,15 @@ void EngineBase::_Process(void)
         resMgr.pool.Cleanup();
     }*/
 
+    objmgr->Update(dt);
+
     resMgr.Update(dt);
 
     camera.update(dt);
 
     OnUpdate(dt);
+
+    ClearGarbage(false);
 }
 
 bool EngineBase::OnInit()
@@ -385,17 +400,15 @@ void EngineBase::OnLog(const char *, int color, int level, void *user)
 {
 }
 
-#include "TestRenderObject.h"
-
-static TestRenderObject ro;
-
 void EngineBase::OnUpdate(float dt)
 {
-    ro.update(dt);
-    //logdev("%f  %f", ro.position.x, ro.position.y);
 }
 
 void EngineBase::OnReset()
+{
+}
+
+void EngineBase::OnRender()
 {
 }
 
@@ -410,7 +423,8 @@ void EngineBase::_Render(void)
 {
     render->clear();
     render->setupRenderPositionAndScale();
-    render->renderObject(&ro);
+
+    OnRender();
 
     render->show();
 }
@@ -428,6 +442,7 @@ void EngineBase::_Reset(void)
     //resMgr.DropUnused();
     //resMgr.vfs.Prepare(true);
     //resMgr.vfs.Reload(true);
+    ClearGarbage(true);
     ResetTime();
 }
 
@@ -449,3 +464,18 @@ Texture *EngineBase::GetTexture(const char *name)
     }
     return tex;
 }
+
+void EngineBase::UnregisterObject(ScriptObject *obj)
+{
+    objmgr->Garbage(obj);
+}
+
+void EngineBase::ClearGarbage(bool deep)
+{
+    objmgr->ClearGarbage();
+    if(deep)
+    {
+        resMgr.DropUnused();
+    }
+}
+

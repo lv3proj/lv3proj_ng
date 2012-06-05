@@ -9,13 +9,13 @@ class Texture;
 class Quad : public RenderObject
 {
 public:
-    Quad();
-    Quad(const char *tex, int w = -1, int h = -1);
+    Quad(const char *tex = NULL, int w = 0, int h = 0);
     virtual ~Quad();
 
     int width;
     int height;
 
+    bool setTexture(const char *tex);
     inline Texture *getTexture() const { return _texture; }
     Vector upperLeftTextureCoordinates;
     Vector lowerRightTextureCoordinates;
@@ -23,8 +23,6 @@ public:
 protected:
 
     virtual void onRender() const;
-
-    bool setTexture(const char *tex);
 
     Texture *_texture;
 

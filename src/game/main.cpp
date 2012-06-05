@@ -29,6 +29,7 @@ int main(int argc, char **argv)
     }
     that.InitScreen(800, 600);
     that.Run();
+    that.Shutdown();
 
 
     SDL_Quit();

@@ -9,6 +9,8 @@
 class Renderer;
 class SoundCore;
 class Texture;
+class ScriptObject;
+class ObjectMgr;
 
 class EngineBase
 {
@@ -74,14 +76,19 @@ public:
     float virtualOffY;
 
     SoundCore *sound;
+    ObjectMgr *objmgr;
 
     Texture *GetTexture(const char *name);
     inline Renderer *GetRenderer() const { return render; }
+
+    virtual void UnregisterObject(ScriptObject *obj);
+    virtual void ClearGarbage(bool deep);
 
 protected:
 
     virtual bool OnInit();
     virtual void OnReset();
+    virtual void OnRender();
     virtual void OnUpdate(float dt);
     virtual void OnMouseEvent(uint32 type, uint32 button, uint32 state, uint32 x, uint32 y, int32 rx, int32 ry);
     virtual void OnKeyDown(SDLKey key, SDLMod mod);

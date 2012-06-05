@@ -51,13 +51,12 @@ bool GLTexture::reload()
 
     // First, convert to 32 bpp RGBA-texture
     SDL_Surface *converted = SDL_ConvertSurface(src, &fmt, 0);
+    res->decref();
     if(!converted)
     {
         logerror("Failed to convert surface to OpenGL texture: %s", res->name());
         return false;
     }
-
-    res->decref();
 
     // Then, transfer that to the final format.
     // This step seems necessary, because omitting it

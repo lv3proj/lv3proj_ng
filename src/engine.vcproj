@@ -207,6 +207,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\engine\ObjectMgr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\ObjectMgr.h"
+				>
+			</File>
+			<File
 				RelativePath=".\engine\Quad.cpp"
 				>
 			</File>
@@ -336,6 +344,14 @@
 				</File>
 				<File
 					RelativePath=".\engine\Resource.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\ScriptObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\ScriptObject.h"
 					>
 				</File>
 				<File

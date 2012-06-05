@@ -16,6 +16,8 @@ RenderObject::~RenderObject()
 
 void RenderObject::update(float dt)
 {
+    ScriptObject::update(dt);
+
     position.update(dt);
     offset.update(dt);
     scale.update(dt);
@@ -27,5 +29,12 @@ void RenderObject::update(float dt)
     velocity.update(dt);
     gravity.update(dt);
 
-    onUpdate(dt);
 }
+
+void RenderObject::onEndOfLife()
+{
+    ScriptObject::onEndOfLife();
+
+    // TODO: unregister from renderer
+}
+

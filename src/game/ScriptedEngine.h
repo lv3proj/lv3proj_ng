@@ -14,6 +14,9 @@ public:
 
     LuaInterface *script;
 
+    virtual void UnregisterObject(ScriptObject *obj);
+    virtual void ClearGarbage(bool deep);
+
 protected:
 
     virtual bool OnInit();

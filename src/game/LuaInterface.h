@@ -7,6 +7,7 @@
 // that provides virtual interfaces?
 
 struct lua_State;
+class ScriptObject;
 
 class LuaInterface
 {
@@ -19,16 +20,19 @@ public:
     void Shutdown();
     void GC();
     unsigned int MemUsed();
-
-    void AddClass(const char *name);
-    void AddClassMethod(const char *name);
-    void AddClassMember(const char *name);
+    void UnregisterObject(ScriptObject *obj);
 
     inline lua_State *getState() const { return _lua; }
+
+    bool call(const char *f);
+    bool call(const char *f, float);
 
 
 
 protected:
+
+    void lookupFunc(const char *f);
+    bool doCall(int nparams, int nrets = 0);
 
     lua_State *_lua;
 };

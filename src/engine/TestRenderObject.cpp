@@ -6,11 +6,11 @@
 
 TestRenderObject::TestRenderObject()
 {
-    position = Vector(350, 300);
-    //position.interpolateTo(Vector(450, 300), 0.3f, -1, true, true);
-    //rotation.interpolateTo(360, 2, -1);
-    //scale = Vector(0.3f,  0.3f);
-    scale.interpolateTo(Vector(1.5f, 1.5f), 1, -1, true, true);
+    position = Vector(300, 300);
+    position.interpolateTo(Vector(500, 300), 0.3f, -1, true, true);
+    rotation.interpolateTo(360, 1, -1);
+    scale = Vector(0.5f, 0.5f);
+    scale.interpolateTo(Vector(8.0f, 8.0f), 1, -1, true, true);
     loadtex = true;
 }
 
@@ -18,8 +18,10 @@ TestRenderObject::~TestRenderObject()
 {
 }
 
-void TestRenderObject::onUpdate(float dt)
+void TestRenderObject::update(float dt)
 {
+    RenderObject::update(dt);
+
     if(loadtex)
     {
         setTexture("test.png");

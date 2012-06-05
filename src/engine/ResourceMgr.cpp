@@ -54,7 +54,7 @@ ResourceMgr::~ResourceMgr()
 void ResourceMgr::DropUnused(void)
 {
     // Start with resources that are likely to have the most dependencies
-    for(int i = RESOURCE_MAX; i >= 0; --i)
+    for(int i = RESOURCE_MAX-1; i >= 0; --i)
     {
         ResourceStore& res = _res[i];
 

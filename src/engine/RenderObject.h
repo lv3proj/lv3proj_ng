@@ -1,7 +1,7 @@
 #ifndef RENDEROBJECT_H
 #define RENDEROBJECT_H
 
-#include "common.h"
+#include "ScriptObject.h"
 #include "Vector.h"
 
 enum BlendType
@@ -13,7 +13,7 @@ enum BlendType
     BLEND_MULT,
 };
 
-class RenderObject
+class RenderObject : public ScriptObject
 {
 protected:
     RenderObject();
@@ -21,7 +21,7 @@ protected:
 public:
     ~RenderObject();
 
-    void update(float dt);
+    virtual void update(float dt);
 
     InterpolatedVector position;
     InterpolatedVector offset;
@@ -47,9 +47,13 @@ public:
 
 protected:
 
-    virtual void onUpdate(float dt) {};
+    virtual void onEndOfLife();
 
     BlendType _blend;
+
 };
+
+
+
 
 #endif

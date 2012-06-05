@@ -9,7 +9,7 @@ public:
     TestRenderObject();
     virtual ~TestRenderObject();
 
-    virtual void onUpdate(float dt);
+    virtual void update(float dt);
     virtual void onRender() const;
 
 protected:
