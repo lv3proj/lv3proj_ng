@@ -4,6 +4,8 @@
 #include "ScriptObject.h"
 #include "Vector.h"
 
+class RenderLayer;
+
 enum BlendType
 {
     BLEND_NONE,
@@ -13,8 +15,15 @@ enum BlendType
     BLEND_MULT,
 };
 
+enum LayerID
+{
+    LR_INVALID = 0,
+};
+
 class RenderObject : public ScriptObject
 {
+    friend class RenderLayer;
+
 protected:
     RenderObject();
 
@@ -44,12 +53,19 @@ public:
 
     inline BlendType getBlendType() const { return _blend; }
 
+    inline unsigned int getLayer() const { return _layer; }
+
+    void toLayer(unsigned int target);
+    void moveToFront();
+    void moveToBack();
+
 
 protected:
 
     virtual void onEndOfLife();
 
     BlendType _blend;
+    unsigned int _layer;
 
 };
 

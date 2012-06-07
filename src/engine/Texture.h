@@ -24,6 +24,8 @@ public:
 
    virtual bool reload() = 0;
 
+   static void clearLastApplied() { s_lastApplied = NULL; }
+
 protected:
     virtual void doApply() = 0;
 

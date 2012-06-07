@@ -7,7 +7,7 @@
 #include "SDLSurfaceResource.h"
 #include "GLTexture.h"
 #include "Quad.h"
-
+#include "Camera.h"
 
 Renderer::Renderer()
 : screen(NULL)
@@ -127,6 +127,8 @@ bool Renderer::ApplySettings()
     SDL_VideoDriverName(&drv[0], 256);
     log("Video driver: %s", drv);
 
+    glViewport(0, 0, settings.pixelsW, settings.pixelsH);
+    glScissor(0, 0, settings.pixelsW, settings.pixelsH);
 
     glEnable(GL_TEXTURE_2D);							// Enable Texture Mapping
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);				// Black Background FIXME
@@ -223,9 +225,9 @@ void Renderer::setupRenderPositionAndScale()
     glLoadIdentity();
     // FIXME: not sure where to store the camera, this seems to make sense
 
-    const Vector& globalScale = engine->camera.scale;
-    const Vector& cameraPos = engine->camera.position;
-    const Vector& cameraOffset = engine->camera.offset;
+    const Vector& globalScale = engine->camera->scale;
+    const Vector& cameraPos = engine->camera->position;
+    const Vector& cameraOffset = engine->camera->offset;
     //const Vector& cameraRot = engine->camera->rotation;
 
     //glRotatef(cameraRot.z, 0, 0, 1);
@@ -242,6 +244,7 @@ void Renderer::setupRenderPositionAndScale()
 void Renderer::clear()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
+    Texture::clearLastApplied();
 }
 
 void Renderer::show()

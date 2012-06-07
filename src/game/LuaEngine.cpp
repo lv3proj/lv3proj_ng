@@ -6,6 +6,10 @@
 #include "MemResource.h"
 #include "ResourceMgr.h"
 #include "ObjectMgr.h"
+#include "RenderLayerMgr.h"
+#include "RenderLayer.h"
+#include "Camera.h"
+#include "Renderer.h"
 
 struct LuaConstants
 {
@@ -70,11 +74,65 @@ luaFunc(wait)
     luaReturnNil();
 }
 
+luaFunc(isMouseButton)
+{
+    luaReturnBool(engine->IsMouseButton(lua_tointeger(L, 1)));
+}
+
+luaFunc(getMouseWindowPos)
+{
+    luaReturnVec2(engine->mouse.x, engine->mouse.y);
+}
+
+luaFunc(getMouseWorldPos)
+{
+    // FIXME: Does it really have to be THAT complicated...?
+    Vector campos = engine->camera->position;
+    Vector camscale = engine->camera->scale;
+    const Vector& rscale = engine->GetRenderer()->getGlobalResolutionScale();
+    Vector worldzoom = Vector(1 / (camscale.x * rscale.x), 1 / (camscale.y * rscale.y));
+    Vector t = campos + engine->mouse * worldzoom;
+    luaReturnVec2(t.x - engine->virtualOffX, t.y - engine->virtualOffY);
+}
+
+#include "GL/gl.h"
+
+// HACK: this is just for testing!
+luaFunc(drawLine)
+{
+    float x1 = lua_tonumber(L, 1);
+    float y1 = lua_tonumber(L, 2);
+    float x2 = lua_tonumber(L, 3);
+    float y2 = lua_tonumber(L, 4);
+    float lw = lua_tonumber(L, 5);
+    float r = lua_tonumber(L, 6);
+    float g = lua_tonumber(L, 7);
+    float b = lua_tonumber(L, 8);
+    float a = lua_tonumber(L, 9);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glLineWidth(lw);
+    glDisable(GL_CULL_FACE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBegin(GL_LINES);
+        glColor4f(r, g, b, a);
+        glVertex3f(x1, y1, 0);
+        glVertex3f(x2, y2, 0);
+    glEnd();
+
+    luaReturnNil();
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
     { "loadfile", l_loadfile_wrap },
     luaRegister(wait),
+    luaRegister(drawLine),
+    luaRegister(isMouseButton),
+    luaRegister(getMouseWindowPos),
+    luaRegister(getMouseWorldPos),
 
     { NULL, NULL }
 };
@@ -115,6 +173,16 @@ static Quad *getQuad(lua_State *L, int idx = 1)
         return (Quad*)su->obj;
     return NULL;
 }
+
+static RenderLayer *getLayerByID(lua_State *L, int idx = 1)
+{
+    if(lua_isnumber(L, idx))
+        return engine->layers->GetLayer(lua_tointeger(L, idx));
+    else if(lua_isstring(L, idx))
+        return engine->layers->GetLayer(getCStr(L, idx));
+    return NULL;
+}
+
 
 static void doInterpolateVec1(InterpolatedVector& v, lua_State *L, int startidx)
 {
@@ -187,45 +255,67 @@ luaFn(ro_delete)
 }
 
 // ----------- Evil define hackery -----------------
-#define MAKE_RO_VEC_MTH(name, v) \
-luaFunc(ro_##name) \
+#define MAKE_RO_VEC_MTH(name, v, c) \
+luaFn(ro_##name) \
 { \
     RenderObject *ro = getRO(L); \
     if(ro) \
-        doInterpolateVec2(ro->v, L, 2); \
+        doInterpolateVec##c(ro->v, L, 2); \
     luaReturnSelf(); \
-}
+} \
 
 #define RO_SET_STUFF \
-MAKE_RO_VEC_MTH(position, position) \
-MAKE_RO_VEC_MTH(offset, offset) \
-MAKE_RO_VEC_MTH(scale, scale) \
-MAKE_RO_VEC_MTH(color, color) \
-MAKE_RO_VEC_MTH(alpha, alpha) \
-MAKE_RO_VEC_MTH(alpha2, alpha2) \
-MAKE_RO_VEC_MTH(rotate, rotation) \
-MAKE_RO_VEC_MTH(rotate2, rotation2) \
-MAKE_RO_VEC_MTH(velocity, velocity) \
-MAKE_RO_VEC_MTH(gravity, gravity)
+MAKE_RO_VEC_MTH(position, position, 2) \
+MAKE_RO_VEC_MTH(offset, offset, 2) \
+MAKE_RO_VEC_MTH(scale, scale, 2) \
+MAKE_RO_VEC_MTH(color, color, 3) \
+MAKE_RO_VEC_MTH(alpha, alpha, 1) \
+MAKE_RO_VEC_MTH(alpha2, alpha2, 1) \
+MAKE_RO_VEC_MTH(rotate, rotation, 1) \
+MAKE_RO_VEC_MTH(rotate2, rotation2, 1) \
+MAKE_RO_VEC_MTH(velocity, velocity, 2) \
+MAKE_RO_VEC_MTH(gravity, gravity, 2)
 
 RO_SET_STUFF // Create the functions
 
+luaFn(ro_getPosition)
+{
+    RenderObject *ro = getRO(L);
+    if(ro)
+        luaReturnVec2(ro->position.x, ro->position.y);
+    
+    luaReturnVec2(0, 0);
+}
+
 #undef MAKE_RO_VEC_MTH
 
-#define MAKE_RO_VEC_MTH(name, v){ #name, l_ro_##name },
+#define MAKE_RO_VEC_MTH(name, v, c){ #name, ro_##name },
 
 //-------------------------------------------
 
 
 luaFn(quad_new)
 {
-    return registerObject(L, new Quad(getCStr(L, 1), lua_tointeger(L, 2), lua_tointeger(L, 3)));
+    RenderLayer *lr = getLayerByID(L, 2);
+    if(!lr)
+    {
+        // TODO: nicer output, add stack
+        logerror("ERROR: quad:new() invalid target layer");
+        luaReturnNil();
+    }
+
+    Quad *q = new Quad(getCStr(L, 1), lua_tointeger(L, 3), lua_tointeger(L, 4));
+    lr->Add(q);
+    return registerObject(L, q);
 }
 
 static const luaL_Reg renderobjectlib[] =
 {
-    { "delete", ro_delete },
     RO_SET_STUFF // Create the call table
+
+    { "delete", ro_delete },
+    { "getPosition", ro_getPosition },
+
     // TODO: more
 
     { NULL, NULL }

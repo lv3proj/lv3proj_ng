@@ -1,6 +1,10 @@
 #include "ScriptedEngine.h"
 #include "LuaInterface.h"
 #include "ObjectMgr.h"
+#include "RenderLayer.h"
+#include "RenderLayerMgr.h"
+#include "Renderer.h"
+#include "GL/gl.h"
 
 #include "TestRenderObject.h"
 
@@ -22,9 +26,10 @@ bool ScriptedEngine::OnInit()
     if(!script->Init())
         return false;
 
-    TestRenderObject *ro = new TestRenderObject();
+    /*TestRenderObject *ro = new TestRenderObject();
     ro->setTexture("test.png");
     objmgr->AddObject(ro);
+    layers->GetLayer(1)->Add(ro);*/
 
     script->call("onInit");
 
@@ -40,6 +45,16 @@ void ScriptedEngine::OnUpdate(float dt)
 {
     EngineBase::OnUpdate(dt);
     script->call("onUpdate", dt);
+}
+
+void ScriptedEngine::OnRender()
+{
+    EngineBase::OnRender();
+
+    glPushMatrix();
+    render->setupRenderPositionAndScale();
+    script->call("onRender");
+    glPopMatrix();
 }
 
 void ScriptedEngine::UnregisterObject(ScriptObject *obj)

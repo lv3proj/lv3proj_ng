@@ -122,7 +122,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="shared;engine;include"
+				AdditionalIncludeDirectories="$(ProjectDir);shared;engine;include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_HAS_EXCEPTIONS=0;_STATIC_CPPLIB"
 				StringPooling="true"
 				ExceptionHandling="0"

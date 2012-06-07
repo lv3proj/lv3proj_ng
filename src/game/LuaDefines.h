@@ -12,6 +12,9 @@
 #define luaReturnNil() { return 0; }
 #define luaReturnNum(x) { lua_pushnumber(L, x); return 1; }
 #define luaReturnSelf() { lua_pushvalue(L, 1); return 1; }
+#define luaReturnNum(x) { lua_pushnumber(L, x); return 1; }
+#define luaReturnBool(x) { lua_pushboolean(L, x); return 1; }
+#define luaReturnVec2(x, y) { lua_pushnumber(L, x); lua_pushnumber(L, y); return 2; }
 
 inline const char *getCStrSafe(lua_State *L, int idx = 1)
 {

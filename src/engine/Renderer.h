@@ -51,6 +51,7 @@ public:
     void renderObject(const RenderObject *);
     void renderQuad(const Quad *);
     Texture *createTexture(const char *name);
+    inline const Vector& getGlobalResolutionScale() const { return globalResolutionScale; }
 
 protected:
 

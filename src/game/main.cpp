@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 {
     SDL_Init(SDL_INIT_NOPARACHUTE);
 
-    Bootstrap::RelocateWorkingDir();
+    //Bootstrap::RelocateWorkingDir();
     Bootstrap::HookSignals();
     log_prepare("game_log.txt", "w");
     log_setloglevel(4);

@@ -4,13 +4,14 @@
 #include "common.h"
 #include <SDL/SDL.h>
 #include "Vector.h"
-#include "Camera.h"
 
 class Renderer;
 class SoundCore;
 class Texture;
 class ScriptObject;
 class ObjectMgr;
+class RenderLayerMgr;
+class Camera;
 
 class EngineBase
 {
@@ -70,19 +71,23 @@ public:
     inline void FrameLimitMax(uint32 fps) { _fpsMax = fps; }
 
     Vector mouse;
+    Vector mouseRel;
     //Vector globalScale;
-    Camera camera;
+    Camera *camera;
     float virtualOffX;
     float virtualOffY;
 
     SoundCore *sound;
     ObjectMgr *objmgr;
+    RenderLayerMgr *layers;
 
     Texture *GetTexture(const char *name);
     inline Renderer *GetRenderer() const { return render; }
 
     virtual void UnregisterObject(ScriptObject *obj);
     virtual void ClearGarbage(bool deep);
+
+    bool IsMouseButton(unsigned int btn);
 
 protected:
 
@@ -128,6 +133,8 @@ protected:
     static uint32 s_diffTime; // time diff per tick [uint32(s_fracTime)]
     static uint32 s_diffTimeReal; // time diff per tick, real time (not scaled by s_speed)
     static float s_fracTime; // (_diffTime * _speed) / 1000.0f
+
+    std::vector<unsigned int> _mouseState;
     
     Renderer *render;
 

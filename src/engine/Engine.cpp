@@ -6,6 +6,8 @@
 #include "Quad.h"
 #include "Texture.h"
 #include "ObjectMgr.h"
+#include "Camera.h"
+#include "RenderLayerMgr.h"
 
 
 // global, static
@@ -32,7 +34,9 @@ virtualOffX(0),
 virtualOffY(0),
 _recursionDepth(-1),
 render(NULL),
-sound(NULL)
+sound(NULL),
+layers(NULL),
+camera(NULL)
 {
     log("Game Engine start.");
     engine = this;
@@ -55,9 +59,12 @@ sound(NULL)
 
 EngineBase::~EngineBase()
 {
-    engine = NULL;
-    delete render;
+    delete layers;
+    delete camera;
     delete objmgr;
+    delete render;
+
+    engine = NULL;
     //delete sound;
 }
 
@@ -69,8 +76,6 @@ void EngineBase::s_OnLog(const char *s, int color, int level, void *user)
 
 bool EngineBase::Setup(void)
 {
-    objmgr = new ObjectMgr();
-
     render = new Renderer();
     if(!render->Init())
         return false;
@@ -78,6 +83,11 @@ bool EngineBase::Setup(void)
     //if(!sound->Init())
     //    return false;
     log_setcallback(&s_OnLog, true, NULL); // TODO: param? newline?
+
+    objmgr = new ObjectMgr();
+    layers = new RenderLayerMgr();
+    camera = new Camera();
+
 
     if(!OnInit())
         return false;
@@ -87,13 +97,13 @@ bool EngineBase::Setup(void)
 
 void EngineBase::Shutdown(void)
 {
+    layers->ClearAll();
     objmgr->ClearAll();
     ClearGarbage(true);
     render->Shutdown();
 
 
     //sound->Shutdown();
-    engine = NULL;
     // this should not be called from inside EngineBase::Run()
 
     //sndCore.StopMusic();
@@ -336,11 +346,16 @@ void EngineBase::_Process(void)
 
     resMgr.Update(dt);
 
-    camera.update(dt);
+    camera->update(dt);
 
     OnUpdate(dt);
 
     ClearGarbage(false);
+}
+
+bool EngineBase::IsMouseButton(unsigned int btn)
+{
+    return btn < _mouseState.size() ? _mouseState[btn] : 0;
 }
 
 bool EngineBase::OnInit()
@@ -365,6 +380,14 @@ void EngineBase::OnMouseEvent(uint32 type, uint32 button, uint32 state, uint32 x
 {
     mouse.x = x;
     mouse.y = y;
+    mouseRel.x = rx;
+    mouseRel.y = ry;
+    
+    // LMB is 1.
+    // So we can safely use button 0 as indicator for dragging or not
+    if(button >= _mouseState.size())
+        _mouseState.resize(button+1, 0);
+    _mouseState[button] = state;
 }
 
 void EngineBase::OnJoystickEvent(uint32 type, uint32 device, uint32 id, int32 val)
@@ -423,6 +446,8 @@ void EngineBase::_Render(void)
 {
     render->clear();
     render->setupRenderPositionAndScale();
+
+    layers->Render();
 
     OnRender();
 

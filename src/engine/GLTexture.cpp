@@ -31,6 +31,8 @@ void GLTexture::doApply()
 bool GLTexture::reload()
 {
     SDLSurfaceResource *res = resMgr.LoadImg(name());
+    if(!res)
+        return false;
 
     // Conversion to 32-bit RGBA // TODO: fix for big endian
     SDL_Surface *src = res->getSurface();

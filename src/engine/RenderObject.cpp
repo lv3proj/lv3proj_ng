@@ -1,8 +1,12 @@
 #include "RenderObject.h"
+#include "Engine.h"
+#include "RenderLayer.h"
+#include "RenderLayerMgr.h"
 
 
 RenderObject::RenderObject()
 {
+    _layer = LR_INVALID;
     _blend = BLEND_DEFAULT;
     scale = Vector(1, 1, 1);
     color = Vector(1, 1, 1);
@@ -35,6 +39,26 @@ void RenderObject::onEndOfLife()
 {
     ScriptObject::onEndOfLife();
 
-    // TODO: unregister from renderer
+    engine->layers->GetLayer(getLayer())->Remove(this);
+}
+
+void RenderObject::toLayer(unsigned int target)
+{
+    if(_layer == target)
+        return;
+    engine->layers->GetLayer(getLayer())->Remove(this);
+    _layer = LR_INVALID; // to avoid warnings
+    engine->layers->GetLayer(target)->Add(this);
+    _layer = target;
+}
+
+void RenderObject::moveToBack()
+{
+    engine->layers->GetLayer(getLayer())->MoveToBack(this);
+}
+
+void RenderObject::moveToFront()
+{
+    engine->layers->GetLayer(getLayer())->MoveToFront(this);
 }
 

@@ -22,6 +22,7 @@ protected:
     virtual bool OnInit();
     virtual void OnReset();
     virtual void OnUpdate(float dt);
+    virtual void OnRender();
 
 };
 

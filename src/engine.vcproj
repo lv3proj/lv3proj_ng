@@ -223,6 +223,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\engine\RenderLayer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\RenderLayer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\RenderLayerMgr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\RenderLayerMgr.h"
+				>
+			</File>
+			<File
 				RelativePath=".\engine\RenderObject.cpp"
 				>
 			</File>
