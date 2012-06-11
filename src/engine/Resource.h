@@ -9,10 +9,11 @@ enum ResourceType
 {
     RESOURCE_BASE,      // used for resources that other resources depend on, but that have no function otherwise.
     RESOURCE_MEM,
-    RESOURCE_IMAGE,
+    RESOURCE_IMAGE, // possibly depends on another image
     RESOURCE_SOUND,
     RESOURCE_MUSIC, // TODO: merge this with sound whenever feasible
-    RESOURCE_TEXTURE,
+    RESOURCE_TEXTURE, // depends on an image
+    RESOURCE_ANIM, // depends on multiple textures
 
     RESOURCE_MAX
 };

@@ -6,6 +6,8 @@
 void stringToLower(std::string& s);
 void stringToUpper(std::string s);
 
+bool fileHasExtension(const char *fn, const char *ext);
+
 void rand_seed(uint32);
 bool chance(float p); // 0 - 100
 

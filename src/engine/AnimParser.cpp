@@ -2,9 +2,9 @@
 #include "AnimParser.h"
 
 
-Anim *ParseAnimData(char *strbuf, char *filename)
+Anim *ParseAnimData(const char *strbuf, const char *filename)
 {
-    Anim *ani = new Anim;
+    Anim *ani = new Anim(filename);
     ani->first = NULL;
     std::vector<std::string> lines, fields;
     size_t cpos; // comment?
@@ -37,7 +37,7 @@ Anim *ParseAnimData(char *strbuf, char *filename)
         if(line[0] == '[')
         {
             anim_name = line.c_str() + 1; // skip '['
-            uint32 alen = anim_name.length();
+            size_t alen = anim_name.length();
             if(anim_name[alen - 1] == ']') // remove trailing ']'
                 anim_name.erase(alen - 1);
             finished_block = false;
@@ -128,10 +128,10 @@ Anim *ParseAnimData(char *strbuf, char *filename)
         }
         if(frames.cmd.action == ANIMCMD_REPEAT && frames.cmd.param.size())
         {
-            logerror("AnimParser: '%s' Warning: Animation '%s' has a unused param '%s', ignored.",
+            logerror("AnimParser: '%s' Warning: Animation '%s' has an unused param '%s', ignored.",
                 filename, frames.name.c_str(), frames.cmd.param.c_str());
         }
     }
-    ani->filename = filename;
+
     return ani;
 }

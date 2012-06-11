@@ -1,0 +1,20 @@
+[on]
+en/01.png 75
+en/02.png 75
+en/03.png 75
+r
+
+[swon]
+en/t03.png 150
+en/t02.png 150
+en/t01.png 150
+j on
+
+[swoff]
+en/t01.png 150
+en/t02.png 150
+en/t03.png 150
+j off
+
+[off]
+empty16.png

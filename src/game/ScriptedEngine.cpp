@@ -26,11 +26,6 @@ bool ScriptedEngine::OnInit()
     if(!script->Init())
         return false;
 
-    /*TestRenderObject *ro = new TestRenderObject();
-    ro->setTexture("test.png");
-    objmgr->AddObject(ro);
-    layers->GetLayer(1)->Add(ro);*/
-
     script->call("onInit");
 
     return true;
@@ -51,10 +46,7 @@ void ScriptedEngine::OnRender()
 {
     EngineBase::OnRender();
 
-    glPushMatrix();
-    render->setupRenderPositionAndScale();
     script->call("onRender");
-    glPopMatrix();
 }
 
 void ScriptedEngine::UnregisterObject(ScriptObject *obj)

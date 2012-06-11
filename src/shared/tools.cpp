@@ -27,6 +27,16 @@ void stringToUpper(std::string s)
     std::transform(s.begin(), s.end(), s.begin(), toupper);
 }
 
+bool fileHasExtension(const char *fn, const char *end)
+{
+    const char *dot = strrchr(fn, '.');
+    if(!dot)
+        return false;
+
+    return !strcmp(dot + 1, end);
+}
+
+
 std::string GetDateString(void)
 {
     time_t t = time(NULL);

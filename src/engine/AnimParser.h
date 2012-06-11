@@ -3,7 +3,7 @@
 
 #include "Anim.h"
 
-Anim *ParseAnimData(char *strbuf, char *filename);
+Anim *ParseAnimData(const char *strbuf, const char *filename);
 
 
 #endif

@@ -8,14 +8,16 @@
 #include "FileAPI.h"
 #include "ResourceMgr.h"
 #include "mathtools.h"
-//#include "AnimParser.h"
+#include "AnimParser.h"
 //#include "PropParser.h"
+#include "Engine.h"
 
 #include "SDLSurfaceResource.h"
 #include "SDLMusicResource.h"
 #include "SDLSoundResource.h"
 #include "MemResource.h"
 #include "Texture.h"
+#include "Anim.h"
 
 
 
@@ -38,6 +40,16 @@ static void SplitFilenameToProps(const char *in, std::string *fn, std::string *s
         *s4 = fields[4];
     if(fields.size() >= 6 && s5)
         *s5 = fields[5];
+}
+
+static bool exists(const std::string& fn)
+{
+    return !!vfs.GetFile(fn.c_str());
+}
+
+static bool exists(const char *fn)
+{
+    return !!vfs.GetFile(fn);
 }
 
 
@@ -69,6 +81,7 @@ void ResourceMgr::DropUnused(void)
                 ++it;
         }
     }
+    vfs.ClearGarbage();
 }
 
 void ResourceMgr::Update(float dt)
@@ -234,63 +247,66 @@ SDLSurfaceResource *ResourceMgr::_LoadImgInternal(const char *name)
     return imgRes;
 }
 
-/*
+
 Anim *ResourceMgr::LoadAnim(const char *name)
 {
-    std::string fn("gfx/");
-    std::string relpath(_PathStripLast(name));
-    std::string loadpath;
-    fn += name;
+    std::string realname = "gfx/";
+    realname += name;
 
-    Anim *ani = (Anim*)_GetPtr(fn);
+    //TODO: add extensions automatically?
+
+    return _LoadAnimInternal(realname.c_str());
+}
+
+
+Anim *ResourceMgr::_LoadAnimInternal(const char *name)
+{
+
+    Anim *ani = (Anim*)_GetResource(RESOURCE_ANIM, name);
     if(ani)
     {
-        _IncRef((void*)ani);
+        ani->incref();
+        return ani;
     }
-    else
+
+    // a .anim file is just a text file, so we use the internal text file loader
+    MemResource *memRes = _LoadFileInternal(name, true);
+    if(!memRes)
     {
-        // a .anim file is just a text file, so we use the internal text file loader
-        memblock *mb = _LoadTextFileInternal((char*)fn.c_str(), FILENAME_TMP_INDIC);
-        if(!mb)
-        {
-            logerror("LoadAnim: Failed to open '%s'", fn.c_str());
-            return NULL;
-        }
-
-        ani = ParseAnimData((char*)mb->ptr, (char*)fn.c_str());
-        Drop(mb); // text data are no longer needed
-
-        if(!ani)
-        {
-            logerror("LoadAnim: Failed to parse '%s'", fn.c_str());
-            return NULL;
-        }
-
-        // load all additional files referenced in this .anim file
-        // pay attention to relative paths in the file, respect the .anim file's directory for this
-        for(AnimMap::iterator am = ani->anims.begin(); am != ani->anims.end(); am++)
-            for(AnimFrameVector::iterator af = am->second.store.begin(); af != am->second.store.end(); af++)
-            {
-                loadpath = AddPathIfNecessary(af->filename,relpath);
-                af->surface = LoadImg(loadpath.c_str()); // get all images referenced
-                if(af->surface)
-                    af->callback.ptr(af->surface); // register callback for auto-deletion
-                else
-                {
-                    logerror("LoadAnim: '%s': Failed to open referenced image '%s'", fn.c_str(), loadpath.c_str());
-                    // we keep the NULL-ptr anyways
-                }
-            }
-
-         logdebug("LoadAnim: '%s' [%s] -> "PTRFMT , fn.c_str(), vfs.GetFile(fn.c_str())->getType(), ani); // the file must exist
-
-         _SetPtr(fn, (void*)ani);
-         _InitRef((void*)ani, RESTYPE_ANIM);
+        logerror("LoadAnim: Failed to open '%s'", name);
+        return NULL;
     }
+
+    ani = ParseAnimData((const char*)memRes->ptr(), name);
+    memRes->decref(); // text data are no longer needed
+
+    if(!ani)
+    {
+        logerror("LoadAnim: Failed to parse '%s'", name);
+        return NULL;
+    }
+
+    // load all additional files referenced in this .anim file
+    for(AnimMap::iterator am = ani->anims.begin(); am != ani->anims.end(); am++)
+        for(AnimFrameVector::iterator af = am->second.store.begin(); af != am->second.store.end(); af++)
+        {
+            Texture *tex = engine->GetTexture(af->GetTextureName());
+            if(!tex)
+            {
+                logerror("LoadAnim: '%s': Failed to open referenced texture '%s'", name, af->GetTextureName());
+                // we keep the NULL-ptr anyways
+                continue;
+            }
+            tex->incref();
+            af->tex = tex;
+        }
+
+    logdebug("LoadAnim: '%s' -> "PTRFMT , name, ani);
+
+    Add(ani);
 
     return ani;
 }
-*/
 
 SDLMusicResource *ResourceMgr::LoadMusic(const char *name)
 {
