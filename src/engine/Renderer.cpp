@@ -259,7 +259,7 @@ void Renderer::renderObject(const RenderObject *ro)
 {
     const Vector renderPos = ro->position + ro->offset;
     const Vector renderRot = ro->rotation + ro->rotation2;
-    const float renderAlpha = ro->alpha.x + ro->alpha2.x;
+    const float renderAlpha = ro->alpha.x * ro->alpha2.x;
     const Vector renderCol = ro->color;
 
     glPushMatrix();

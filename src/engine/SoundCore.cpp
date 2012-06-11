@@ -266,7 +266,7 @@ void SoundCore::PauseMusic()
 void SoundCore::FadeOutMusic(float t)
 {
     Mix_FadeOutMusic(int(t * 1000));
-    _looppoint = -1; // No not restart after fading out
+    _looppoint = -1; // Do not restart after fading out
 }
 
 void SoundCore::StopMusic()
@@ -323,8 +323,8 @@ SoundFile *SoundCore::GetSound(const char *fn)
         if(soundf->CanBeDeleted())
         {
             logdev("SoundCore: Recycling "PTRFMT" (%s)", fn);
-            soundf->SetDeleteWhenStopped(false);
-            return soundf; // Will be revived by caller when starting to play
+            soundf->SetDeleteWhenStopped(false); // Revive it
+            return soundf;
         }
     }
 
