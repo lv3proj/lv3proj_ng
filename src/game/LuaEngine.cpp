@@ -10,6 +10,7 @@
 #include "RenderLayer.h"
 #include "Camera.h"
 #include "Renderer.h"
+#include "SoundCore.h"
 
 struct LuaConstants
 {
@@ -23,8 +24,6 @@ struct LuaFunctions
     const char *name;
     lua_CFunction func;
 };
-
-
 
 static int loadFile_helper(lua_State *L, const char *fn)
 {
@@ -174,6 +173,14 @@ static Quad *getQuad(lua_State *L, int idx = 1)
     return NULL;
 }
 
+static SoundFile *getSound(lua_State *L, int idx = 1)
+{
+    ScriptObjectUserStruct *su = (ScriptObjectUserStruct*)lua_touserdata(L, idx);
+    if(su && ((su->type & OT_SOUND) == OT_SOUND))
+        return (SoundFile*)su->obj;
+    return NULL;
+}
+
 static RenderLayer *getLayerByID(lua_State *L, int idx = 1)
 {
     if(lua_isnumber(L, idx))
@@ -212,37 +219,50 @@ static void doInterpolateVec3(InterpolatedVector& v, lua_State *L, int startidx)
 }
 
 // ScriptObjectUserStruct must be on top of stack; leaves it there.
-static void registerScriptObjectStruct(lua_State *L)
+static void registerScriptObjectStruct(lua_State *L, lua_CFunction gcfunc)
 {
     // -- Register object in global object table --
     // now [su]
     ScriptObjectUserStruct *su = (ScriptObjectUserStruct*)lua_touserdata(L, -1);
-    lua_getglobal(L, "_OBJECTREGISTRY");
-    // now [su][t]
-    lua_pushlightuserdata(L, su->obj);
-    // now [su][t][q]
-    lua_pushvalue(L, -3);
-    // now [su][t][q][su]
-    lua_settable(L, -3); // t[su->obj] = su
-    // now [su][t]
-    lua_pop(L, 1);
-    // now [su]
+    if(su->obj->isManaged())
+    {
+        lua_getglobal(L, "_OBJECTREGISTRY");
+        // now [su][t]
+        lua_pushlightuserdata(L, su->obj);
+        // now [su][t][q]
+        lua_pushvalue(L, -3);
+        // now [su][t][q][su]
+        lua_settable(L, -3); // t[su->obj] = su
+        // now [su][t]
+        lua_pop(L, 1);
+        // now [su]
+    }
 
     // -- Assign metatable -- (Will be populated in the scripts)
     lua_newtable(L);
     // now [su][t]
+    if(gcfunc)
+    {
+        lua_pushliteral(L, "__gc");
+        // now [su][t]["__gc"]
+        lua_pushcfunction(L, gcfunc);
+        // now [su][t]["__gc"][gcfunc]
+        lua_settable(L, -3);
+        // now [su][t]
+    }
     lua_setmetatable(L, -2);
     // now [su]
 }
 
-static int registerObject(lua_State *L, ScriptObject *obj)
+static int registerObject(lua_State *L, ScriptObject *obj, ScriptObjectType type, lua_CFunction gcfunc)
 {
     ScriptObjectUserStruct *su = (ScriptObjectUserStruct*)lua_newuserdata(L, sizeof(ScriptObjectUserStruct));
     obj->scriptBindings = su;
     su->obj = obj;
-    su->type = OT_QUAD;
-    registerScriptObjectStruct(L);
-    engine->objmgr->AddObject(obj);
+    su->type = type;
+    registerScriptObjectStruct(L, gcfunc);
+    if(obj->isManaged())
+        engine->objmgr->AddObject(obj);
     return 1;
 }
 
@@ -306,7 +326,150 @@ luaFn(quad_new)
 
     Quad *q = new Quad(getCStr(L, 1), lua_tointeger(L, 3), lua_tointeger(L, 4));
     lr->Add(q);
-    return registerObject(L, q);
+    return registerObject(L, q, OT_QUAD, NULL);
+}
+
+luaFn(_sound_gc)
+{
+    SoundFile *sound = getSound(L);
+    if(sound)
+    {
+        sound->SetDeleteWhenStopped(true);
+        engine->UnregisterObject(sound);
+    }
+    luaReturnNil();
+}
+
+
+luaFn(sound_new)
+{
+    const char *fn = getCStr(L);
+    if(!fn)
+        return 0;
+
+    SoundFile *sf = engine->sound->GetSound(fn);
+    if(!sf)
+        luaReturnNil();
+
+    return registerObject(L, sf, OT_SOUND, _sound_gc);
+}
+
+luaFn(sound_play)
+{
+    SoundFile *sf = getSound(L);
+    if(sf)
+    {
+        int loops = lua_tointeger(L, 2);
+        sf->Play(loops);
+        luaReturnSelf();
+    }
+    luaReturnNil();
+}
+
+luaFn(sound_fadeOut)
+{
+    SoundFile *sf = getSound(L);
+    if(sf)
+    {
+        sf->FadeOut(lua_tonumber(L, 2));
+        luaReturnSelf();
+    }
+    luaReturnNil();
+}
+
+luaFn(sound_fadeIn)
+{
+    SoundFile *sf = getSound(L);
+    if(sf)
+    {
+        float t = lua_tonumber(L, 2);
+        int loops = lua_tointeger(L, 3);
+        sf->FadeIn(t, loops);
+        luaReturnSelf();
+    }
+    luaReturnNil();
+}
+
+luaFn(sound_stop)
+{
+    SoundFile *sf = getSound(L);
+    if(sf)
+    {
+        sf->Stop();
+        luaReturnSelf();
+    }
+    luaReturnNil();
+}
+
+luaFn(sound_volume)
+{
+    SoundFile *sf = getSound(L);
+    if(sf)
+    {
+        float vol = lua_tonumber(L, 2);
+        sf->SetVolume(vol);
+        luaReturnSelf();
+    }
+    luaReturnNil();
+}
+
+luaFn(sound_getVolume)
+{
+    SoundFile *sf = getSound(L);
+    luaReturnNum(sf ? sf->GetVolume() : 0.0f);
+}
+
+luaFn(sound_isPlaying)
+{
+    SoundFile *sf = getSound(L);
+    luaReturnBool(sf ? sf->IsPlaying() : false);
+}
+
+
+
+luaFn(music_play)
+{
+    luaReturnBool(engine->sound->PlayMusic(getCStr(L))); // NULL to resume
+}
+
+luaFn(music_stop)
+{
+    engine->sound->StopMusic();
+    luaReturnNil();
+}
+
+luaFn(music_pause)
+{
+    engine->sound->PauseMusic();
+    luaReturnNil();
+}
+
+luaFn(music_fadeOut)
+{
+    engine->sound->FadeOutMusic(lua_tonumber(L, 1));
+    luaReturnNil();
+}
+
+luaFn(music_isPlaying)
+{
+    luaReturnBool(engine->sound->IsPlayingMusic());
+}
+
+luaFn(music_volume)
+{
+    engine->sound->SetMusicVolume(lua_tonumber(L, 1));
+    luaReturnNil();
+}
+
+luaFn(music_getVolume)
+{
+    luaReturnNum(engine->sound->GetMusicVolume());
+}
+
+luaFn(music_loopPoint)
+{
+    engine->sound->SetLoopPoint(lua_tonumber(L, 1));
+    luaReturnNil();
 }
 
 static const luaL_Reg renderobjectlib[] =
@@ -322,7 +485,30 @@ static const luaL_Reg renderobjectlib[] =
 
 };
 
+static const luaL_Reg soundlib[] =
+{
+    { "new", sound_new },
+    { "play", sound_play },
+    { "fadeOut", sound_fadeOut },
+    { "fadeIn", sound_fadeIn },
+    { "stop", sound_stop },
+    { "volume", sound_volume },
+    { "getVolume", sound_getVolume },
+    { "isPlaying", sound_isPlaying },
+    { NULL, NULL }
+};
 
+
+static const luaL_Reg musiclib[] =
+{
+    { "play", music_play },
+    { "fadeOut", music_fadeOut },
+    { "stop", music_stop },
+    { "volume", music_volume },
+    { "getVolume", music_getVolume },
+    { "isPlaying", music_isPlaying },
+    { NULL, NULL }
+};
 
 static const luaL_Reg quadlib[] =
 {
@@ -336,6 +522,18 @@ static const luaL_Reg quadlib[] =
 int luaopen_renderobject(lua_State *L)
 {
     luaL_newlib(L, renderobjectlib);
+    return 1;
+}
+
+int luaopen_sound(lua_State *L)
+{
+    luaL_newlib(L, soundlib);
+    return 1;
+}
+
+int luaopen_music(lua_State *L)
+{
+    luaL_newlib(L, musiclib);
     return 1;
 }
 

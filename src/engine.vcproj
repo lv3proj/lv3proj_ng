@@ -267,6 +267,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\engine\SoundCore.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\SoundCore.h"
+				>
+			</File>
+			<File
 				RelativePath=".\engine\TestRenderObject.cpp"
 				>
 			</File>

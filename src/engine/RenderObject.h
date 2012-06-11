@@ -20,7 +20,7 @@ enum LayerID
     LR_INVALID = 0,
 };
 
-class RenderObject : public ScriptObject
+class RenderObject : public LifeObject
 {
     friend class RenderLayer;
 

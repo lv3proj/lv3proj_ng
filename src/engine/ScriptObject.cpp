@@ -2,10 +2,9 @@
 #include "Engine.h"
 
 ScriptObject::ScriptObject()
- : scriptBindings(NULL)
- , _dead(false)
- , _life(1)
- , _decay(0)
+: scriptBindings(NULL)
+, _dead(false)
+, _managed(false)
 {
 }
 
@@ -13,23 +12,36 @@ ScriptObject::~ScriptObject()
 {
 }
 
-void ScriptObject::update(float dt)
+
+LifeObject::LifeObject()
+: _life(1)
+ , _decay(0)
 {
-    if(!_dead)
+    _managed = true;
+}
+
+LifeObject::~LifeObject()
+{
+}
+
+void LifeObject::update(float dt)
+{
+    if(!isDead())
     {
+        ScriptObject::update(dt);
         _life -= (_decay * dt);
         if(_life <= 0)
             onEndOfLife();
     }
 }
 
-void ScriptObject::onEndOfLife()
+void LifeObject::onEndOfLife()
 {
     _dead = true;
     engine->UnregisterObject(this);
 }
 
-void ScriptObject::kill(float decay)
+void LifeObject::kill(float decay)
 {
     if(decay <= 0)
         _life = -1;

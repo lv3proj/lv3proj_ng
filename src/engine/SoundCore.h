@@ -1,73 +1,95 @@
 #ifndef SOUNDCORE_H
 #define SOUNDCORE_H
 
-#include <SDL/SDL_mixer.h>
 #include "ResourceMgr.h"
-#include "SelfRefCounter.h"
-#include "DelayedDeletable.h"
+#include "SDLSoundResource.h"
+#include "ScriptObject.h"
+
+#include <map>
+#include <list>
+
+typedef struct _Mix_Music Mix_Music;
 
 struct gme_t;
 
-class SoundFile : public DelayedDeletable
+class SoundFile : public ScriptObject
 {
     friend class SoundCore;
 
 public:
-    virtual ~SoundFile();
-    void Play(void); // also used to resume
-    void Stop(void);
-    void SetVolume(uint8 vol);
-    uint8 GetVolume(void);
-    bool IsPlaying(void);
 
+    void Play(int loops = 0); // also used to resume
+    void Stop();
+    void SetVolume(float vol);
+    float GetVolume();
+    bool IsPlaying();
+    void FadeOut(float secs);
+    void FadeIn(float secs, int loops = 0);
+    //void Pause(); // NYI
     //void Seek(uint32); // NYI
-
-    SelfRefCounter<SoundFile, false> ref;
-
-    // from DelayedDeletable
-    virtual bool CanBeDeleted(void);
-    virtual void SetDelete(void);
+    bool CanBeDeleted();
+    void SetDeleteWhenStopped(bool del);
 
 private:
-    SoundFile(Mix_Chunk *p);
-    ResourceCallback<Mix_Chunk> resCallback;
-    Mix_Chunk *sound;
-    int channel;
+    SoundFile(SDLSoundResource *);
+    virtual ~SoundFile();
+
+    SDLSoundResource *_res;
+    int _channel;
+    bool _deletable;
 };
+
+typedef std::list<SoundFile*> SoundList;
+typedef std::map<std::string, SoundList> SoundStore;
 
 class SoundCore
 {
 public:
-    bool Init(void);
-    void Shutdown(void);
+    SoundCore();
+    ~SoundCore();
+
+    bool Init();
+    void Shutdown();
+    void ClearGarbage();
     SoundFile *GetSound(const char *fn); // do NOT forget to decRef the returned ptr !!
     bool PlayMusic(const char *fn);
-    void PauseMusic(void);
-    void StopMusic(void);
-    bool IsPlayingMusic(void);
-    void SetMusicVolume(uint8 vol);
-    uint32 GetMusicVolume(void);
+    void PauseMusic();
+    void FadeOutMusic(float t);
+    // TODO: proper fade-in or crossfading is quite impossible with SDL_Mixer.
+    // This needs to wait until something OpenAL-based is in use instead.
+    void StopMusic();
+    bool IsPlayingMusic();
+    void SetMusicVolume(float vol);
+    float GetMusicVolume();
 
-    inline Mix_Music *_GetMusicPtr(void) { return _music; }
-    inline void SetLoopPoint(double msec) { _looppoint = msec; }
-    inline double GetLoopPoint(void) { return _looppoint; }
-    inline uint32 GetSampleSize(void) { return _sampleSize; }
+    inline SDLMusicResource *_GetMusicPtr() { return _music; }
+    inline void SetLoopPoint(float msec) { _looppoint = msec; }
+    inline float GetLoopPoint() { return _looppoint; }
+    inline uint32 GetSampleSize() { return _sampleSize; }
+
+    void _ChannelFinished(int channel);
+    SoundFile *_GetActiveChannel(int channel) { return _activeChannels[channel]; }
+    void _SetActiveChannel(int channel, SoundFile *ch) { _activeChannels[channel] = ch; }
 
 private:
-    bool _LoadWithGME(memblock *mb);
-    Mix_Music *_music;
+    bool _LoadWithGME(MemResource *memRes);
+    SDLMusicResource *_music;
     gme_t *_gme;
-    double _looppoint;
-    uint8 _volume;
+    float _looppoint;
+    float _volume;
 
     // queried from SDL
     int _sampleRate;
-    int _channels;
+    int _channels; // output channels. 1 is mono, 2 is stereo.
+    int _playChannels; // amount of playback channels - this many sounds can be played at a time.
     uint32 _sampleSize;
+
+    SoundStore _sounds;
+
+    std::vector<SoundFile*> _activeChannels;
 
 };
 
-extern SoundCore sndCore;
 
 
 #endif

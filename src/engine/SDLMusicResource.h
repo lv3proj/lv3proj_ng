@@ -12,13 +12,15 @@ class SDLMusicResource : public Resource
 public:
     SDLMusicResource(const char *name, Mix_Music *s, SDL_RWops *rwop);
 
-    inline const Mix_Music *getMusic() const { return _music; }
+    inline Mix_Music *getMusic() const { return _music; }
+    inline float getLoopPoint() const { return _looppoint; }
 
 protected:
     virtual ~SDLMusicResource();
 
     Mix_Music *_music;
     SDL_RWops *_rwop;
+    float _looppoint;
 };
 
 #endif

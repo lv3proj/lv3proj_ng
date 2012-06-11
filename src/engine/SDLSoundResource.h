@@ -11,7 +11,8 @@ class SDLSoundResource : public Resource
 public:
     SDLSoundResource(const char *name, Mix_Chunk *ch);
 
-    inline const Mix_Chunk *getChunk() const { return _chunk; }
+    inline Mix_Chunk *getChunk() const { return _chunk; }
+    inline float getLoopPoint() const { return _looppoint; }
 
     virtual unsigned int usedMem() const;
 
@@ -19,6 +20,7 @@ protected:
     ~SDLSoundResource();
 
     Mix_Chunk *_chunk;
+    float _looppoint;
 };
 
 #endif

@@ -8,17 +8,22 @@
 #include "common.h"
 #include "ResourceMgr.h"
 #include "SoundCore.h"
+#include "SDLMusicResource.h"
+#include "SDLSoundResource.h"
+#include "MemResource.h"
+
+static SoundCore *_sndcore = NULL;
 
 static void musicFinished(void)
 {
     // from the manual:
     // NOTE: NEVER call SDL_Mixer functions, nor SDL_LockAudio, from a callback function. 
     // oh well... works. bah.
-    logdev("SoundCore: Music finished, looppoint = %f", (float)sndCore.GetLoopPoint());
-    if(sndCore._GetMusicPtr() && sndCore.GetLoopPoint() >= 0)
+    logdev("SoundCore: Music finished, looppoint = %f", _sndcore->GetLoopPoint());
+    if(_sndcore->_GetMusicPtr() && _sndcore->GetLoopPoint() >= 0)
     {
-        Mix_PlayMusic(sndCore._GetMusicPtr(), 0);
-        Mix_SetMusicPosition(sndCore.GetLoopPoint());
+        Mix_PlayMusic(_sndcore->_GetMusicPtr()->getMusic(), 0);
+        Mix_SetMusicPosition(_sndcore->GetLoopPoint());
     }
 }
 
@@ -31,71 +36,120 @@ static void play_music_gme(void *udata, Uint8 *stream, int len)
 static void stop_music_gme(void *userdata)
 {
     logdev("SoundCore: delete GME, mem ptr "PTRFMT, userdata);
-    memblock *mb = (memblock*)userdata;
-    resMgr.Drop(mb);
+    MemResource *memRes = (MemResource*)userdata;
+    memRes->decref();
 }
 
-static inline float getFloatVolume(uint8 vol)
+static void channelFinished(int channel)
 {
-    return vol / float(MIX_MAX_VOLUME);
+    //logdev("Channel finished: %d", channel);
+    _sndcore->_ChannelFinished(channel);
 }
 
 
-SoundFile::SoundFile(Mix_Chunk *p)
-: sound(p), channel(-1), resCallback(p), ref(this)
+SoundFile::SoundFile(SDLSoundResource *res)
+: _res(res), _channel(-1), _deletable(false)
 {
-    resMgr.pool.Add(this);
+    res->incref();
 }
 
 SoundFile::~SoundFile()
 {
     Stop();
-    // resource management done by ResourceCallback
+    _res->decref();
 }
 
-void SoundFile::SetVolume(uint8 vol)
+void SoundFile::SetVolume(float vol)
 {
-    Mix_VolumeChunk(sound, vol);
+    Mix_VolumeChunk(_res->getChunk(), int(vol * MIX_MAX_VOLUME));
 }
 
-uint8 SoundFile::GetVolume(void)
+float SoundFile::GetVolume()
 {
-    return Mix_VolumeChunk(sound, -1);
+    return Mix_VolumeChunk(_res->getChunk(), -1) / float(MIX_MAX_VOLUME);
 }
 
-void SoundFile::Play(void)
+void SoundFile::Play(int loops /* = 0 */)
 {
-    channel = Mix_PlayChannel(-1, sound, 0);
-    //DEBUG(logdebug("PLAY on channel %u", channel));
+    _channel = Mix_PlayChannel(-1, _res->getChunk(), loops);
+    if(_channel < 0)
+    {
+        logdebug("No free channels!");
+        return;
+    }
+
+    //logdebug("PLAY on channel %u", channel);
+
+    _sndcore->_SetActiveChannel(_channel, this);
+
 }
 
-bool SoundFile::IsPlaying(void)
+bool SoundFile::IsPlaying()
 {
-    return channel >= 0 && Mix_Playing(channel) && Mix_GetChunk(channel) == sound;
+    if(_channel < 0)
+        return false;
+    SoundFile *chs = _sndcore->_GetActiveChannel(_channel); // Not using SDL_Mixer function, because it crashes...
+    if(!chs)
+        return false;
+    if(chs != this)
+        return false;
+
+    return Mix_Playing(_channel);
 }
 
-void SoundFile::Stop(void)
+void SoundFile::Stop()
 {
-    //if(IsPlaying())
-        Mix_HaltChannel(channel);
+    if(IsPlaying())
+    {
+        Mix_HaltChannel(_channel);
+        _channel = -1;
+    }
 }
 
-bool SoundFile::CanBeDeleted(void)
+bool SoundFile::CanBeDeleted()
 {
-    return !(ref.count() || IsPlaying());
+    return _deletable && !IsPlaying();
 }
 
-void SoundFile::SetDelete(void)
+void SoundFile::SetDeleteWhenStopped(bool del)
 {
-    Stop();
+    _deletable = del;
 }
 
-bool SoundCore::Init(void)
+void SoundFile::FadeOut(float secs)
+{
+    if(_channel > 0)
+        Mix_FadeOutChannel(_channel, int(secs * 1000));
+}
+
+void SoundFile::FadeIn(float secs, int loops /* = 0 */)
+{
+    Mix_FadeInChannel(-1, _res->getChunk(), loops, int(secs * 1000));
+}
+
+
+
+SoundCore::SoundCore()
+{
+    _sndcore = this;
+}
+
+SoundCore::~SoundCore()
+{
+    _sndcore = NULL;
+}
+
+bool SoundCore::Init()
 {
     _music = NULL;
     _gme = NULL;
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024);
-    Mix_AllocateChannels(16);
+    _volume = 1;
+    _looppoint = 0;
+
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024); // 2 means stereo
+
+    _playChannels = Mix_AllocateChannels(64);
+    _activeChannels.resize(_playChannels, (SoundFile*)NULL);
 
     Uint16 format;
     Mix_QuerySpec(&_sampleRate, &format, &_channels);
@@ -113,18 +167,30 @@ bool SoundCore::Init(void)
     }
     if(!(_sampleRate == 44100 && _sampleSize == 2 && _channels == 2))
     {
-        logerror("SoundCore: %d Hz, %d channels [%s]", _sampleRate, _channels, fmt);
+        logerror("SoundCore: %d Hz, %d output channels [%s], %u playback channels", _sampleRate, _channels, fmt, _playChannels);
         logerror("--> WARNING: Unexpected Mixer settings, audio playback may be weird!");
     }
     else
-        logdetail("SoundCore: %d Hz, %d channels [%s]", _sampleRate, _channels, fmt);
+        logdetail("SoundCore: %d Hz, %d output channels [%s], %u playback channels", _sampleRate, _channels, fmt, _playChannels);
+
+    Mix_ChannelFinished(channelFinished);
 
     return true;
 }
 
-void SoundCore::Shutdown(void)
+void SoundCore::Shutdown()
 {
     StopMusic();
+
+    for(SoundStore::iterator s = _sounds.begin(); s != _sounds.end(); ++s)
+    {
+        SoundList& sl = s->second;
+        for(SoundList::iterator it = sl.begin(); it != sl.end(); ++it)
+            delete *it;
+    }
+
+    _sounds.clear();
+
     Mix_CloseAudio();
 }
 
@@ -140,26 +206,31 @@ bool SoundCore::PlayMusic(const char *fn)
         return false;
     }
 
-    Mix_Music *mus = resMgr.LoadMusic(fn);
+    SDLMusicResource *mus = resMgr.LoadMusic(fn);
+
     if(mus)
     {
-        std::string loopstr = resMgr.GetPropForMusic(fn, "looppoint");
-        if(loopstr.length())
-            SetLoopPoint(atof(loopstr.c_str()));
-        else
-            SetLoopPoint(-1);
+        if(_music == mus)
+        {
+            mus->decref();
+            return true;
+        }
+
+        SetLoopPoint(mus->getLoopPoint());
 
         StopMusic();
 
-        int result = Mix_PlayMusic(mus, 0);
+        int result = Mix_PlayMusic(mus->getMusic(), 0);
         if(!result) // everything ok
         {
+            if(_music)
+                _music->decref();
             _music = mus;
             Mix_HookMusicFinished(musicFinished);
             return true;
         }
         else
-            resMgr.Drop(mus); // whoops?
+            mus->decref();
     }
 
     // SDL_Mixer can't play it...
@@ -167,19 +238,19 @@ bool SoundCore::PlayMusic(const char *fn)
     // get raw memory block - should still be in memory
     std::string file("music/");
     file += fn;
-    memblock *mb = resMgr.LoadFile(file.c_str());
-    if(mb)
+    MemResource *memRes = resMgr.LoadFile(file.c_str());
+    if(memRes)
     {
         // Try GME
-        if(_LoadWithGME(mb)
+        if(_LoadWithGME(memRes)
             // ... possibly more loaders here later ...
             )
         {
             return true; // all fine now
         }
 
-        // unable to load, mb no longer used here
-        resMgr.Drop(mb);
+        // unable to load, memory no longer used here
+        memRes->decref();
     }
 
     // still no success, give up
@@ -187,12 +258,18 @@ bool SoundCore::PlayMusic(const char *fn)
     return false;
 }
 
-void SoundCore::PauseMusic(void)
+void SoundCore::PauseMusic()
 {
     Mix_PauseMusic();
 }
 
-void SoundCore::StopMusic(void)
+void SoundCore::FadeOutMusic(float t)
+{
+    Mix_FadeOutMusic(int(t * 1000));
+    _looppoint = -1; // No not restart after fading out
+}
+
+void SoundCore::StopMusic()
 {
     Mix_HookMusic(NULL, NULL); // clear any custom player function
     Mix_HaltMusic();
@@ -203,46 +280,85 @@ void SoundCore::StopMusic(void)
 
     if(_music)
     {
-        resMgr.Drop(_music); 
+        _music->decref();
         _music = NULL;
     }
 
-    gme_delete(_gme);
-    _gme = NULL;
+    if(_gme)
+    {
+        gme_delete(_gme);
+        _gme = NULL;
+    }
 }
 
-bool SoundCore::IsPlayingMusic(void)
+bool SoundCore::IsPlayingMusic()
 {
     return Mix_PlayingMusic() && !Mix_PausedMusic();
 }
 
-void SoundCore::SetMusicVolume(uint8 vol)
+void SoundCore::SetMusicVolume(float vol)
 {
-    if(vol > MIX_MAX_VOLUME)
-        vol = MIX_MAX_VOLUME;
-    Mix_VolumeMusic(vol);
+    int ivol = int(vol * MIX_MAX_VOLUME);
+    if(ivol > MIX_MAX_VOLUME)
+        ivol = MIX_MAX_VOLUME;
+    Mix_VolumeMusic(ivol);
     if(_gme)
-        gme_set_volume(_gme, getFloatVolume(vol));
+        gme_set_volume(_gme, vol);
     _volume = vol;
 }
 
-uint32 SoundCore::GetMusicVolume(void)
+float SoundCore::GetMusicVolume()
 {
     return _volume;
 }
 
 SoundFile *SoundCore::GetSound(const char *fn)
 {
-    Mix_Chunk *chunk = resMgr.LoadSound(fn);
-    if(chunk)
+    // First, try to find a sound that isn't in use anymore that can be recycled.
+    SoundList &used = _sounds[fn];
+    SoundFile *soundf = NULL;
+    for(SoundList::iterator it = used.begin(); it != used.end(); ++it)
     {
-        SoundFile *sound = new SoundFile(chunk);
-        return sound;
+        soundf = *it;
+        if(soundf->CanBeDeleted())
+        {
+            logdev("SoundCore: Recycling "PTRFMT" (%s)", fn);
+            soundf->SetDeleteWhenStopped(false);
+            return soundf; // Will be revived by caller when starting to play
+        }
     }
-    return NULL;
+
+    soundf = NULL;
+    SDLSoundResource *res = resMgr.LoadSound(fn);
+    if(res)
+    {
+        soundf = new SoundFile(res);
+        res->decref();
+        used.push_back(soundf);
+    }
+    return soundf;
 }
 
-bool SoundCore::_LoadWithGME(memblock *mb)
+void SoundCore::ClearGarbage()
+{
+    for(SoundStore::iterator s = _sounds.begin(); s != _sounds.end(); ++s)
+    {
+        SoundList& sl = s->second;
+        for(SoundList::iterator it = sl.begin(); it != sl.end(); )
+        {
+            SoundFile *sf = *it;
+            if(sf->CanBeDeleted())
+            {
+                delete sf;
+                sl.erase(it++);
+            }
+            else
+                ++it;
+        }
+    }
+}
+
+bool SoundCore::_LoadWithGME(MemResource *memRes)
 {
     if(!(_sampleSize == 2 && _channels == 2))
     {
@@ -251,25 +367,26 @@ bool SoundCore::_LoadWithGME(memblock *mb)
     }
 
     gme_t *emu =  NULL;
-    gme_err_t err = gme_open_data((void const*)mb->ptr, mb->size, &emu, _sampleRate);
+    gme_err_t err = gme_open_data(memRes->ptr(), (long)memRes->size(), &emu, _sampleRate);
     
     if(!err)
     {
         const char *ty = gme_type_system(gme_type(emu));
-        logdebug("_LoadWithGME("PTRFMT") ptr = "PTRFMT"  Type: %s" , mb, mb->ptr, ty);
+        logdebug("_LoadWithGME() ptr = "PTRFMT"  Type: %s" , memRes->ptr(), ty);
         StopMusic();
         _gme = emu;
-        gme_start_track(emu, 0); // TODO FIXME
+        gme_start_track(emu, 0); // TODO FIXME: add support for other track IDs (NSF files)
         gme_set_user_cleanup(emu, stop_music_gme);
-        gme_set_user_data(emu, (void*)mb);
+        gme_set_user_data(emu, memRes);
         Mix_HookMusic(play_music_gme, (void*)emu);
-        gme_set_volume(emu, getFloatVolume(_volume));
+        gme_set_volume(emu, _volume);
         return true;
     }
 
     return false;
 }
 
-
-// extern, global (since we aren't using singletons here)
-SoundCore sndCore;
+void SoundCore::_ChannelFinished(int channel)
+{
+    _SetActiveChannel(channel, NULL);
+}

@@ -8,6 +8,8 @@ struct lua_State;
 void lua_register_enginefuncs(lua_State *);
 int luaopen_renderobject(lua_State *);
 int luaopen_quad(lua_State *);
+int luaopen_sound(lua_State *);
+int luaopen_music(lua_State *);
 
 
 struct ScriptObjectUserStruct

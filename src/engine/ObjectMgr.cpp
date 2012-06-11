@@ -1,6 +1,7 @@
 #include "ObjectMgr.h"
 #include "ScriptObject.h"
 #include "common.h"
+#include <assert.h>
 
 ObjectMgr::ObjectMgr()
 {
@@ -30,11 +31,13 @@ void ObjectMgr::Update(float dt)
 
 void ObjectMgr::AddObject(ScriptObject *obj)
 {
+    assert(obj->isManaged());
     _alive.insert(obj);
 }
 
 void ObjectMgr::Garbage(ScriptObject *obj)
 {
+    assert(obj->isManaged());
     _garbage.push_back(obj);
 }
 

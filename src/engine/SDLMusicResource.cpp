@@ -4,7 +4,7 @@
 
 SDLMusicResource::SDLMusicResource(const char *name, Mix_Music *m, SDL_RWops *rwop)
  : Resource(name, RESOURCE_MUSIC)
- , _music(m), _rwop(rwop)
+ , _music(m), _rwop(rwop), _looppoint(0)
 {
 }
 

@@ -65,6 +65,7 @@ ResourceMgr::~ResourceMgr()
 
 void ResourceMgr::DropUnused(void)
 {
+    logdev("ResourceMgr before clear: %u resources, %u KB", GetUsedCount(), GetUsedMem() / 1024);
     // Start with resources that are likely to have the most dependencies
     for(int i = RESOURCE_MAX-1; i >= 0; --i)
     {
@@ -74,6 +75,7 @@ void ResourceMgr::DropUnused(void)
         {
             if(!it->second->refcount())
             {
+                _unaccountMem(it->second->usedMem());
                 delete it->second;
                 res.erase(it++);
             }
@@ -82,6 +84,8 @@ void ResourceMgr::DropUnused(void)
         }
     }
     vfs.ClearGarbage();
+
+    logdev("ResourceMgr after clear: %u resources, %u KB", GetUsedCount(), GetUsedMem() / 1024);
 }
 
 void ResourceMgr::Update(float dt)
@@ -99,7 +103,7 @@ unsigned int ResourceMgr::GetUsedCount(void)
     unsigned int total = 0;
     for(int i = 0; i < RESOURCE_MAX; ++i)
     {
-        total += (uint32)_res[i].size();
+        total += (unsigned int)_res[i].size();
     }
     return total;
 }

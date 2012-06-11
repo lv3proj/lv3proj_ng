@@ -20,7 +20,7 @@ RenderObject::~RenderObject()
 
 void RenderObject::update(float dt)
 {
-    ScriptObject::update(dt);
+    LifeObject::update(dt);
 
     position.update(dt);
     offset.update(dt);
@@ -37,7 +37,7 @@ void RenderObject::update(float dt)
 
 void RenderObject::onEndOfLife()
 {
-    ScriptObject::onEndOfLife();
+    LifeObject::onEndOfLife();
 
     engine->layers->GetLayer(getLayer())->Remove(this);
 }

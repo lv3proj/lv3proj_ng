@@ -3,7 +3,7 @@
 
 SDLSoundResource::SDLSoundResource(const char *name, Mix_Chunk *ch)
  : Resource(name, RESOURCE_SOUND)
- , _chunk(ch)
+ , _chunk(ch), _looppoint(0)
 {
 }
 

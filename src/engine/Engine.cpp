@@ -1,6 +1,6 @@
 #include "Engine.h"
 #include "Renderer.h"
-//#include "SoundCore.h"
+#include "SoundCore.h"
 #include "ResourceMgr.h"
 #include "SDLSurfaceResource.h"
 #include "Quad.h"
@@ -64,9 +64,9 @@ EngineBase::~EngineBase()
     delete camera;
     delete objmgr;
     delete render;
+    delete sound;
 
     engine = NULL;
-    //delete sound;
 }
 
 void EngineBase::s_OnLog(const char *s, int color, int level, void *user)
@@ -80,9 +80,9 @@ bool EngineBase::Setup(void)
     render = new Renderer();
     if(!render->Init())
         return false;
-    //sound = new SoundCore();
-    //if(!sound->Init())
-    //    return false;
+    sound = new SoundCore();
+    if(!sound->Init())
+        return false;
     log_setcallback(&s_OnLog, true, NULL); // TODO: param? newline?
 
     objmgr = new ObjectMgr();
@@ -96,32 +96,18 @@ bool EngineBase::Setup(void)
     return true;
 }
 
+// this should not be called from inside EngineBase::Run()
 void EngineBase::Shutdown(void)
 {
     layers->ClearAll();
     objmgr->ClearAll();
+    sound->Shutdown();
     ClearGarbage(true);
     render->Shutdown();
 
-
-    //sound->Shutdown();
-    // this should not be called from inside EngineBase::Run()
-
-    //sndCore.StopMusic();
-    /*delete objmgr;
-    delete physmgr;
-    delete _layermgr;
-    resMgr.pool.Cleanup(true); // force deletion of everything
-    resMgr.DropUnused(); // at this point, all resources should have a refcount of 0, so this removes all.
-    sndCore.Destroy(); // must be deleted after all sounds were dropped by the ResourceMgr
-    if(_screen)
-        SDL_FreeSurface(_screen);*/
-    
     for(uint32 i = 0; i < s_joysticks.size(); ++i)
         if(s_joysticks[i] && SDL_JoystickOpened(SDL_JoystickIndex(s_joysticks[i]))) // this is maybe a bit overcomplicated, but safe at least
             SDL_JoystickClose(s_joysticks[i]);
-
-
 
     // be sure we did a clean shutdown
     //resMgr.DbgCheckEmpty();
@@ -501,7 +487,8 @@ Texture *EngineBase::GetTexture(const char *name)
 
 void EngineBase::UnregisterObject(ScriptObject *obj)
 {
-    objmgr->Garbage(obj);
+    if(obj->isManaged())
+        objmgr->Garbage(obj);
 }
 
 void EngineBase::ClearGarbage(bool deep)
@@ -509,6 +496,7 @@ void EngineBase::ClearGarbage(bool deep)
     objmgr->ClearGarbage();
     if(deep)
     {
+        sound->ClearGarbage();
         resMgr.DropUnused();
     }
 }

@@ -41,6 +41,8 @@ unsigned int LuaInterface::MemUsed()
 static const luaL_Reg customLibs[] = {
     {"ro", luaopen_renderobject},
     {"quad", luaopen_quad},
+    {"sound", luaopen_sound},
+    {"music", luaopen_music},
     {NULL, NULL}
 };
 
@@ -85,27 +87,18 @@ bool LuaInterface::Init()
 
 void LuaInterface::UnregisterObject(ScriptObject *obj)
 {
+    ScriptObjectUserStruct *su = (ScriptObjectUserStruct *)obj->scriptBindings;
+    if(!su)
+        return;
+
+    assert(su->obj == obj);
+    assert(obj->scriptBindings == su);
+    obj->scriptBindings = NULL;
+    su->obj = NULL;
+    su->type = OT_NONE;
+
     lua_getglobal(_lua, "_OBJECTREGISTRY");
     // now [t]
-    lua_pushlightuserdata(_lua, obj);
-    // now [t][obj]
-    lua_gettable(_lua, -2);
-    // now [t][su]
-    ScriptObjectUserStruct *su = (ScriptObjectUserStruct *)lua_touserdata(_lua, -1);
-    if(su)
-    {
-        assert(su->obj == obj);
-        assert(obj->scriptBindings == su);
-        obj->scriptBindings = NULL;
-        su->obj = NULL;
-        su->type = OT_NONE;
-    }
-    else
-    {
-        logerror("LuaInterface::UnregisterObject %p: Value not associated");
-    }
-    lua_pop(_lua, 1);
-
     lua_pushlightuserdata(_lua, obj);
     // now [t][obj]
     lua_pushnil(_lua);
