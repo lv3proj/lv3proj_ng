@@ -11,8 +11,9 @@
 
 #define luaReturnNil() { return 0; }
 #define luaReturnNum(x) { lua_pushnumber(L, x); return 1; }
-#define luaReturnSelf() { lua_pushvalue(L, 1); return 1; }
+#define luaReturnSelf() { lua_pushvalue(L, 1); return 1; } // This assumes 'self' is at bottom of stack, i.e. first arg
 #define luaReturnNum(x) { lua_pushnumber(L, x); return 1; }
+#define luaReturnInt(x) {lua_pushinteger(L, x); return 1; }
 #define luaReturnBool(x) { lua_pushboolean(L, x); return 1; }
 #define luaReturnVec2(x, y) { lua_pushnumber(L, x); lua_pushnumber(L, y); return 2; }
 

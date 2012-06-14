@@ -34,6 +34,7 @@ _fpsMin(60), _fpsMax(70),
 virtualOffX(0),
 virtualOffY(0),
 _recursionDepth(-1),
+mouseWheelRel(0),
 render(NULL),
 sound(NULL),
 layers(NULL),
@@ -227,6 +228,10 @@ void EngineBase::Run(float runtime /* = -1 */)
 
 void EngineBase::_ProcessEvents(void)
 {
+    mouseWheelRel = 0;
+    mouseRel.x = 0;
+    mouseRel.y = 0;
+
     SDL_Event evt;
     while(!s_quit && SDL_PollEvent(&evt))
     {
@@ -329,11 +334,15 @@ void EngineBase::_Process(void)
         resMgr.pool.Cleanup();
     }*/
 
+    camera->update(dt);
+
+    const RenderSettings& rr = render->getSettings();
+    screenCenter.x = camera->position.x + (rr.virtualW / 2) * camera->invScale.x;
+    screenCenter.y = camera->position.y + (rr.virtualH / 2) * camera->invScale.y;
+
     objmgr->Update(dt);
 
     resMgr.Update(dt);
-
-    camera->update(dt);
 
     OnUpdate(dt);
 
@@ -365,16 +374,33 @@ void EngineBase::OnWindowEvent(bool active)
 
 void EngineBase::OnMouseEvent(uint32 type, uint32 button, uint32 state, uint32 x, uint32 y, int32 rx, int32 ry)
 {
-    mouse.x = x;
-    mouse.y = y;
-    mouseRel.x = rx;
-    mouseRel.y = ry;
+    Vector lastMouse = mouse;
+    const RenderSettings &rr = render->getSettings();
+
+    mouse.x = rangeTransform<float>(x, 0, rr.pixelsW, -virtualOffX, rr.virtualW + virtualOffX);
+    mouse.y = rangeTransform<float>(y, 0, rr.pixelsH, -virtualOffY, rr.virtualH + virtualOffY);
+
+    mouseRel = mouse - lastMouse;
+
+    logdev("mx = %.2f   my = %.2f", mouse.x, mouse.y);
+
     
     // LMB is 1.
     // So we can safely use button 0 as indicator for dragging or not
     if(button >= _mouseState.size())
         _mouseState.resize(button+1, 0);
     _mouseState[button] = state;
+
+    // This is reset at the beginning of input handling.
+    switch(button)
+    {
+        case 4:
+            ++mouseWheelRel;
+            break;
+        case 5:
+            --mouseWheelRel;
+            break;
+    }
 }
 
 void EngineBase::OnJoystickEvent(uint32 type, uint32 device, uint32 id, int32 val)
@@ -501,3 +527,28 @@ void EngineBase::ClearGarbage(bool deep)
     }
 }
 
+Vector EngineBase::ToWorldPosition(const Vector& v) const
+{
+    const RenderSettings& rr = render->getSettings();
+    Vector ret = v;
+    ret.x -= (rr.virtualW / 2);
+    ret.y -= (rr.virtualH / 2);
+    ret.x *= camera->invScale.x;
+    ret.y *= camera->invScale.y;
+    ret.x += screenCenter.x;
+    ret.y += screenCenter.y;
+    return ret;
+}
+
+Vector EngineBase::ToWindowPosition(const Vector& v) const
+{
+    const RenderSettings& rr = render->getSettings();
+    Vector ret = v;
+    ret.x -= screenCenter.x;
+    ret.y -= screenCenter.y;
+    ret.x *= camera->scale.x;
+    ret.y *= camera->scale.y;
+    ret.x += (rr.virtualW / 2);
+    ret.y += (rr.virtualH / 2);
+    return ret;
+}

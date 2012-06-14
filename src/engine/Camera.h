@@ -8,6 +8,10 @@ class Camera : public RenderObject
 public:
     Camera();
     virtual ~Camera();
+
+    virtual void update(float dt);
+
+    Vector invScale;
 };
 
 

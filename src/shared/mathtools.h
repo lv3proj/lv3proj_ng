@@ -99,5 +99,19 @@ inline int fceili(float val)
     return 0.0f;
 }
 
+// scale t from [lower, upper] into [rangeMin, rangeMax]
+// Allows out of bounds values
+template <typename T> inline T rangeTransform(T t, T lower, T upper, T rangeMin, T rangeMax)
+{
+    T d = upper - lower;
+    if (d == 0)
+        return rangeMin;
+
+    t = t - lower;
+    t = t / d;
+    t = t * (rangeMax - rangeMin);
+    t = t + rangeMin;
+    return t;
+}
 
 #endif

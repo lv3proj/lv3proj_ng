@@ -53,6 +53,8 @@ public:
     Texture *createTexture(const char *name);
     inline const Vector& getGlobalResolutionScale() const { return globalResolutionScale; }
 
+    inline const RenderSettings& getSettings() const { return settings; }
+
 protected:
 
     void _Enable2D(uint32 x, uint32 y);
@@ -62,7 +64,6 @@ protected:
     Vector globalResolutionScale;
 
     RenderSettings settings;
-    RenderSettings active;
 };
 
 

@@ -13,7 +13,6 @@ Renderer::Renderer()
 : screen(NULL)
 {
     memset(&settings, 0, sizeof(settings));
-    memset(&active, 0, sizeof(settings));
     globalResolutionScale = Vector(1, 1, 1);
 }
 
@@ -208,16 +207,19 @@ void Renderer::_Enable2D(uint32 x, uint32 y)
 
     float diff = x - settings.virtualW;
     if (diff > 0)
-        engine->virtualOffX = ((x - settings.virtualW)/2);
+        engine->virtualOffX = diff / 2;
     else
         engine->virtualOffX = 0;
 
 
     diff = y - settings.virtualH;
     if (diff > 0)
-        engine->virtualOffY = ((y - settings.virtualH)/2);
+        engine->virtualOffY = diff / 2;
     else
         engine->virtualOffY = 0;
+
+    logdebug("virtualOffX = %.2f", engine->virtualOffX);
+    logdebug("virtualOffY = %.2f", engine->virtualOffY);
 }
 
 void Renderer::setupRenderPositionAndScale()

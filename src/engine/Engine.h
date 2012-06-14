@@ -70,9 +70,11 @@ public:
     inline void FrameLimitMin(uint32 fps) { _fpsMin = fps; }
     inline void FrameLimitMax(uint32 fps) { _fpsMax = fps; }
 
-    Vector mouse;
+    Vector mouse; // mouse position relative to window size.
     Vector mouseRel;
-    //Vector globalScale;
+    Vector screenCenter; // world position where the center of the screen is at
+    int mouseWheelRel;
+
     Camera *camera;
     float virtualOffX;
     float virtualOffY;
@@ -89,6 +91,8 @@ public:
 
     bool IsMouseButton(unsigned int btn);
 
+    Vector ToWorldPosition(const Vector& v) const; // window -> world
+    Vector ToWindowPosition(const Vector& v) const; // world -> window
 protected:
 
     virtual bool OnInit();

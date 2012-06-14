@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "Renderer.h"
 #include "SoundCore.h"
+#include "GL/gl.h"
 
 struct LuaConstants
 {
@@ -83,20 +84,18 @@ luaFunc(getMouseWindowPos)
     luaReturnVec2(engine->mouse.x, engine->mouse.y);
 }
 
-luaFunc(getMouseWorldPos)
+luaFunc(getMouseWindowRel)
 {
-    // FIXME: Does it really have to be THAT complicated...?
-    Vector campos = engine->camera->position;
-    Vector camscale = engine->camera->scale;
-    const Vector& rscale = engine->GetRenderer()->getGlobalResolutionScale();
-    Vector worldzoom = Vector(1 / (camscale.x * rscale.x), 1 / (camscale.y * rscale.y));
-    Vector t = campos + engine->mouse * worldzoom;
-    luaReturnVec2(t.x - engine->virtualOffX, t.y - engine->virtualOffY);
+    luaReturnVec2(engine->mouseRel.x, engine->mouseRel.y);
 }
 
-#include "GL/gl.h"
+luaFunc(getMouseWorldPos)
+{
+    Vector t = engine->ToWorldPosition(engine->mouse);
+    luaReturnVec2(t.x, t.y);
+}
 
-// HACK: this is just for testing!
+
 luaFunc(drawLine)
 {
     float x1 = lua_tonumber(L, 1);
@@ -123,6 +122,11 @@ luaFunc(drawLine)
     luaReturnNil();
 }
 
+luaFunc(getMouseWheelRel)
+{
+    luaReturnInt(engine->mouseWheelRel);
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -131,7 +135,9 @@ static LuaFunctions s_functab[] =
     luaRegister(drawLine),
     luaRegister(isMouseButton),
     luaRegister(getMouseWindowPos),
+    luaRegister(getMouseWindowRel),
     luaRegister(getMouseWorldPos),
+    luaRegister(getMouseWheelRel),
 
     { NULL, NULL }
 };
@@ -472,6 +478,33 @@ luaFn(music_loopPoint)
     luaReturnNil();
 }
 
+luaFn(camera_position)
+{
+    doInterpolateVec2(engine->camera->position, L, 1);
+    luaReturnNil();
+}
+
+luaFn(camera_getPosition)
+{
+    const Vector& cpos = engine->camera->position;
+    luaReturnVec2(cpos.x, cpos.y);
+}
+
+luaFn(camera_scale)
+{
+    doInterpolateVec2(engine->camera->scale, L, 1);
+    luaReturnNil();
+}
+
+luaFn(camera_getScale)
+{
+    const Vector& cpos = engine->camera->scale;
+    luaReturnVec2(cpos.x, cpos.y);
+}
+
+
+
+
 static const luaL_Reg renderobjectlib[] =
 {
     RO_SET_STUFF // Create the call table
@@ -512,7 +545,19 @@ static const luaL_Reg musiclib[] =
 
 static const luaL_Reg quadlib[] =
 {
-    {"new", quad_new},
+    { "new", quad_new },
+    // TODO: more
+
+    {NULL, NULL}
+};
+
+static const luaL_Reg cameralib[] =
+{
+    { "position", camera_position },
+    { "getPosition", camera_getPosition },
+    { "scale", camera_scale },
+    { "getScale", camera_getScale },
+
     // TODO: more
 
     {NULL, NULL}
@@ -540,5 +585,11 @@ int luaopen_music(lua_State *L)
 int luaopen_quad(lua_State *L)
 {
     luaL_newlib(L, quadlib);
+    return 1;
+}
+
+int luaopen_camera(lua_State *L)
+{
+    luaL_newlib(L, cameralib);
     return 1;
 }
