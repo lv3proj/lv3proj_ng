@@ -3,6 +3,9 @@
 
 #include <assert.h>
 
+// TODO: This can be better organized.
+// Only row count needs to be a power of 2!
+
 
 // fast 2D array avoiding multiplication to access array indexes
 // the size has to be a power of 2, if not, it will automatically align
@@ -13,10 +16,10 @@ public:
     array2d() : _shift(0), _size(0), data(NULL) {} // when checking for bounds, we NEED a default value to return
     ~array2d() { this->free(); }
 
-    inline void fill(T val)
+    inline void fill(const T& val)
     {
-        uint32 s = size2d();
-        for(uint32 i = 0; i < s; ++i)
+        unsigned int s = size2d();
+        for(unsigned int i = 0; i < s; ++i)
             data[i] = val;
     }
 

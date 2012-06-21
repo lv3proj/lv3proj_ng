@@ -499,7 +499,11 @@ Texture *EngineBase::GetTexture(const char *name)
     Texture *tex = resMgr._GetTexture(name);
     if(!tex)
     {
-        if(fileHasExtension(name, "anim"))
+        if(!*name)
+        {
+            tex = render->createNullTexture();
+        }
+        else if(fileHasExtension(name, "anim"))
         {
             Anim *ani = resMgr.LoadAnim(name);
             if(ani)

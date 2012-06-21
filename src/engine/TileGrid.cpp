@@ -115,9 +115,16 @@ void TileGrid::onRender()
 
     Vector start;
     const Vector step(_tileSize, 0);
+    Texture **texarray = (Texture**)alloca(dim * sizeof(Texture*));
     for(unsigned int y = 0; y < dim; ++y)
     {
-        render->renderTileArray(&_tiles(0, y), dim, start, step);
+        Tile **tileptr = &_tiles(0, y);
+        for(unsigned int x = 0; x < dim; ++x)
+        {
+            Tile *tile = tileptr[x];
+            texarray[x] = tile ? tile->getTexture() : NULL;
+        }
+        render->renderTextureArray(texarray, dim, start, step);
         start.y += _tileSize;
     }
 }

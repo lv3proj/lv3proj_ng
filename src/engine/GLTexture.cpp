@@ -30,6 +30,9 @@ void GLTexture::doApply()
 
 bool GLTexture::reload()
 {
+    if(!*name())
+        return true;
+
     SDLSurfaceResource *res = resMgr.LoadImg(name());
     if(!res)
         return false;

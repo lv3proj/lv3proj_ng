@@ -16,7 +16,7 @@ enum ClientState
 };
 
 Renderer::Renderer()
-: screen(NULL), _clientState(0)
+: screen(NULL), _clientState(0), _activeBlend(BLEND_NONE)
 {
     memset(&settings, 0, sizeof(settings));
     globalResolutionScale = Vector(1, 1, 1);
@@ -307,6 +307,9 @@ void Renderer::renderObject(const RenderObject *ro)
 
 void Renderer::_applyBlendType(BlendType blend)
 {
+    if(_activeBlend == blend)
+        return;
+
     switch (blend)
     {
     case BLEND_NONE:
@@ -329,6 +332,8 @@ void Renderer::_applyBlendType(BlendType blend)
         glBlendFunc(GL_ZERO, GL_SRC_COLOR);
         break;
     }
+
+    _activeBlend = blend;
 }
 
 void Renderer::renderQuad(const Quad *q)
@@ -434,18 +439,16 @@ void Renderer::renderSingleTexture(Texture *tex, const Vector& pos, const Vector
     glPopMatrix();
 }
 
-#include "Tile.h"
-
-void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& start, const Vector& step)
+void Renderer::renderTextureArray(Texture **textures, unsigned int size, const Vector& start, const Vector& step, const Vector& halfsize)
 {
     Vector trans = start;
     {
         int skipped = 0;
         // skip forward until first usable tile is in tiles[0], or abort if nothing found
-        while(size && !*tiles)
+        while(size && !*textures)
         {
             --size;
-            ++tiles;
+            ++textures;
             ++skipped;
         }
         if(!size)
@@ -458,9 +461,9 @@ void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& st
 
     _enableVertexAndTexCoords();
 
-    Texture *tex = tiles[0]->getTexture();
-    const float w2 = tex->getHalfWidth();
-    const float h2 = tex->getHalfHeight();
+    Texture *tex = textures[0];
+    const float w2 = halfsize.x ? halfsize.x : tex->getHalfWidth();
+    const float h2 = halfsize.y ? halfsize.y : tex->getHalfHeight();
 
     const GLfloat vertexData[] =
     {
@@ -475,8 +478,7 @@ void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& st
 
     do
     {
-        Tile *tile;
-        if( ((tile = *tiles++)) && ((tex = tile->getTexture())) )
+        if((tex = *textures++))
         {
             glTranslatef(trans.x, trans.y, trans.z);
             tex->apply();
@@ -508,4 +510,11 @@ void Renderer::_disableVertexAndTexCoords()
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
         _clientState = CLS_NONE;
     }
+}
+
+Texture *Renderer::createNullTexture()
+{
+    GLTexture *tex = new GLTexture("");
+    tex->setID(0);
+    return tex;
 }

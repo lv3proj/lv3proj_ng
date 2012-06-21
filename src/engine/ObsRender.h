@@ -6,6 +6,7 @@
 #include "RenderObject.h"
 
 class Texture;
+class Tile;
 
 class ObsRender : public RenderObject
 {
@@ -18,6 +19,9 @@ public:
 protected:
     unsigned int _layer;
     Texture *_tex;
+
+private:
+    void _renderMixedTile(Tile *tile, float xpos, float ypos) const;
 };
 
 #endif

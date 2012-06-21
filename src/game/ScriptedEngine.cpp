@@ -43,14 +43,15 @@ bool ScriptedEngine::OnInit()
             }
             else
             {
-                //sprintf(buf, "block%u.png", (rand() % 3) + 1);
-                layers->GetLayer(4)->tiles.SetTileByName(x, y, "block1.png");
+                sprintf(buf, "block%u.png", (rand() % 4) + 1);
+                layers->GetLayer(4)->tiles.SetTileByName(x, y, &buf[0]);
                 layers->GetLayer(4)->tiles.GetTile(x, y)->CalcCollision();
             }
         }
 
     ObsRender *o = new ObsRender(4);
     o->alpha = 0.4f;
+    o->color = Vector(1, 0, 0);
     layers->GetLayer(4)->Add(o);
     objmgr->AddObject(o);
 

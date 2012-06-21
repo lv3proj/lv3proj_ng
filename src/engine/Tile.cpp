@@ -32,7 +32,8 @@ bool Tile::CalcCollision()
     SDL_PixelFormat *fmt = surf->format;
     unsigned int w = surf->w, h = surf->h;
 
-    _mask.resize(w, h);
+    _mask.resize(std::max(w, h), 0);
+
     unsigned int fre = 0, solid = 0;
 
     // TODO: speed this up. This is really slow.
