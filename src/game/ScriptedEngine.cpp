@@ -33,6 +33,8 @@ bool ScriptedEngine::OnInit()
     for(unsigned int y = 0; y < 64; ++y)
         for(unsigned int x = 0; x < 64; ++x)
         {
+            if(rand() & 1)
+                continue;
             if(rand() % 6 == 0)
             {
                 layers->GetLayer(4)->tiles.SetTileByName(x, y, "en.anim");

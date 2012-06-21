@@ -432,8 +432,21 @@ void Renderer::renderSingleTexture(Texture *tex, const Vector& pos)
 
 void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& start, const Vector& step)
 {
-    if(!size)
-        return;
+    Vector trans;
+    {
+        int skipped = 0;
+        // skip forward until first usable tile is in tiles[0], or abort if nothing found
+        while(size && !*tiles)
+        {
+            --size;
+            ++tiles;
+            ++skipped;
+        }
+        if(!size)
+            return;
+
+        trans = step * skipped;
+    }
 
     glPushMatrix();
     glTranslatef(start.x, start.y, start.z);
@@ -441,8 +454,8 @@ void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& st
     _enableVertexAndTexCoords();
 
     Texture *tex = tiles[0]->getTexture();
-    const float w2 = tex->getWidth() / 2.0f;
-    const float h2 = tex->getHeight() / 2.0f;
+    const float w2 = tex->getHalfWidth();
+    const float h2 = tex->getHalfHeight();
 
     const GLfloat vertexData[] =
     {
@@ -460,10 +473,12 @@ void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& st
         Tile *tile;
         if( ((tile = tiles[i])) && ((tex = tile->getTexture())) )
         {
+            glTranslatef(trans.x, trans.y, trans.z);
             tex->apply();
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            trans.x = trans.y = trans.z = 0;
         }
-        glTranslatef(step.x, step.y, step.z); // FIXME: this sucks
+        trans += step;
     }
 
     glPopMatrix();
