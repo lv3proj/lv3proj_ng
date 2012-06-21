@@ -18,12 +18,15 @@ ObsRender::~ObsRender()
 void ObsRender::onRender() const
 {
     TileGrid& grid = engine->layers->GetLayer(_layer)->tiles;
+
+    int xstart, ystart, xend, yend;
+    grid.CalcRenderLimits(xstart, ystart, xend, yend);
+
     Renderer *render = engine->GetRenderer();
 
-    const unsigned int dim = grid.GetSize();
-    for(unsigned int y = 0; y < dim; ++y)
+    for(unsigned int y = ystart; y < yend; ++y)
     {
-        for(unsigned int x = 0; x < dim; ++x)
+        for(unsigned int x = xstart; x < xend; ++x)
         {
             if(Tile *tile = grid.GetTile(x, y))
             {

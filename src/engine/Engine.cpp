@@ -538,12 +538,10 @@ Vector EngineBase::ToWorldPosition(const Vector& v) const
 {
     const RenderSettings& rr = render->getSettings();
     Vector ret = v;
-    ret.x -= (rr.virtualW / 2);
-    ret.y -= (rr.virtualH / 2);
-    ret.x *= camera->invScale.x;
-    ret.y *= camera->invScale.y;
-    ret.x += screenCenter.x;
-    ret.y += screenCenter.y;
+    ret.x -= (rr.virtualW / 2.0f);
+    ret.y -= (rr.virtualH / 2.0f);
+    ret *= camera->invScale;
+    ret += screenCenter;
     return ret;
 }
 
@@ -551,11 +549,9 @@ Vector EngineBase::ToWindowPosition(const Vector& v) const
 {
     const RenderSettings& rr = render->getSettings();
     Vector ret = v;
-    ret.x -= screenCenter.x;
-    ret.y -= screenCenter.y;
-    ret.x *= camera->scale.x;
-    ret.y *= camera->scale.y;
-    ret.x += (rr.virtualW / 2);
-    ret.y += (rr.virtualH / 2);
+    ret -= screenCenter;
+    ret *= camera->scale;
+    ret.x += (rr.virtualW / 2.0f);
+    ret.y += (rr.virtualH / 2.0f);
     return ret;
 }

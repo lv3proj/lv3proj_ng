@@ -104,8 +104,6 @@ void TileGrid::onRender()
 
     Renderer *render = engine->GetRenderer();
 
-    const unsigned int dim = _tiles.size1d();
-
     /*
     for(unsigned int y = 0; y < dim; ++y)
         for(unsigned int x = 0; x < dim; ++x)
@@ -113,19 +111,49 @@ void TileGrid::onRender()
                 render->renderSingleTexture(tile->getTexture(), Vector(x * _tileSize, y * _tileSize));
     */
 
-    Vector start;
+    int xstart, ystart, xend, yend;
+    CalcRenderLimits(xstart, ystart, xend, yend);
+    int dim = xend - xstart;
+    if(dim <= 0 || (yend - ystart) <= 0)
+        return;
+
+    Vector start(_tileSize * xstart, _tileSize * ystart);
     const Vector step(_tileSize, 0);
     Texture **texarray = (Texture**)alloca(dim * sizeof(Texture*));
-    for(unsigned int y = 0; y < dim; ++y)
+    for(int y = ystart; y < yend; ++y)
     {
         Tile **tileptr = &_tiles(0, y);
-        for(unsigned int x = 0; x < dim; ++x)
+        for(int x = xstart; x < xend; ++x)
         {
             Tile *tile = tileptr[x];
-            texarray[x] = tile ? tile->getTexture() : NULL;
+            texarray[x-xstart] = tile ? tile->getTexture() : NULL;
         }
         render->renderTextureArray(texarray, dim, start, step);
         start.y += _tileSize;
     }
+}
+
+void TileGrid::CalcRenderLimits(int& x, int& y, int& x2, int& y2)
+{
+    const int dim = _tiles.size1d();
+    const RenderSettings& rr = engine->GetRenderer()->getSettings();
+
+    // Find out max. visible screen coordinates
+    Vector upperLeftTile  = engine->ToWorldPosition(Vector(-engine->virtualOffX, -engine->virtualOffY));
+    Vector lowerRightTile = engine->ToWorldPosition(Vector(rr.virtualW + engine->virtualOffX, rr.virtualH + engine->virtualOffY));
+
+    // Transform these into tile coords
+    upperLeftTile /= _tileSize;
+    lowerRightTile /= _tileSize;
+
+    // Make sure the right- and bottom-most tiles are on the screen too
+    lowerRightTile.x += 2;
+    lowerRightTile.y += 2;
+
+    // Prevent the view going off bounds
+    x = (upperLeftTile.x < 0 ? 0 : int(upperLeftTile.x));
+    y = (upperLeftTile.y < 0 ? 0 : int(upperLeftTile.y));
+    x2 = (lowerRightTile.x > dim ? dim : int(lowerRightTile.x));
+    y2 = (lowerRightTile.y > dim ? dim : int(lowerRightTile.y));
 }
 

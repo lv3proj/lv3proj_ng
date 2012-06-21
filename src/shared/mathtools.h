@@ -107,10 +107,10 @@ template <typename T> inline T rangeTransform(T t, T lower, T upper, T rangeMin,
     if (d == 0)
         return rangeMin;
 
-    t = t - lower;
-    t = t / d;
-    t = t * (rangeMax - rangeMin);
-    t = t + rangeMin;
+    t -= lower;
+    t /= d;
+    t *= (rangeMax - rangeMin);
+    t += rangeMin;
     return t;
 }
 

@@ -19,6 +19,8 @@ public:
 
     virtual void onRender();
 
+    void CalcRenderLimits(int& x, int& y, int& x2, int& y2);
+
 protected:
 
     array2d<Tile*> _tiles;
