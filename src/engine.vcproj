@@ -227,6 +227,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\engine\ObsRender.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\ObsRender.h"
+				>
+			</File>
+			<File
 				RelativePath=".\engine\Quad.cpp"
 				>
 			</File>

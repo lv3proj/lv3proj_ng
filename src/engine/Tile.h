@@ -11,6 +11,16 @@ enum ObsType
 {
     OBS_NONE = 0x00,
     OBS_WALL = 0x01,
+
+    OBS_ANY = 0xff,
+};
+
+enum TileObsType
+{
+    TO_MIXED = 0,
+    TO_FULLSOLID,           // all pixels are obstructed
+    TO_FULLSOLID_OPAQUE,    // all pixels are fully obstructed and fully opaque (i.e. underlying tiles do not need to be rendered.)
+    TO_FULLFREE,
 };
 
 // A Tile is a texture with collision/obstruction information.
@@ -26,9 +36,20 @@ public:
 
     bool CalcCollision(); // sets up collision mask
 
+    inline TileObsType getTileObsType() const { return _tileobs; }
+
+    inline unsigned char isObs(unsigned int x, unsigned int y, ObsType obs = OBS_ANY) const
+    {
+        return _mask(x, y) & obs;
+    }
+
+    inline const array2d<unsigned char>& getObsMask() const { return _mask; }
+    inline unsigned int getSize() const { return _mask.size1d(); }
+
 protected:
 
     Texture *_tex;
+    TileObsType _tileobs; // true if all collision pixels are non-zero
     array2d<unsigned char> _mask;
 
 };

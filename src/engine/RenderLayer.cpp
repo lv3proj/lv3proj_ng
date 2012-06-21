@@ -52,7 +52,7 @@ void RenderLayer::AddFront(RenderObject *ro)
 void RenderLayer::Remove(RenderObject *ro)
 {
     if(ro->getLayer() != _id)
-        logerror("RenderLayer(%u)::Add: Object %p is on wrong layer (%u), may go haywire later!", _id, ro, ro->getLayer());
+        logerror("RenderLayer(%u)::Remove: Object %p is on wrong layer (%u), may go haywire later!", _id, ro, ro->getLayer());
     _objs.remove(ro);
     ro->_layer = LR_INVALID;
 }
@@ -75,8 +75,6 @@ void RenderLayer::MoveToFront(RenderObject *ro)
 
 void RenderLayer::Render()
 {
-    // TODO: parallax etc
-
     Renderer *r = engine->GetRenderer();
 
     tiles.onRender();

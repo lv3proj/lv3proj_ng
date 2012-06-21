@@ -14,6 +14,9 @@ public:
     void SetTile(unsigned int x, unsigned int y, Tile *tile);
     bool SetTileByName(unsigned int x, unsigned int y, const char *name);
 
+    inline unsigned int GetSize() const { return _tiles.size1d(); }
+    inline Tile *GetTile(unsigned int x, unsigned int y) const { return _tiles(x, y); }
+
     virtual void onRender();
 
 protected:

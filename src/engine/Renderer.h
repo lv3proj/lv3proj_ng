@@ -52,6 +52,7 @@ public:
     void renderObject(const RenderObject *);
     void renderQuad(const Quad *);
     void renderSingleTexture(Texture *tex, const Vector& pos);
+    void renderSingleTexture(Texture *tex, const Vector& pos, const Vector& halfsize);
 
     // optimized function for TileGrid rendering
     void renderTileArray(Tile **tiles, unsigned int size, const Vector& start, const Vector& step);

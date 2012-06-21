@@ -7,7 +7,7 @@
 
 Tile::Tile(Texture *tex)
 : Resource(tex->name(), RESOURCE_TILE)
-, _tex(tex)
+, _tex(tex), _tileobs(TO_MIXED)
 {
     tex->incref();
 }
@@ -32,7 +32,8 @@ bool Tile::CalcCollision()
     SDL_PixelFormat *fmt = surf->format;
     unsigned int w = surf->w, h = surf->h;
 
-    _mask.resize(0, 0);
+    _mask.resize(w, h);
+    unsigned int fre = 0, solid = 0;
 
     // TODO: speed this up. This is really slow.
     for(unsigned int y = 0; y < h; ++y)
@@ -44,13 +45,26 @@ bool Tile::CalcCollision()
 
             // TODO: max. threshold?
             if(a)
+            {
                 _mask(x, y) |= OBS_WALL;
+                ++solid;
+            }
             else
+            {
                 _mask(x, y) &= ~OBS_WALL;
+                ++fre;
+            }
         }
     }
 
     res->decref();
+
+    if(!solid)
+        _tileobs = TO_FULLFREE;
+    else if(!fre)
+        _tileobs = TO_FULLSOLID;
+    else
+        _tileobs = TO_MIXED;
 
     return true;
 }

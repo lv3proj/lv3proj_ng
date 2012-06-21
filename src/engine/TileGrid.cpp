@@ -117,8 +117,8 @@ void TileGrid::onRender()
     const Vector step(_tileSize, 0);
     for(unsigned int y = 0; y < dim; ++y)
     {
-        start.y += _tileSize;
         render->renderTileArray(&_tiles(0, y), dim, start, step);
+        start.y += _tileSize;
     }
 }
 

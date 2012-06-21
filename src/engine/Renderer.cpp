@@ -390,12 +390,18 @@ static const GLfloat simpleTexCoords[] =
 
 void Renderer::renderSingleTexture(Texture *tex, const Vector& pos)
 {
+    Vector halfsize(tex->getHalfWidth(), tex->getHalfHeight());
+    renderSingleTexture(tex, pos, halfsize);
+}
+
+void Renderer::renderSingleTexture(Texture *tex, const Vector& pos, const Vector& halfsize)
+{
     glPushMatrix();
     glTranslatef(pos.x, pos.y, pos.z);
 
     tex->apply();
-    const float w2 = tex->getHalfWidth();
-    const float h2 = tex->getHalfHeight();
+    const float w2 = halfsize.x;
+    const float h2 = halfsize.y;
 
     /*glBegin(GL_QUADS);
     {
@@ -432,7 +438,7 @@ void Renderer::renderSingleTexture(Texture *tex, const Vector& pos)
 
 void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& start, const Vector& step)
 {
-    Vector trans;
+    Vector trans = start;
     {
         int skipped = 0;
         // skip forward until first usable tile is in tiles[0], or abort if nothing found
@@ -445,11 +451,10 @@ void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& st
         if(!size)
             return;
 
-        trans = step * skipped;
+        trans += step * skipped;
     }
 
     glPushMatrix();
-    glTranslatef(start.x, start.y, start.z);
 
     _enableVertexAndTexCoords();
 
@@ -468,10 +473,10 @@ void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& st
     glVertexPointer(2, GL_FLOAT, 0, &vertexData);
     glTexCoordPointer(2, GL_FLOAT, 0, &simpleTexCoords);
 
-    for(unsigned int i = 0; i < size; ++i)
+    do
     {
         Tile *tile;
-        if( ((tile = tiles[i])) && ((tex = tile->getTexture())) )
+        if( ((tile = *tiles++)) && ((tex = tile->getTexture())) )
         {
             glTranslatef(trans.x, trans.y, trans.z);
             tex->apply();
@@ -480,6 +485,7 @@ void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& st
         }
         trans += step;
     }
+    while(--size);
 
     glPopMatrix();
 }

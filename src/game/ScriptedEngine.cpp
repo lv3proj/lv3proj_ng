@@ -4,8 +4,9 @@
 #include "RenderLayer.h"
 #include "RenderLayerMgr.h"
 #include "Renderer.h"
-#include "GL/gl.h"
 
+#include "GL/gl.h"
+#include "ObsRender.h"
 #include "TestRenderObject.h"
 
 ScriptedEngine::ScriptedEngine()
@@ -38,13 +39,20 @@ bool ScriptedEngine::OnInit()
             if(rand() % 6 == 0)
             {
                 layers->GetLayer(4)->tiles.SetTileByName(x, y, "en.anim");
+                layers->GetLayer(4)->tiles.GetTile(x, y)->CalcCollision();
             }
             else
             {
-                sprintf(buf, "block%u.png", (rand() % 3) + 1);
-                layers->GetLayer(4)->tiles.SetTileByName(x, y, &buf[0]);
+                //sprintf(buf, "block%u.png", (rand() % 3) + 1);
+                layers->GetLayer(4)->tiles.SetTileByName(x, y, "block1.png");
+                layers->GetLayer(4)->tiles.GetTile(x, y)->CalcCollision();
             }
         }
+
+    ObsRender *o = new ObsRender(4);
+    o->alpha = 0.4f;
+    layers->GetLayer(4)->Add(o);
+    objmgr->AddObject(o);
 
     return true;
 }
