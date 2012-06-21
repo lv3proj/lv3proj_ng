@@ -16,6 +16,7 @@ public:
 
     inline unsigned int GetSize() const { return _tiles.size1d(); }
     inline Tile *GetTile(unsigned int x, unsigned int y) const { return _tiles(x, y); }
+    inline float GetTileSizef() const { return _tileSize; }
 
     virtual void onRender();
 

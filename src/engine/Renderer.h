@@ -56,6 +56,8 @@ public:
     // optimized function for TileGrid rendering
     void renderTextureArray(Texture **textures, unsigned int size, const Vector& start, const Vector& step, const Vector& halfsize = Vector(0, 0));
 
+    void render2DVertexArray(float *verts, unsigned int size);
+
     Texture *createTexture(const char *name);
     Texture *createNullTexture();
 

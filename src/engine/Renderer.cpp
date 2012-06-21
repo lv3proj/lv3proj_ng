@@ -492,6 +492,12 @@ void Renderer::renderTextureArray(Texture **textures, unsigned int size, const V
     glPopMatrix();
 }
 
+void Renderer::render2DVertexArray(float *verts, unsigned int size)
+{
+    glVertexPointer(2, GL_FLOAT, 0, verts);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, size);
+}
+
 void Renderer::_enableVertexAndTexCoords()
 {
     if(_clientState != CLS_VERT_TEXCOORD)

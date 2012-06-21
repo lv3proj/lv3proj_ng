@@ -4,6 +4,7 @@
 #include "TileGrid.h"
 #include "RenderLayerMgr.h"
 #include "RenderLayer.h"
+#include "Texture.h"
 
 ObsRender::ObsRender(unsigned int layer)
  : _layer(layer)
@@ -13,6 +14,7 @@ ObsRender::ObsRender(unsigned int layer)
 
 ObsRender::~ObsRender()
 {
+    _tex->decref();
 }
 
 void ObsRender::onRender() const
@@ -21,33 +23,57 @@ void ObsRender::onRender() const
 
     int xstart, ystart, xend, yend;
     grid.CalcRenderLimits(xstart, ystart, xend, yend);
+    if((xend - xstart) <= 0 || (yend - ystart) <= 0)
+        return;
 
     Renderer *render = engine->GetRenderer();
+    _tex->apply();
 
-    for(unsigned int y = ystart; y < yend; ++y)
+    float vertexData[8];
+    const float ts = grid.GetTileSizef();
+    const float tsh = ts * 0.5f;
+
+    for(int y = ystart; y < yend; ++y)
     {
-        for(unsigned int x = xstart; x < xend; ++x)
+        vertexData[1] = vertexData[3] = y * ts - tsh; // current row
+        vertexData[5] = vertexData[7] = vertexData[1] + ts; // one block row below
+        int c = 0; // how many consecutive obs found in one run
+        for(int x = xstart; x < xend; ++x)
         {
-            if(Tile *tile = grid.GetTile(x, y))
+            Tile *tile = grid.GetTile(x, y);
+            if(tile)
             {
-                const unsigned int tdim = tile->getSize();
-                const float tdimfh = tdim / 2.0f;
                 switch(tile->getTileObsType())
                 {
-                    case TO_FULLFREE:
-                        break;
-
                     case TO_MIXED:
-                        _renderMixedTile(tile, x * tdim - tdimfh + 0.5f, y * tdim - tdimfh + 0.5f);
+                        _renderMixedTile(tile, (x * ts) - tsh, (y * ts) - tsh);
+                        // fall through
+
+                    case TO_FULLFREE:
+                        tile = NULL;
                         break;
 
                     case TO_FULLSOLID:
-                        render->renderSingleTexture(_tex,
-                            Vector(x * tdim, y * tdim),
-                            Vector(tdimfh, tdimfh));
+                        // Starting a new run? Remember current x pos.
+                        if(!c)
+                            vertexData[2] = vertexData[6] = (x * ts) - tsh;
+                        ++c;
                         break;
                 }
             }
+            // tile == NULL serves as an indicator here that the tile was not fully solid.
+            if(c && !tile) // Reached end of run?
+            {
+                vertexData[0] = vertexData[4] = vertexData[2] + (c * ts);  // where run started + c tiles.
+                render->render2DVertexArray(&vertexData[0], 4);
+                c = 0;
+            }
+        }
+        if(c) // Reached end of run?
+        {
+            vertexData[0] = vertexData[4] = vertexData[2] + (c * ts);  // where run started + c pixels.
+            render->render2DVertexArray(&vertexData[0], 4);
+            c = 0;
         }
     }
 }
@@ -56,17 +82,39 @@ void ObsRender::_renderMixedTile(Tile *tile, float xpos, float ypos) const
 {
     const int tdim = tile->getSize();
     Renderer *render = engine->GetRenderer();
-    Texture **texptrs = (Texture**)alloca(tdim * sizeof(Texture*));
+
+    float vertexData[8];
 
     for(int py = 0; py < tdim; ++py)
     {
+        vertexData[1] = vertexData[3] = ypos + py; // current row
+        vertexData[5] = vertexData[7] = vertexData[1] + 1.0f; // one pixel below
+        int c = 0; // how many consecutive obs found in one run
         const unsigned char *obsptr = &(tile->getObsMask()(0, py));
         for(int px = 0; px < tdim; ++px)
         {
-            texptrs[px] = obsptr[px] ? _tex : NULL;
+            if(obsptr[px])
+            {
+                // Starting a new run? Remember current x pos.
+                if(!c)
+                    vertexData[2] = vertexData[6] = xpos + px;
+                ++c;
+            }
+            else if(c)
+            {
+                // Reached end of run.
+                vertexData[0] = vertexData[4] = vertexData[2] + float(c);  // where run started + c pixels.
+                render->render2DVertexArray(&vertexData[0], 4);
+                c = 0;
+            }
         }
-
-        render->renderTextureArray(texptrs, tdim, Vector(xpos, ypos + py), Vector(1, 0), Vector(0.5f, 0.5f));
+        // Unfinished run? Finish.
+        if(c)
+        {
+            vertexData[0] = vertexData[4] = vertexData[2] + float(c); // where run started + c pixels.
+            render->render2DVertexArray(&vertexData[0], 4);
+            c = 0;
+        }
     }
 }
 

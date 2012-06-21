@@ -88,10 +88,11 @@ void TileGrid::SetTile(unsigned int x, unsigned int y, Tile *tile)
     {
         tile->incref();
 
-        // HACK: move this somewhere else
         if(!_tileSize)
             _tileSize = tile->getTexture()->getWidth();
     }
+    else if(!_used)
+        _tileSize = 0;
 
     // put tile in place
     tileref = tile;
