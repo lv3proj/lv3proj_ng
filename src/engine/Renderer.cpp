@@ -9,8 +9,14 @@
 #include "Quad.h"
 #include "Camera.h"
 
+enum ClientState
+{
+    CLS_NONE = 0,
+    CLS_VERT_TEXCOORD = 1,
+};
+
 Renderer::Renderer()
-: screen(NULL)
+: screen(NULL), _clientState(0)
 {
     memset(&settings, 0, sizeof(settings));
     globalResolutionScale = Vector(1, 1, 1);
@@ -259,7 +265,7 @@ const bool DEBUG_RENDER = true;
 
 void Renderer::renderObject(const RenderObject *ro)
 {
-    const Vector renderPos = ro->position + ro->offset;
+    const Vector renderPos = ro->getParallaxRenderPosition(engine->screenCenter); //ro->position + ro->offset;
     const Vector renderRot = ro->rotation + ro->rotation2;
     const float renderAlpha = ro->alpha.x * ro->alpha2.x;
     const Vector renderCol = ro->color;
@@ -337,7 +343,7 @@ void Renderer::renderQuad(const Quad *q)
     const Vector& upperLeftTextureCoordinates = q->upperLeftTextureCoordinates;
     const Vector &lowerRightTextureCoordinates = q->lowerRightTextureCoordinates;
 
-    glBegin(GL_QUADS);
+    /*glBegin(GL_QUADS);
     {
         glTexCoord2f(upperLeftTextureCoordinates.x, 1.0f-upperLeftTextureCoordinates.y);
         glVertex2f(-w2, +h2);
@@ -351,5 +357,134 @@ void Renderer::renderQuad(const Quad *q)
         glTexCoord2f(upperLeftTextureCoordinates.x, 1.0f-lowerRightTextureCoordinates.y);
         glVertex2f(-w2, -h2);
     }
-    glEnd();
+    glEnd();*/
+
+    _enableVertexAndTexCoords();
+
+    const GLfloat vertexData[] =
+    {
+        -w2, -h2, // upper left
+        +w2, -h2, // upper right
+        -w2, +h2, // lower right
+        +w2, +h2, // lower left
+    };
+    const GLfloat texCoords[] =
+    {
+        upperLeftTextureCoordinates.x,   1.0f-lowerRightTextureCoordinates.y, // upper left
+        lowerRightTextureCoordinates.x,  1.0f-lowerRightTextureCoordinates.y, // upper right
+        upperLeftTextureCoordinates.x,   1.0f-upperLeftTextureCoordinates.y, // lower right
+        lowerRightTextureCoordinates.x,  1.0f-upperLeftTextureCoordinates.y, // lower left
+    };
+    glVertexPointer(2, GL_FLOAT, 0, &vertexData);
+    glTexCoordPointer(2, GL_FLOAT, 0, &texCoords);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+static const GLfloat simpleTexCoords[] =
+{
+    0,      0, // upper left
+    1,      0, // upper right
+    0,      1, // lower right
+    1,      1, // lower left
+};
+
+void Renderer::renderSingleTexture(Texture *tex, const Vector& pos)
+{
+    glPushMatrix();
+    glTranslatef(pos.x, pos.y, pos.z);
+
+    tex->apply();
+    const float w2 = tex->getWidth() / 2.0f; // TODO: cache this in Texture class
+    const float h2 = tex->getHeight() / 2.0f;
+
+    /*glBegin(GL_QUADS);
+    {
+        glTexCoord2f(0, 1);
+        glVertex2f(-w2, +h2);
+
+        glTexCoord2f(1, 1);
+        glVertex2f(+w2, +h2);
+
+        glTexCoord2f(1, 0);
+        glVertex2f(+w2, -h2);
+
+        glTexCoord2f(0, 0);
+        glVertex2f(-w2, -h2);
+    }
+    glEnd();*/
+
+    _enableVertexAndTexCoords();
+
+    const GLfloat vertexData[] =
+    {
+        -w2, -h2, // upper left
+        +w2, -h2, // upper right
+        -w2, +h2, // lower right
+        +w2, +h2, // lower left
+    };
+    glVertexPointer(2, GL_FLOAT, 0, &vertexData);
+    glTexCoordPointer(2, GL_FLOAT, 0, &simpleTexCoords);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glPopMatrix();
+}
+
+#include "Tile.h"
+
+void Renderer::renderTileArray(Tile **tiles, unsigned int size, const Vector& start, const Vector& step)
+{
+    if(!size)
+        return;
+
+    glPushMatrix();
+    glTranslatef(start.x, start.y, start.z);
+
+    _enableVertexAndTexCoords();
+
+    Texture *tex = tiles[0]->getTexture();
+    const float w2 = tex->getWidth() / 2.0f;
+    const float h2 = tex->getHeight() / 2.0f;
+
+    const GLfloat vertexData[] =
+    {
+        -w2, -h2, // upper left
+        +w2, -h2, // upper right
+        -w2, +h2, // lower right
+        +w2, +h2, // lower left
+    };
+
+    glVertexPointer(2, GL_FLOAT, 0, &vertexData);
+    glTexCoordPointer(2, GL_FLOAT, 0, &simpleTexCoords);
+
+    for(unsigned int i = 0; i < size; ++i)
+    {
+        Tile *tile;
+        if( ((tile = tiles[i])) && ((tex = tile->getTexture())) )
+        {
+            tex->apply();
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        }
+        glTranslatef(step.x, step.y, step.z); // FIXME: this sucks
+    }
+
+    glPopMatrix();
+}
+
+void Renderer::_enableVertexAndTexCoords()
+{
+    if(_clientState != CLS_VERT_TEXCOORD)
+    {
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        _clientState = CLS_VERT_TEXCOORD;
+    }
+}
+
+void Renderer::_disableVertexAndTexCoords()
+{
+    if(_clientState != CLS_VERT_TEXCOORD)
+    {
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        _clientState = CLS_NONE;
+    }
 }

@@ -3,6 +3,7 @@
 
 #include <list>
 #include <string>
+#include "TileGrid.h"
 
 class RenderObject;
 
@@ -22,6 +23,8 @@ public:
     void Render();
     void MoveToFront(RenderObject *);
     void MoveToBack(RenderObject *);
+
+    TileGrid tiles;
 
     std::string name;
 

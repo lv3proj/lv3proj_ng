@@ -9,8 +9,8 @@
 class AnimatedTexture : public Texture
 {
 public:
-
     AnimatedTexture(Anim *);
+
     virtual void update(float dt);
     virtual bool reload();
 

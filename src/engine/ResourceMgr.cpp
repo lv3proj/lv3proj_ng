@@ -18,6 +18,7 @@
 #include "MemResource.h"
 #include "Texture.h"
 #include "Anim.h"
+#include "Tile.h"
 
 
 
@@ -281,7 +282,7 @@ Anim *ResourceMgr::_LoadAnimInternal(const char *name)
         return NULL;
     }
 
-    ani = ParseAnimData((const char*)memRes->ptr(), name);
+    ani = ParseAnimData((const char*)memRes->ptr(), name + 4); // HACK: drop "gfx/"
     memRes->decref(); // text data are no longer needed
 
     if(!ani)
@@ -446,6 +447,29 @@ Texture *ResourceMgr::_GetTexture(const char *name)
     if(tex)
         tex->incref();
     return tex;
+}
+
+Tile *ResourceMgr::LoadTile(const char *name)
+{
+    Tile *tile = (Tile*)_GetResource(RESOURCE_TILE, name);
+    if(tile)
+    {
+        tile->incref();
+        return tile;
+    }
+
+    Texture *tex = engine->GetTexture(name);
+    if(!tex)
+    {
+        logerror("Failed to load tile '%s' - missing texture", name);
+        return NULL;
+    }
+
+    tile = new Tile(tex);
+    tex->decref();
+
+    Add(tile);
+    return tile;
 }
 
 

@@ -381,9 +381,6 @@ void EngineBase::OnMouseEvent(uint32 type, uint32 button, uint32 state, uint32 x
     mouse.y = rangeTransform<float>(y, 0, rr.pixelsH, -virtualOffY, rr.virtualH + virtualOffY);
 
     mouseRel = mouse - lastMouse;
-
-    logdev("mx = %.2f   my = %.2f", mouse.x, mouse.y);
-
     
     // LMB is 1.
     // So we can safely use button 0 as indicator for dragging or not
@@ -457,6 +454,12 @@ bool EngineBase::IsKeyPressed(SDLKey k)
 
 void EngineBase::_Render(void)
 {
+    camera->update(0);
+
+    const RenderSettings& rr = render->getSettings();
+    screenCenter.x = camera->position.x + (rr.virtualW / 2) * camera->invScale.x;
+    screenCenter.y = camera->position.y + (rr.virtualH / 2) * camera->invScale.y;
+
     render->clear();
     render->setupRenderPositionAndScale();
 

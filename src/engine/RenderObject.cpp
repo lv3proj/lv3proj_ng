@@ -12,6 +12,7 @@ RenderObject::RenderObject()
     color = Vector(1, 1, 1);
     alpha = 1;
     alpha2 = 1;
+    parallax = Vector(1, 1, 1);
 }
 
 RenderObject::~RenderObject()

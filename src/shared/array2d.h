@@ -1,15 +1,16 @@
 #ifndef ARRAY2D_H
 #define ARRAY2D_H
 
+#include <assert.h>
+
 
 // fast 2D array avoiding multiplication to access array indexes
 // the size has to be a power of 2, if not, it will automatically align
-template <class T, bool OOBCHECK = false> class array2d
+template <class T> class array2d
 {
 public:
 
-    array2d() : _shift(0), _size(0), data(NULL) { ASSERT(!OOBCHECK); } // when checking for bounds, we NEED a default value to return
-    array2d(T defaultval): _shift(0), _size(0), data(NULL), _defaultval(defaultval) {}
+    array2d() : _shift(0), _size(0), data(NULL) {} // when checking for bounds, we NEED a default value to return
     ~array2d() { this->free(); }
 
     inline void fill(T val)
@@ -29,10 +30,10 @@ public:
         }
     }
 
-    inline void resize(uint32 dim, T fillval, bool force = false)
+    inline void resize(unsigned int dim, const T& fillval, bool force = false)
     {
-        uint32 req = 0;
-        uint32 newsize = 1;
+        unsigned int req = 0;
+        unsigned int newsize = 1;
 
         // find out how often we have to shift to reach the desired capacity
         // this will set the size to the nearest power of 2 required (if dim is 50 the final size will be 64, for example)
@@ -60,9 +61,9 @@ public:
         // if there was content, copy it
         if(olddata && oldsize)
         {
-            uint32 copysize = oldsize < newsize ? oldsize : newsize;
-            for(uint32 x = 0; x < copysize; ++x)
-                for(uint32 y = 0; y < copysize; ++y)
+            unsigned int copysize = oldsize < newsize ? oldsize : newsize;
+            for(unsigned int x = 0; x < copysize; ++x)
+                for(unsigned int y = 0; y < copysize; ++y)
                     data[(y << req) | x] = olddata[(y << _shift) | x];
             delete [] olddata;
         }
@@ -70,30 +71,24 @@ public:
         _shift = req;
     }
 
-    inline T& operator () (uint32 x, uint32 y)
+    inline T& operator () (unsigned int x, unsigned int y)
     {
-        // trust the compiler to optimize this out
-        if(OOBCHECK)
-            if(x >= _size || y >= _size)
-                return _defaultval;
+        assert(x < _size && y < _size);
         return data[(y << _shift) | x];
     }
 
-    inline const T& operator () (uint32 x, uint32 y) const
+    inline const T& operator () (unsigned int x, unsigned int y) const
     {
-        // trust the compiler to optimize this out
-        if(OOBCHECK)
-            if(x >= _size || y >= _size)
-                return _defaultval;
+        assert(x < _size && y < _size);
         return data[(y << _shift) | x];
     }
 
-    inline T& operator [] (uint16 pos)
+    inline T& operator [] (unsigned int pos)
     {
         return data[pos];
     }
 
-    inline const T& operator [] (uint16 pos) const
+    inline const T& operator [] (unsigned int pos) const
     {
         return data[pos];
     }
@@ -108,14 +103,14 @@ public:
         return &data[0];
     }
 
-    inline uint32 size1d(void) const { return _size; }
-    inline uint32 size2d(void) const { return _size * _size; }
+    inline unsigned int size1d(void) const { return _size; }
+    inline unsigned int size2d(void) const { return _size * _size; }
 
     // use at your own risk
     inline T* getPtr(void) { return data; }
     inline const T* getPtr(void) const { return data; }
     inline void setPtr(T *p) { data = p; }
-    inline void resizeNoAlloc(uint32 s)
+    inline void resizeNoAlloc(unsigned int s)
     {
         _shift = 0;
         _size = 1;
@@ -129,10 +124,9 @@ public:
 
 protected:
 
-    uint32 _size;
-    uint32 _shift;
+    unsigned int _size;
+    unsigned int _shift;
 
-    T _defaultval;
     T *data;
 
 };

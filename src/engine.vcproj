@@ -282,6 +282,22 @@
 				RelativePath=".\engine\TestRenderObject.h"
 				>
 			</File>
+			<File
+				RelativePath=".\engine\Tile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\Tile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\TileGrid.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\TileGrid.h"
+				>
+			</File>
 			<Filter
 				Name="GL"
 				>

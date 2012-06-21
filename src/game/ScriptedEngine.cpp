@@ -28,6 +28,22 @@ bool ScriptedEngine::OnInit()
 
     script->call("onInit");
 
+    layers->GetLayer(4)->tiles.SetSize(64);
+    char buf[20];
+    for(unsigned int y = 0; y < 64; ++y)
+        for(unsigned int x = 0; x < 64; ++x)
+        {
+            if(rand() % 6 == 0)
+            {
+                layers->GetLayer(4)->tiles.SetTileByName(x, y, "en.anim");
+            }
+            else
+            {
+                sprintf(buf, "block%u.png", (rand() % 3) + 1);
+                layers->GetLayer(4)->tiles.SetTileByName(x, y, &buf[0]);
+            }
+        }
+
     return true;
 }
 

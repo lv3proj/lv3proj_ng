@@ -11,6 +11,7 @@ class SDLSoundResource;
 class MemResource;
 class Texture;
 class Anim;
+class Tile;
 
 typedef std::map<std::string, Resource*> ResourceStore;
 
@@ -34,7 +35,10 @@ public:
     MemResource *LoadFile(const char *name);
     MemResource *LoadTextFile(const char *name);
 
+    Tile *LoadTile(const char *name);
+
     Texture *_GetTexture(const char *name); // does *NOT* load a texture if not known. The engine does texture management.
+
 
     unsigned int GetUsedCount(void); // amount of resources
     unsigned int GetUsedMem(void); // estimated total resource memory consumption

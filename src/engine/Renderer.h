@@ -10,6 +10,7 @@ class RenderObject;
 class Texture;
 class SDLSurfaceResource;
 class Quad;
+class Tile;
 
 struct RenderSettings
 {
@@ -50,6 +51,11 @@ public:
 
     void renderObject(const RenderObject *);
     void renderQuad(const Quad *);
+    void renderSingleTexture(Texture *tex, const Vector& pos);
+
+    // optimized function for TileGrid rendering
+    void renderTileArray(Tile **tiles, unsigned int size, const Vector& start, const Vector& step);
+
     Texture *createTexture(const char *name);
     inline const Vector& getGlobalResolutionScale() const { return globalResolutionScale; }
 
@@ -64,6 +70,13 @@ protected:
     Vector globalResolutionScale;
 
     RenderSettings settings;
+
+
+private:
+
+    int _clientState;
+    void _enableVertexAndTexCoords(); // 1
+    void _disableVertexAndTexCoords(); // 1
 };
 
 

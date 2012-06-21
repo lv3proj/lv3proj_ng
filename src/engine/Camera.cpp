@@ -12,7 +12,8 @@ Camera::~Camera()
 
 void Camera::update(float dt)
 {
-    RenderObject::update(dt);
+    if(dt)
+        RenderObject::update(dt);
 
     invScale.x = 1 / scale.x;
     invScale.y = 1 / scale.y;

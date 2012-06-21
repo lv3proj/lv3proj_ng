@@ -1,6 +1,8 @@
 #ifndef SDL_FUNC_H
 #define SDL_FUNC_H
 
+#include <SDL/SDL.h>
+
 Uint32 SDLfunc_GetSurfaceBytes(const SDL_Surface *surface);
 
 Uint32 SDLfunc_getpixel(SDL_Surface *surface, int x, int y);

@@ -48,6 +48,11 @@ public:
     InterpolatedVector velocity;
     InterpolatedVector gravity;
 
+    // scroll factor, 1 = stay at same position relative to camera (like GUI elements that never move)
+    // 0.5 = scroll half as fast as the camera
+    // 0 = scroll with the camera (for world objects)
+    Vector parallax;
+
 
     virtual void onRender() const {}
 
@@ -58,6 +63,8 @@ public:
     void toLayer(unsigned int target);
     void moveToFront();
     void moveToBack();
+
+    inline Vector getParallaxRenderPosition(const Vector& refPoint) const;
 
 
 protected:
@@ -70,6 +77,15 @@ protected:
 };
 
 
+Vector RenderObject::getParallaxRenderPosition(const Vector& refPoint) const
+{
+    Vector pos = position;
+    pos += offset;
 
+    pos -= refPoint;
+    pos *= parallax;
+    pos += refPoint;
+    return pos;
+}
 
 #endif

@@ -78,6 +78,9 @@ void RenderLayer::Render()
     // TODO: parallax etc
 
     Renderer *r = engine->GetRenderer();
+
+    tiles.onRender();
+
     for(std::list<RenderObject*>::const_iterator it = _objs.begin(); it != _objs.end(); ++it)
         r->renderObject(*it);
 }

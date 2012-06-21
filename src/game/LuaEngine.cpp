@@ -313,6 +313,14 @@ luaFn(ro_getPosition)
     luaReturnVec2(0, 0);
 }
 
+luaFn(ro_parallax)
+{
+    RenderObject *ro = getRO(L);
+    if(ro)
+        ro->parallax = Vector(lua_tonumber(L, 2), lua_tonumber(L, 3));
+    luaReturnSelf();
+}
+
 #undef MAKE_RO_VEC_MTH
 
 #define MAKE_RO_VEC_MTH(name, v, c){ #name, ro_##name },
@@ -511,6 +519,7 @@ static const luaL_Reg renderobjectlib[] =
 
     { "delete", ro_delete },
     { "getPosition", ro_getPosition },
+    { "parallax", ro_parallax },
 
     // TODO: more
 
