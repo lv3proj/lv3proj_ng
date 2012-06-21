@@ -9,6 +9,8 @@
 #define luaFn(func)         static int func(lua_State *L)
 #define luaRegister(func)	{#func, l_##func}
 
+#define luaConstant(x) {#x, x}
+
 #define luaReturnNil() { return 0; }
 #define luaReturnNum(x) { lua_pushnumber(L, x); return 1; }
 #define luaReturnSelf() { lua_pushvalue(L, 1); return 1; } // This assumes 'self' is at bottom of stack, i.e. first arg

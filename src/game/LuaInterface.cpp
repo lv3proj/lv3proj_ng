@@ -6,6 +6,7 @@
 #include <sstream>
 
 #include "LuaEngine.h"
+#include "LuaConstants.h"
 
 
 LuaInterface::LuaInterface()
@@ -64,6 +65,8 @@ bool LuaInterface::Init()
             luaL_requiref(_lua, lib->name, lib->func, 1);
             lua_pop(_lua, 1);  /* remove lib */
         }
+
+        lua_register_constants(_lua);
 
         lua_newtable(_lua);
         lua_setglobal(_lua, "_OBJECTREGISTRY");

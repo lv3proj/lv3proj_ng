@@ -57,6 +57,7 @@ public:
     virtual void onRender() const {}
 
     inline BlendType getBlendType() const { return _blend; }
+    inline void setBlendType(BlendType b) {_blend = b; }
 
     inline unsigned int getLayer() const { return _layer; }
 

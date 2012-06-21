@@ -13,13 +13,6 @@
 #include "SoundCore.h"
 #include "GL/gl.h"
 
-struct LuaConstants
-{
-    const char *name;
-    lua_Number val;
-};
-
-
 struct LuaFunctions
 {
     const char *name;
@@ -142,24 +135,12 @@ static LuaFunctions s_functab[] =
     { NULL, NULL }
 };
 
-static LuaConstants s_consttab[] =
-{
-
-    { NULL, 0 }
-};
-
 
 void lua_register_enginefuncs(lua_State *L)
 {
     for(unsigned int i = 0; s_functab[i].name; ++i)
     {
         lua_register(L, s_functab[i].name, s_functab[i].func);
-    }
-
-    for(unsigned int i = 0; s_consttab[i].name; ++i)
-    {
-        lua_pushnumber(L, s_consttab[i].val);
-        lua_setglobal(L, s_consttab[i].name);
     }
 }
 
@@ -277,6 +258,14 @@ luaFn(ro_delete)
     RenderObject *ro = getRO(L);
     if(ro)
         ro->kill(lua_tonumber(L, 2));
+    luaReturnSelf();
+}
+
+luaFn(ro_blend)
+{
+    RenderObject *ro = getRO(L);
+    if(ro)
+        ro->setBlendType((BlendType)lua_tointeger(L, 2));
     luaReturnSelf();
 }
 
@@ -520,6 +509,7 @@ static const luaL_Reg renderobjectlib[] =
     { "delete", ro_delete },
     { "getPosition", ro_getPosition },
     { "parallax", ro_parallax },
+    { "blend", ro_blend },
 
     // TODO: more
 

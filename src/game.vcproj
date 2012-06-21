@@ -203,6 +203,14 @@
 				Name="Lua"
 				>
 				<File
+					RelativePath=".\game\LuaConstants.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\game\LuaConstants.h"
+					>
+				</File>
+				<File
 					RelativePath=".\game\LuaDefines.h"
 					>
 				</File>
