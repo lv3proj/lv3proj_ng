@@ -97,6 +97,8 @@ bool GLTexture::reload()
     setID(texId);
     this->width = w;
     this->height = h;
+    this->halfWidth = w / 2.0f;
+    this->halfHeight = h / 2.0f;
 
     return true;
 }

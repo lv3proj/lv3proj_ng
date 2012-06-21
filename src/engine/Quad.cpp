@@ -10,6 +10,8 @@ Quad::Quad(const char *tex /* = NULL */, int w /* = 0 */, int h /* = 0 */)
  , _texture(NULL)
  , width(0)
  , height(0)
+ , halfWidth(0)
+ , halfHeight(0)
 {
     if(tex && *tex)
         setTexture(tex);
@@ -45,6 +47,8 @@ bool Quad::setTexture(const char *tex)
     _texture = newtex;
     width = newtex->getWidth();
     height = newtex->getHeight();
+    halfWidth = newtex->getHalfWidth();
+    halfHeight = newtex->getHalfHeight();
     return true;
 }
 

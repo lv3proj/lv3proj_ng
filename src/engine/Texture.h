@@ -21,6 +21,8 @@ public:
 
    inline int getWidth() const { return width; }
    inline int getHeight() const { return height; }
+   inline float getHalfWidth() const { return halfWidth; }
+   inline float getHalfHeight() const { return halfHeight; }
 
    virtual bool reload() = 0;
 
@@ -32,6 +34,7 @@ protected:
     static Texture *s_lastApplied;
 
     int width, height;
+    float halfWidth, halfHeight;
 };
 
 #endif

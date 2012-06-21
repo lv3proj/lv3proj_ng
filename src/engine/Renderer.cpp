@@ -338,8 +338,8 @@ void Renderer::renderQuad(const Quad *q)
         return;
 
     tex->apply();
-    const float w2 = q->width / 2.0f;
-    const float h2 = q->height / 2.0f;
+    const float w2 = q->getHalfWidth();
+    const float h2 = q->getHalfHeight();
     const Vector& upperLeftTextureCoordinates = q->upperLeftTextureCoordinates;
     const Vector &lowerRightTextureCoordinates = q->lowerRightTextureCoordinates;
 
@@ -394,8 +394,8 @@ void Renderer::renderSingleTexture(Texture *tex, const Vector& pos)
     glTranslatef(pos.x, pos.y, pos.z);
 
     tex->apply();
-    const float w2 = tex->getWidth() / 2.0f; // TODO: cache this in Texture class
-    const float h2 = tex->getHeight() / 2.0f;
+    const float w2 = tex->getHalfWidth();
+    const float h2 = tex->getHalfHeight();
 
     /*glBegin(GL_QUADS);
     {
