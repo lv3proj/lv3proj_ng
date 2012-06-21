@@ -7,7 +7,7 @@
 
 Tile::Tile(Texture *tex)
 : Resource(tex->name(), RESOURCE_TILE)
-, _tex(tex), _tileobs(TO_MIXED)
+, _tex(tex), _tileobs(TO_FULLFREE)
 {
     tex->incref();
 }

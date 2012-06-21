@@ -36,6 +36,14 @@ void AnimatedTexture::_InitAnim()
     assert(_ani->first); // the parser must set this
     _curFrameStore = _ani->first;
     SetFrameID(0);
+
+    if(_activeTex)
+    {
+        width = _activeTex->getWidth();
+        height = _activeTex->getHeight();
+        halfWidth = _activeTex->getHalfWidth();
+        halfHeight = _activeTex->getHalfHeight();
+    }
 }
 
 void AnimatedTexture::_NextFrame()
@@ -71,11 +79,6 @@ void AnimatedTexture::SetFrameID(unsigned int frame)
     _curFrameIdx = frame;
 
     _activeTex = _curFrame->GetTexture();
-    if(_activeTex)
-    {
-        width = _activeTex->getWidth();
-        height = _activeTex->getHeight();
-    }
 }
 
 void AnimatedTexture::SetFrameName(const char *name)
