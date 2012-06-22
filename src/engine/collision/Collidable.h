@@ -11,7 +11,7 @@ enum CollisionShape
     COLL_CIRCLE,
     COLL_AABB,
     COLL_PIXMAP,
-    //COLL_RAY,
+    COLL_LINE,
 };
 
 class Collidable
