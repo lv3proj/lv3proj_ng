@@ -30,6 +30,11 @@ public:
 
     virtual AABB getAABB() const;
 
+    inline bool isPointInside(const Vector& point) const
+    {
+        return (position - point).isLength2DIn(radius);
+    }
+
 
     Vector position;
     float radius;

@@ -61,8 +61,88 @@ bool Collision::AABB_vs_AABB(const AABB& a, const AABB& b, Vector *v)
     return c;
 }
 
-bool Collision::AABB_vs_Circle(const AABB& a, const Circle& b, Vector *v)
+bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
 {
+    bool inx = c.position.x >= a.upleft.x
+            && c.position.x <= a.downright.x;
+
+    bool iny = c.position.y >= a.upleft.y
+            && c.position.y <= a.downright.y;
+    /*
+      |       |    
+      |  (x)  |    
+  ----+-------+----
+      |#######|    
+   (y)|#######|(y) 
+      |#######|    
+  ----+-------+----
+      |  (x)  |    
+      |       |    
+    */
+    // First check: Center completely in AABB? [(#) region ]
+    if(inx && iny)
+    {
+        if(v)
+            *v = c.position;
+        return true;
+    }
+
+    // Quick check: If AABBs are not intersecting, the circle is definitely out of reach.
+    AABB caabb = c.getAABB();
+    if(!AABB_vs_AABB(a, caabb, NULL))
+        return false;
+
+    // AABBs intersecting. Now, if the circle center is contained in at least one axis,
+    // they are intersecting. [ (x) or (y) region ]
+    if(inx || iny)
+    {
+        if(v)
+        {
+            v = a.getOverlap(caabb).getCenter(); // FIXME: this is just an estimation, and probably off
+        }
+        return true;
+    }
+
+    // If we are here, the circle center must be in one of the corner regions.
+    // Now we need to check if the circle contains the corresponding corner point of the AABB.
+    Vector corner;
+    // Above AABB?
+    if(c.position.y <= a.upleft.y)
+    {
+        // Left of AABB?
+        if(c.position.x <= a.upleft.y)
+        {
+            // Upper left
+            corner = a.upleft;
+        }
+        else
+        {
+            // Upper right
+            corner = Vector(a.downright.x, a.upleft.y);
+        }
+    }
+    else
+    {
+        if(c.position.x <= a.upleft.y)
+        {
+            // Lower left
+            corner = Vector(a.upleft.x, a.downright.y);
+        }
+        else
+        {
+            // Lower right.
+            corner = a.downright;
+        }
+    }
+
+    if(c.isPointInside(corner))
+    {
+        if(v)
+            *v = corner; // FIXME: this is off too
+        return true;
+    }
+
+    // Circle is too far away, done here.
     return false;
 }
 
