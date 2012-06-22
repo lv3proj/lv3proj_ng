@@ -227,6 +227,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\engine\ObsGrid.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\ObsGrid.h"
+				>
+			</File>
+			<File
 				RelativePath=".\engine\ObsRender.cpp"
 				>
 			</File>
@@ -420,6 +428,46 @@
 				</File>
 				<File
 					RelativePath=".\engine\Texture.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Collision"
+				>
+				<File
+					RelativePath=".\engine\collision\AABB.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\collision\AABB.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\collision\Circle.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\collision\Circle.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\collision\Collidable.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\collision\Collision.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\collision\Collision.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\collision\PixelMap.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\collision\PixelMap.h"
 					>
 				</File>
 			</Filter>
