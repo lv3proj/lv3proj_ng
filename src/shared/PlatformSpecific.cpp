@@ -14,6 +14,7 @@
 #   include <unistd.h>
 #endif
 
+#include <signal.h>
 
 #include "PlatformSpecific.h"
 #include "tools.h"
@@ -153,5 +154,16 @@ uint32 GetConsoleWidth(void)
     if (ioctl(0,TIOCGWINSZ,&ws))
         return 80; // the standard, because we don't know any better
     return ws.ws_col;
+#endif
+}
+
+void TriggerBreakpoint()
+{
+#ifdef _MSC_VER
+    _CrtDbgBreak();
+#elif defined(__GNUC__) && ((__i386__) || (__x86_64__))
+    __asm__ __volatile__ ( "int $3\n\t" )
+#else
+    raise(SIGTRAP)
 #endif
 }

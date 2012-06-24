@@ -9,6 +9,9 @@
 #include "Quad.h"
 #include "Camera.h"
 
+#define GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX  0x9049
+#define TEXTURE_FREE_MEMORY_ATI 0x87FC
+
 enum ClientState
 {
     CLS_NONE = 0,
@@ -49,8 +52,24 @@ bool Renderer::Init()
     if(!OpenGLAPI::LoadSymbols())
         return false;
 
-
     return true;
+}
+
+unsigned int Renderer::getFreeVideoMemoryKB()
+{
+    GLint meminfo[4];
+    memset(meminfo, 0, 4 * sizeof(GLint));
+
+    // nvidia?
+    glGetIntegerv(GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, meminfo); // in KB
+    if(!meminfo[0])
+    {
+        // ATI?
+        glGetIntegerv(TEXTURE_FREE_MEMORY_ATI, meminfo); // in KB, // [0] = total memory free in the pool
+    }
+    GLenum err = glGetError();
+
+    return meminfo[0];
 }
 
 void Renderer::Shutdown()
@@ -128,9 +147,16 @@ bool Renderer::ApplySettings()
         return false;
     }
 
-    char drv[256];
-    SDL_VideoDriverName(&drv[0], 256);
-    log("Video driver: %s", drv);
+    const GLubyte *vendor = glGetString(GL_VENDOR);
+    const GLubyte *rend = glGetString(GL_RENDERER);
+    const GLubyte *ver = glGetString(GL_VERSION);
+    //const GLubyte *exts = glGetString(GL_EXTENSIONS);
+
+    log("== Video info ==");
+    log("Driver:   %s", vendor);
+    log("Renderer: %s", rend);
+    log("Version: %s", ver);
+    //log("Extensions: %s", exts);
 
     glViewport(0, 0, settings.pixelsW, settings.pixelsH);
     glScissor(0, 0, settings.pixelsW, settings.pixelsH);
@@ -158,6 +184,16 @@ bool Renderer::ApplySettings()
     {
         int vh = int(float(settings.virtualW) * (float(settings.pixelsH)/float(settings.pixelsW)));
         _Enable2D(settings.virtualW, vh);
+    }
+
+    unsigned int freemem = getFreeVideoMemoryKB();
+    if(freemem)
+    {
+        logdetail("Free video memory: %u KB", freemem);
+    }
+    else
+    {
+        logdetail("Unable to query free video memory");
     }
 
     return true;

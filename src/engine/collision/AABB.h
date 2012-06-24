@@ -33,6 +33,14 @@ public:
     AABB getOverlap(const AABB& other) const;
     inline Vector getCenter() const { return upleft + (0.5f * (downright - upleft)); }
 
+    inline void setCenter(const Vector& c)
+    {
+        Vector half = (downright - upleft) * 0.5f;
+        upleft = c - half;
+        downright = c + half;
+    }
+
+
 
     Vector upleft;
     Vector downright;

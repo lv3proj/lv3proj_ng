@@ -61,6 +61,10 @@ public:
     Texture *createTexture(const char *name);
     Texture *createNullTexture();
 
+    unsigned int getFreeVideoMemoryKB();
+    unsigned int getUsedVideoMemoryKB();
+    unsigned int getTotalVideoMemoryKB();
+
     inline const Vector& getGlobalResolutionScale() const { return globalResolutionScale; }
 
     inline const RenderSettings& getSettings() const { return settings; }

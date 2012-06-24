@@ -8,6 +8,7 @@ std::string GetProgramDir(void);
 bool SetWorkingDir(std::string d);
 std::string GetWorkingDir(void);
 uint32 GetConsoleWidth(void);
+void TriggerBreakpoint();
 
 
 #endif

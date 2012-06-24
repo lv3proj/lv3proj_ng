@@ -23,7 +23,7 @@ public:
     
     inline bool collidesWith(const Collidable *other, Vector *point = NULL) const
     {
-        return Collision::Check(*this, *other, point);
+        return other && Collision::Check(*this, *other, point);
     }
 
     inline CollisionShape getShape() const { return _shape; }

@@ -3,8 +3,10 @@
 
 #include "ScriptObject.h"
 #include "Vector.h"
+#include "collision/Collidable.h"
 
 class RenderLayer;
+class Collidable;
 
 enum BlendType
 {
@@ -53,6 +55,8 @@ public:
     // 0 = scroll with the camera (for world objects)
     Vector parallax;
 
+    Collidable *collider;
+
 
     virtual void onRender() const {}
 
@@ -66,6 +70,8 @@ public:
     void moveToBack();
 
     inline Vector getParallaxRenderPosition(const Vector& refPoint) const;
+
+    inline bool collidesWith(const RenderObject *other, Vector *result);
 
 
 protected:
@@ -87,6 +93,11 @@ Vector RenderObject::getParallaxRenderPosition(const Vector& refPoint) const
     pos *= parallax;
     pos += refPoint;
     return pos;
+}
+
+bool RenderObject::collidesWith(const RenderObject *other, Vector *result)
+{
+    return collider && collider->collidesWith(other->collider, result);
 }
 
 #endif

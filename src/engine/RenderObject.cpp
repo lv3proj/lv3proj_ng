@@ -2,6 +2,8 @@
 #include "Engine.h"
 #include "RenderLayer.h"
 #include "RenderLayerMgr.h"
+#include "collision/AABB.h"
+#include "collision/Circle.h"
 
 
 RenderObject::RenderObject()
@@ -13,10 +15,12 @@ RenderObject::RenderObject()
     alpha = 1;
     alpha2 = 1;
     parallax = Vector(1, 1, 1);
+    collider = NULL;
 }
 
 RenderObject::~RenderObject()
 {
+    delete collider;
 }
 
 void RenderObject::update(float dt)
@@ -33,6 +37,25 @@ void RenderObject::update(float dt)
     rotation2.update(dt);
     velocity.update(dt);
     gravity.update(dt);
+
+    if(collider)
+    {
+        switch(collider->getShape())
+        {
+            case COLL_AABB:
+                ((AABB*)collider)->setCenter(position + offset);
+                break;
+
+            case COLL_CIRCLE:
+                ((Circle*)collider)->position = position + offset;
+                break;
+
+            case COLL_LINE:
+            case COLL_PIXMAP:
+            default:
+                assert(false); // Not sure what to do here
+        }
+    }
 
 }
 

@@ -21,6 +21,11 @@ static inline void _log_docallback(const char *fmt, int c, int level, va_list ap
         return;
     char b[512];
     int p = vsnprintf(b, 508, fmt, ap);
+    // GRR: "The Windows version returns -1 if you overflow the buffer,
+    // while the Unix version returns how many characters would have been
+    // written had the buffer been large enough."
+    if(p < 0 || p > 508)
+        p = 508;
     if(callback_newline)
     {
         b[p] = '\n';
