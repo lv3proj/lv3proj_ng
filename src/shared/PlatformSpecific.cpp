@@ -18,6 +18,7 @@
 
 #include "PlatformSpecific.h"
 #include "tools.h"
+#include "log.h"
 
 
 // fix filenames for linux ( '/' instead of windows '\')
@@ -165,5 +166,13 @@ void TriggerBreakpoint()
     __asm__ __volatile__ ( "int $3\n\t" )
 #else
     raise(SIGTRAP)
+#endif
+}
+
+void MsgBox(const char *s)
+{
+    logerror("%s", s);
+#ifdef _WIN32
+    MessageBoxA(NULL, s, "Message", MB_OK);
 #endif
 }

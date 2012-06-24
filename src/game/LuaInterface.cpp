@@ -147,7 +147,7 @@ bool LuaInterface::doCall(int nparams, int nrets /* = 0 */)
     {
         logerror("Lua: %s", getCStr(_lua, -1));
         printCallstack(_lua);
-        lua_pop(_lua, -1);
+        lua_pop(_lua, 1);
         return false;
     }
     return true;

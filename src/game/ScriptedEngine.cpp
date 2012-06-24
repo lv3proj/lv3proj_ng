@@ -42,12 +42,12 @@ bool ScriptedEngine::OnInit()
         {
             if(rand() & 1)
                 continue;
-            if(rand() % 6 == 0)
+            /*if(rand() % 6 == 0)
             {
                 layers->GetLayer(4)->tiles.SetTileByName(x, y, "en.anim");
                 layers->GetLayer(4)->tiles.GetTile(x, y)->CalcCollision();
             }
-            else
+            else*/
             {
                 sprintf(buf, "block%u.png", (rand() % 4) + 1);
                 layers->GetLayer(4)->tiles.SetTileByName(x, y, &buf[0]);

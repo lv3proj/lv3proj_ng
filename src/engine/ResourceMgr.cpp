@@ -183,7 +183,7 @@ SDLSurfaceResource *ResourceMgr::_LoadImgInternal(const char *name)
             bool flipH = s5.find('h') != std::string::npos;
             bool flipV = s5.find('v') != std::string::npos;
 
-            SDL_Surface *section = SDL_CreateRGBSurface(origin->flags, rect.w, rect.h, origin->format->BitsPerPixel,
+            SDL_Surface *section = SDL_CreateRGBSurface(0, rect.w, rect.h, 32,
                 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000); // TODO: fix this for big endian
             
             // properly blit alpha values, save original flags + alpha before blitting, and restore after
@@ -236,13 +236,18 @@ SDLSurfaceResource *ResourceMgr::_LoadImgInternal(const char *name)
         return NULL;
     }
 
-    // no longer doing software blit so this should no longer be required
-    /*SDL_Surface *newimg = SDL_DisplayFormatAlpha(img);
-    if(newimg && img != newimg)
+    if(img->format->BitsPerPixel != 32)
     {
-        SDL_FreeSurface(img);
-        img = newimg;
-    }*/
+        SDL_PixelFormat fmt = *img->format;
+        fmt.BitsPerPixel = 32;
+        fmt.BytesPerPixel = 4;
+        SDL_Surface *newimg = SDL_ConvertSurface(img, &fmt, 0);
+        if(newimg && img != newimg)
+        {
+            SDL_FreeSurface(img);
+            img = newimg;
+        }
+    }
 
     logdebug("LoadImg: '%s' [%s] -> "PTRFMT , name, vf ? vf->getType() : "*", img);
 

@@ -12,6 +12,7 @@
 #include "Renderer.h"
 #include "SoundCore.h"
 #include "GL/gl.h"
+#include "PlatformSpecific.h"
 
 struct LuaFunctions
 {
@@ -120,6 +121,12 @@ luaFunc(getMouseWheelRel)
     luaReturnInt(engine->mouseWheelRel);
 }
 
+luaFunc(msgbox)
+{
+    MsgBox(getCStrSafe(L));
+    luaReturnNil();
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -131,6 +138,7 @@ static LuaFunctions s_functab[] =
     luaRegister(getMouseWindowRel),
     luaRegister(getMouseWorldPos),
     luaRegister(getMouseWheelRel),
+    luaRegister(msgbox),
 
     { NULL, NULL }
 };
@@ -330,6 +338,14 @@ luaFn(quad_new)
     Quad *q = new Quad(getCStr(L, 1), lua_tointeger(L, 3), lua_tointeger(L, 4));
     lr->Add(q);
     return registerObject(L, q, OT_QUAD, NULL);
+}
+
+luaFn(quad_texture)
+{
+    Quad *q = getQuad(L);
+    if(q)
+        q->setTexture(getCStrSafe(L, 2));
+    luaReturnSelf();
 }
 
 luaFn(_sound_gc)
@@ -545,6 +561,7 @@ static const luaL_Reg musiclib[] =
 static const luaL_Reg quadlib[] =
 {
     { "new", quad_new },
+    { "texture", quad_texture },
     // TODO: more
 
     {NULL, NULL}

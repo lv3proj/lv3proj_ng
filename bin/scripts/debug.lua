@@ -8,13 +8,13 @@ end
 
 local function handleSetGlobal(tab, k, v)
     if not looksLikeGlobal(k) then
-        print(debug.traceback("WARNING: Set global variable '" .. k .. "' = '" .. tostring(v) .. "'", 2))
+        msgbox(debug.traceback("WARNING: Set global variable '" .. k .. "' = '" .. tostring(v) .. "'", 2))
     end
     rawset(_G, k, v)
 end
 
 local function handleUndefGlobal(tab, k)
-    print(debug.traceback("WARNING: Tried to read undef global variable '" .. k .. "'", 2))
+    msgbox(debug.traceback("WARNING: Tried to read undef global variable '" .. k .. "'", 2))
 end
 
 local meta =
