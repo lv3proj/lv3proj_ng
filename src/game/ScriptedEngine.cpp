@@ -30,9 +30,15 @@ bool ScriptedEngine::OnInit()
     script->call("onInit");
 
     layers->GetLayer(4)->tiles.SetSize(64);
+    layers->GetLayer(4)->tiles.colliding = true;
+    layers->GetLayer(3)->tiles.SetSize(64);
+    layers->GetLayer(3)->tiles.colliding = true;
     char buf[20];
     for(unsigned int y = 0; y < 64; ++y)
-        for(unsigned int x = 0; x < 64; ++x)
+    {
+        layers->GetLayer(4)->tiles.SetTileByName(0, y, "block4.png");
+        layers->GetLayer(4)->tiles.GetTile(0, y)->CalcCollision();
+        for(unsigned int x = 1; x < 64; ++x)
         {
             if(rand() & 1)
                 continue;
@@ -48,12 +54,29 @@ bool ScriptedEngine::OnInit()
                 layers->GetLayer(4)->tiles.GetTile(x, y)->CalcCollision();
             }
         }
+    }
 
-    ObsRender *o = new ObsRender(4);
+    for(unsigned int y = 0; y < 20; ++y)
+        for(unsigned int x = 0; x < 20; ++x)
+        {
+            layers->GetLayer(3)->tiles.SetTileByName(x, y, "blocktest.png");
+            layers->GetLayer(3)->tiles.GetTile(x, y)->CalcCollision();
+        }
+
+    /*ObsRender *o = new ObsRender(4);
     o->alpha = 0.4f;
     o->color = Vector(1, 0, 0);
     layers->GetLayer(4)->Add(o);
-    objmgr->AddObject(o);
+    objmgr->AddObject(o);*/
+
+    obsgrid.Init(64, 16);
+    obsgrid.Setup();
+
+    ObsGridRender *og = new ObsGridRender;
+    og->alpha = 0.4f;
+    og->color = Vector(1, 0, 0);
+    layers->GetLayer(10)->Add(og);
+    objmgr->AddObject(og);
 
     return true;
 }

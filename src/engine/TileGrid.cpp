@@ -6,7 +6,7 @@
 #include "Texture.h"
 
 TileGrid::TileGrid()
-: _used(0), _tileSize(0)
+: _used(0), _tileSize(0), colliding(false)
 {
 }
 
@@ -136,25 +136,6 @@ void TileGrid::onRender()
 
 void TileGrid::CalcRenderLimits(int& x, int& y, int& x2, int& y2)
 {
-    const int dim = _tiles.size1d();
-    const RenderSettings& rr = engine->GetRenderer()->getSettings();
-
-    // Find out max. visible screen coordinates
-    Vector upperLeftTile  = engine->ToWorldPosition(Vector(-engine->virtualOffX, -engine->virtualOffY));
-    Vector lowerRightTile = engine->ToWorldPosition(Vector(rr.virtualW + engine->virtualOffX, rr.virtualH + engine->virtualOffY));
-
-    // Transform these into tile coords
-    upperLeftTile /= _tileSize;
-    lowerRightTile /= _tileSize;
-
-    // Make sure the right- and bottom-most tiles are on the screen too
-    lowerRightTile.x += 2;
-    lowerRightTile.y += 2;
-
-    // Prevent the view going off bounds
-    x = (upperLeftTile.x < 0 ? 0 : int(upperLeftTile.x));
-    y = (upperLeftTile.y < 0 ? 0 : int(upperLeftTile.y));
-    x2 = (lowerRightTile.x > dim ? dim : int(lowerRightTile.x));
-    y2 = (lowerRightTile.y > dim ? dim : int(lowerRightTile.y));
+    engine->CalcRenderLimits(_tiles.size1d(), _tileSize, x, y, x2, y2);
 }
 

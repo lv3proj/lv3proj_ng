@@ -47,12 +47,12 @@ bool Tile::CalcCollision()
             // TODO: max. threshold?
             if(a)
             {
-                _mask(x, y) |= OBS_WALL;
+                _mask(x, y) |= OBS_ANY; //OBS_WALL;
                 ++solid;
             }
             else
             {
-                _mask(x, y) &= ~OBS_WALL;
+                _mask(x, y) &= ~OBS_ANY; // OBS_WALL;
                 ++fre;
             }
         }

@@ -22,6 +22,8 @@ public:
 
     void CalcRenderLimits(int& x, int& y, int& x2, int& y2);
 
+    bool colliding;
+
 protected:
 
     array2d<Tile*> _tiles;

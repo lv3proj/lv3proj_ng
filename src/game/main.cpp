@@ -21,6 +21,8 @@ int main(int argc, char **argv)
     vfs.LoadFileSysRoot(false);
     vfs.Prepare();
 
+    srand(42); // FIXME: temporary
+
     ScriptedEngine that;
     if(!that.Setup())
     {

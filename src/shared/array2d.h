@@ -51,7 +51,7 @@ public:
             return;
 
         // save old size and data field for later copy
-        uint32 oldsize = _size;
+        unsigned int oldsize = _size;
         T* olddata = data;
 
         // alloc new space
@@ -127,11 +127,9 @@ public:
 
 protected:
 
-    unsigned int _size;
-    unsigned int _shift;
-
     T *data;
-
+    unsigned int _shift;
+    unsigned int _size;
 };
 
 #endif

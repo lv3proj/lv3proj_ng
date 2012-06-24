@@ -5,15 +5,7 @@ class Texture;
 
 #include "array2d.h"
 #include "Resource.h"
-
-// bitmask
-enum ObsType
-{
-    OBS_NONE = 0x00,
-    OBS_WALL = 0x01,
-
-    OBS_ANY = 0xff,
-};
+#include "ObsGrid.h"
 
 enum TileObsType
 {
@@ -32,6 +24,8 @@ public:
     Tile(Texture *tex);
     virtual ~Tile();
 
+    virtual unsigned int usedMem() const { return _mask.size2d(); }
+
     inline Texture *getTexture() const { return _tex; }
 
     bool CalcCollision(); // sets up collision mask
@@ -43,13 +37,18 @@ public:
         return _mask(x, y) & obs;
     }
 
+    inline unsigned char getObs(unsigned int x, unsigned int y) const
+    {
+        return _mask(x, y);
+    }
+
     inline const array2d<unsigned char>& getObsMask() const { return _mask; }
     inline unsigned int getSize() const { return _mask.size1d(); }
 
 protected:
 
     Texture *_tex;
-    TileObsType _tileobs; // true if all collision pixels are non-zero
+    TileObsType _tileobs;
     array2d<unsigned char> _mask;
 
 };

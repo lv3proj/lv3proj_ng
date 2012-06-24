@@ -4,6 +4,7 @@
 #include "common.h"
 #include <SDL/SDL.h>
 #include "Vector.h"
+#include "ObsGrid.h"
 
 class Renderer;
 class SoundCore;
@@ -78,7 +79,8 @@ public:
     Camera *camera;
     float virtualOffX;
     float virtualOffY;
-
+    
+    ObsGrid obsgrid;
     SoundCore *sound;
     ObjectMgr *objmgr;
     RenderLayerMgr *layers;
@@ -93,6 +95,9 @@ public:
 
     Vector ToWorldPosition(const Vector& v) const; // window -> world
     Vector ToWindowPosition(const Vector& v) const; // world -> window
+
+    void CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, int& y, int& x2, int& y2);
+
 protected:
 
     virtual bool OnInit();

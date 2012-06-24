@@ -526,6 +526,7 @@ void EngineBase::UnregisterObject(ScriptObject *obj)
 
 void EngineBase::ClearGarbage(bool deep)
 {
+    obsgrid.OptimizeIncremental();
     objmgr->ClearGarbage();
     if(deep)
     {
@@ -554,4 +555,27 @@ Vector EngineBase::ToWindowPosition(const Vector& v) const
     ret.x += (rr.virtualW / 2.0f);
     ret.y += (rr.virtualH / 2.0f);
     return ret;
+}
+
+void EngineBase::CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, int& y, int& x2, int& y2)
+{
+    const RenderSettings& rr = render->getSettings();
+
+    // Find out max. visible screen coordinates
+    Vector upperLeftTile  = ToWorldPosition(Vector(-virtualOffX, -virtualOffY));
+    Vector lowerRightTile = ToWorldPosition(Vector(rr.virtualW + virtualOffX, rr.virtualH + virtualOffY));
+
+    // Transform these into tile coords
+    upperLeftTile /= tileSize;
+    lowerRightTile /= tileSize;
+
+    // Make sure the right- and bottom-most tiles are on the screen too
+    lowerRightTile.x += 2;
+    lowerRightTile.y += 2;
+
+    // Prevent the view going off bounds
+    x = (upperLeftTile.x < 0 ? 0 : int(upperLeftTile.x));
+    y = (upperLeftTile.y < 0 ? 0 : int(upperLeftTile.y));
+    x2 = (lowerRightTile.x > maxdim ? maxdim : int(lowerRightTile.x));
+    y2 = (lowerRightTile.y > maxdim ? maxdim : int(lowerRightTile.y));
 }
