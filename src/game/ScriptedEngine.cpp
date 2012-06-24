@@ -10,7 +10,7 @@
 #include "TestRenderObject.h"
 
 ScriptedEngine::ScriptedEngine()
- : script(NULL)
+ : script(NULL), _obsRender(NULL)
 {
 }
 
@@ -72,11 +72,11 @@ bool ScriptedEngine::OnInit()
     obsgrid.Init(64, 16);
     obsgrid.Setup();
 
-    ObsGridRender *og = new ObsGridRender;
-    og->alpha = 0.4f;
-    og->color = Vector(1, 0, 0);
-    layers->GetLayer(10)->Add(og);
-    objmgr->AddObject(og);
+    _obsRender = new ObsGridRender;
+    _obsRender->alpha = 0;
+    _obsRender->color = Vector(1, 0, 0);
+    layers->GetLayer(20)->Add(_obsRender);
+    objmgr->AddObject(_obsRender);
 
     return true;
 }
@@ -116,4 +116,15 @@ void ScriptedEngine::ClearGarbage(bool deep)
     }
 }
 
+void ScriptedEngine::OnKeyDown(SDLKey key, SDLMod mod)
+{
+    EngineBase::OnKeyDown(key, mod);
 
+    if(key == SDLK_F9)
+    {
+        if(_obsRender->alpha.x <= 0)
+            _obsRender->alpha.interpolateTo(0.5f, 0);
+        else
+            _obsRender->alpha.interpolateTo(0, 0);
+    }
+}

@@ -4,6 +4,7 @@
 #include "Engine.h"
 
 class LuaInterface;
+class ObsGridRender;
 
 class ScriptedEngine : public EngineBase
 {
@@ -23,6 +24,9 @@ protected:
     virtual void OnReset();
     virtual void OnUpdate(float dt);
     virtual void OnRender();
+    virtual void OnKeyDown(SDLKey key, SDLMod mod);
+
+    ObsGridRender *_obsRender;
 
 };
 

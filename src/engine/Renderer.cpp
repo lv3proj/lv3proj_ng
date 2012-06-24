@@ -301,6 +301,9 @@ const bool DEBUG_RENDER = true;
 
 void Renderer::renderObject(const RenderObject *ro)
 {
+    if(ro->alpha.x <= 0)
+        return;
+
     const Vector renderPos = ro->getParallaxRenderPosition(engine->screenCenter); //ro->position + ro->offset;
     const Vector renderRot = ro->rotation + ro->rotation2;
     const float renderAlpha = ro->alpha.x * ro->alpha2.x;
