@@ -4,6 +4,12 @@
 #ifndef GME_H
 #define GME_H
 
+#ifdef _WIN32
+#  define GME_DLL_EXPORT __declspec(dllexport)
+#else
+#  define GME_DLL_EXPORT
+#endif
+
 #ifdef __cplusplus
 	extern "C" {
 #endif
@@ -24,36 +30,36 @@ typedef int gme_bool;
 /******** Basic operations ********/
 
 /* Opens game music file and points *out at it. If error, sets *out to NULL. */
-gme_err_t gme_open_file( const char path [], gme_t** out, int sample_rate );
+GME_DLL_EXPORT gme_err_t gme_open_file( const char path [], gme_t** out, int sample_rate );
 
 /* Number of tracks */
-int gme_track_count( const gme_t* );
+GME_DLL_EXPORT int gme_track_count( const gme_t* );
 
 /* Starts a track, where 0 is the first track. Requires that 0 <= index < gme_track_count(). */
-gme_err_t gme_start_track( gme_t*, int index );
+GME_DLL_EXPORT gme_err_t gme_start_track( gme_t*, int index );
 
 /* Generates 'count' 16-bit signed samples info 'out'. Output is in stereo, so count
 must be even. */
-gme_err_t gme_play( gme_t*, int count, short out [] );
+GME_DLL_EXPORT gme_err_t gme_play( gme_t*, int count, short out [] );
 
 /* Closes file and frees memory. OK to pass NULL. */
-void gme_delete( gme_t* );
+GME_DLL_EXPORT void gme_delete( gme_t* );
 
 
 /******** Track position/length ********/
 
 /* Sets time to start fading track out. Once fade ends track_ended() returns true.
 Fade time can be changed while track is playing. */
-void gme_set_fade( gme_t*, int start_msec );
+GME_DLL_EXPORT void gme_set_fade( gme_t*, int start_msec );
 
 /* True if a track has reached its end */
-gme_bool gme_track_ended( const gme_t* );
+GME_DLL_EXPORT gme_bool gme_track_ended( const gme_t* );
 
 /* Number of milliseconds played since beginning of track (1000 = one second) */
-int gme_tell( const gme_t* );
+GME_DLL_EXPORT int gme_tell( const gme_t* );
 
 /* Seeks to new time in track. Seeking backwards or far forward can take a while. */
-gme_err_t gme_seek( gme_t*, int msec );
+GME_DLL_EXPORT gme_err_t gme_seek( gme_t*, int msec );
 
 
 /******** Informational ********/
@@ -64,22 +70,22 @@ enum { gme_info_only = -1 };
 
 /* Most recent warning string, or NULL if none. Clears current warning after returning.
 Warning is also cleared when loading a file and starting a track. */
-const char* gme_warning( gme_t* );
+GME_DLL_EXPORT const char* gme_warning( gme_t* );
 
 /* Loads m3u playlist file (must be done after loading music) */
-gme_err_t gme_load_m3u( gme_t*, const char path [] );
+GME_DLL_EXPORT gme_err_t gme_load_m3u( gme_t*, const char path [] );
 
 /* Clears any loaded m3u playlist and any internal playlist that the music format
 supports (NSFE for example). */
-void gme_clear_playlist( gme_t* );
+GME_DLL_EXPORT void gme_clear_playlist( gme_t* );
 
 /* Passes back pointer to information for a particular track (length, name, author, etc.).
 Must be freed after use. */
 typedef struct gme_info_t gme_info_t;
-gme_err_t gme_track_info( const gme_t*, gme_info_t** out, int track );
+GME_DLL_EXPORT gme_err_t gme_track_info( const gme_t*, gme_info_t** out, int track );
 
 /* Frees track information */
-void gme_free_info( gme_info_t* );
+GME_DLL_EXPORT void gme_free_info( gme_info_t* );
 
 struct gme_info_t
 {
@@ -111,24 +117,24 @@ struct gme_info_t
 
 /* Disables automatic end-of-track detection and skipping of silence at beginning
 if ignore is true */
-void gme_ignore_silence( gme_t*, gme_bool ignore );
+GME_DLL_EXPORT void gme_ignore_silence( gme_t*, gme_bool ignore );
 
 /* Adjusts song tempo, where 1.0 = normal, 0.5 = half speed, 2.0 = double speed, etc.
 Track length as returned by track_info() ignores tempo (assumes it's 1.0). */
-void gme_set_tempo( gme_t*, double tempo );
+GME_DLL_EXPORT void gme_set_tempo( gme_t*, double tempo );
 
 /* Number of voices used by currently loaded file */
-int gme_voice_count( const gme_t* );
+GME_DLL_EXPORT int gme_voice_count( const gme_t* );
 
 /* Name of voice i, from 0 to gme_voice_count() - 1 */
-const char* gme_voice_name( const gme_t*, int i );
+GME_DLL_EXPORT const char* gme_voice_name( const gme_t*, int i );
 
 /* Mutes/unmutes single voice i, where voice 0 is first voice */
-void gme_mute_voice( gme_t*, int index, gme_bool mute );
+GME_DLL_EXPORT void gme_mute_voice( gme_t*, int index, gme_bool mute );
 
 /* Sets muting state of ALL voices at once using a bit mask, where -1 mutes all
 voices, 0 unmutes them all, 0x01 mutes just the first voice, etc. */
-void gme_mute_voices( gme_t*, int muting_mask );
+GME_DLL_EXPORT void gme_mute_voices( gme_t*, int muting_mask );
 
 /* Frequency equalizer parameters (see gme.txt) */
 typedef struct gme_equalizer_t
@@ -140,13 +146,13 @@ typedef struct gme_equalizer_t
 } gme_equalizer_t;
 
 /* Gets current frequency equalizer parameters */
-void gme_equalizer( const gme_t*, gme_equalizer_t* out );
+GME_DLL_EXPORT void gme_equalizer( const gme_t*, gme_equalizer_t* out );
 
 /* Changes frequency equalizer parameters */
-void gme_set_equalizer( gme_t*, gme_equalizer_t const* eq );
+GME_DLL_EXPORT void gme_set_equalizer( gme_t*, gme_equalizer_t const* eq );
 
 /* Set volume */
-void gme_set_volume( gme_t*, float v );
+GME_DLL_EXPORT void gme_set_volume( gme_t*, float v );
 
 
 
@@ -156,7 +162,7 @@ void gme_set_volume( gme_t*, float v );
 stereo. Has no effect on GYM, SPC, and Sega Genesis VGM music. */
 
 /* Simplified control using a single value, where 0.0 = off and 1.0 = maximum */
-void gme_set_stereo_depth( gme_t*, double depth );
+GME_DLL_EXPORT void gme_set_stereo_depth( gme_t*, double depth );
 
 struct gme_effects_t
 {
@@ -173,10 +179,10 @@ struct gme_effects_t
 typedef struct gme_effects_t gme_effects_t;
 
 /* Sets effects configuration, or disables effects if NULL */
-void gme_set_effects( gme_t*, gme_effects_t const* );
+GME_DLL_EXPORT void gme_set_effects( gme_t*, gme_effects_t const* );
 
 /* Passes back current effects configuration */
-void gme_effects( const gme_t*, gme_effects_t* out );
+GME_DLL_EXPORT void gme_effects( const gme_t*, gme_effects_t* out );
 
 
 /******** Game music types ********/
@@ -185,66 +191,66 @@ void gme_effects( const gme_t*, gme_effects_t* out );
 typedef const struct gme_type_t_* gme_type_t;
 
 /* Type of this emulator */
-gme_type_t gme_type( const gme_t* );
+GME_DLL_EXPORT gme_type_t gme_type( const gme_t* );
 
 /* Pointer to array of all music types, with NULL entry at end. Allows a player linked
 to this library to support new music types without having to be updated. */
-gme_type_t const* gme_type_list();
+GME_DLL_EXPORT gme_type_t const* gme_type_list();
 
 /* Name of game system for this music file type */
-const char* gme_type_system( gme_type_t );
+GME_DLL_EXPORT const char* gme_type_system( gme_type_t );
 
 /* True if this music file type supports multiple tracks */
-gme_bool gme_type_multitrack( gme_type_t );
+GME_DLL_EXPORT gme_bool gme_type_multitrack( gme_type_t );
 
 
 /******** Advanced file loading ********/
 
 /* Same as gme_open_file(), but uses file data already in memory. Makes copy of data. */
-gme_err_t gme_open_data( void const* data, long size, gme_t** emu_out, int sample_rate );
+GME_DLL_EXPORT gme_err_t gme_open_data( void const* data, long size, gme_t** emu_out, int sample_rate );
 
 /* Determines likely game music type based on first four bytes of file. Returns
 string containing proper file suffix ("NSF", "SPC", etc.) or "" if file header
 is not recognized. */
-const char* gme_identify_header( void const* header );
+GME_DLL_EXPORT const char* gme_identify_header( void const* header );
 
 /* Gets corresponding music type for file path or extension passed in. */
-gme_type_t gme_identify_extension( const char path_or_extension [] );
+GME_DLL_EXPORT gme_type_t gme_identify_extension( const char path_or_extension [] );
 
 /* Determines file type based on file's extension or header (if extension isn't recognized).
 Sets *type_out to type, or 0 if unrecognized or error. */
-gme_err_t gme_identify_file( const char path [], gme_type_t* type_out );
+GME_DLL_EXPORT gme_err_t gme_identify_file( const char path [], gme_type_t* type_out );
 
 /* Creates new emulator and sets sample rate. Returns NULL if out of memory. If you only need
 track information, pass gme_info_only for sample_rate. */
-gme_t* gme_new_emu( gme_type_t, int sample_rate );
+GME_DLL_EXPORT gme_t* gme_new_emu( gme_type_t, int sample_rate );
 
 /* Loads music file into emulator */
-gme_err_t gme_load_file( gme_t*, const char path [] );
+GME_DLL_EXPORT gme_err_t gme_load_file( gme_t*, const char path [] );
 
 /* Loads music file from memory into emulator. Makes a copy of data passed. */
-gme_err_t gme_load_data( gme_t*, void const* data, long size );
+GME_DLL_EXPORT gme_err_t gme_load_data( gme_t*, void const* data, long size );
 
 /* Loads music file using custom data reader function that will be called to
 read file data. Most emulators load the entire file in one read call. */
 typedef gme_err_t (*gme_reader_t)( void* your_data, void* out, int count );
-gme_err_t gme_load_custom( gme_t*, gme_reader_t, long file_size, void* your_data );
+GME_DLL_EXPORT gme_err_t gme_load_custom( gme_t*, gme_reader_t, long file_size, void* your_data );
 
 /* Loads m3u playlist file from memory (must be done after loading music) */
-gme_err_t gme_load_m3u_data( gme_t*, void const* data, long size );
+GME_DLL_EXPORT gme_err_t gme_load_m3u_data( gme_t*, void const* data, long size );
 
 
 /******** User data ********/
 
 /* Sets/gets pointer to data you want to associate with this emulator.
 You can use this for whatever you want. */
-void  gme_set_user_data( gme_t*, void* new_user_data );
-void* gme_user_data( const gme_t* );
+GME_DLL_EXPORT void  gme_set_user_data( gme_t*, void* new_user_data );
+GME_DLL_EXPORT void* gme_user_data( const gme_t* );
 
 /* Registers cleanup function to be called when deleting emulator, or NULL to
 clear it. Passes user_data when calling cleanup function. */
 typedef void (*gme_user_cleanup_t)( void* user_data );
-void gme_set_user_cleanup( gme_t*, gme_user_cleanup_t func );
+GME_DLL_EXPORT void gme_set_user_cleanup( gme_t*, gme_user_cleanup_t func );
 
 
 /******** Errors ********/
@@ -256,15 +262,15 @@ strings. */
 
 /* Error string associated with err. Returns "" if err is NULL. Returns err
 unchanged if it isn't a gme_err_t string. */
-const char* gme_err_str( gme_err_t err );
+GME_DLL_EXPORT const char* gme_err_str( gme_err_t err );
 
 /* Details of error beyond main cause, or "" if none or err is NULL. Returns
 err unchanged if it isn't a gme_err_t string. */
-const char* gme_err_details( gme_err_t err );
+GME_DLL_EXPORT const char* gme_err_details( gme_err_t err );
 
 /* Numeric code corresponding to err. Returns gme_ok if err is NULL. Returns
 gme_err_generic if err isn't a gme_err_t string. */
-int gme_err_code( gme_err_t err );
+GME_DLL_EXPORT int gme_err_code( gme_err_t err );
 
 enum {
 	gme_ok               =    0,/* Successful call. Guaranteed to be zero. */
@@ -287,7 +293,7 @@ enum {
 /* gme_err_t corresponding to numeric code. Note that this might not recover
 the original gme_err_t before it was converted to a numeric code; in
 particular, gme_err_details(gme_code_to_err(code)) will be "" in most cases. */
-gme_err_t gme_code_to_err( int code );
+GME_DLL_EXPORT gme_err_t gme_code_to_err( int code );
 
 
 

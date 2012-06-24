@@ -30,7 +30,7 @@ static void musicFinished(void)
 static void play_music_gme(void *udata, Uint8 *stream, int len)
 {
     gme_t *gme = (gme_t*)udata;
-    gme->play(len / sizeof(Music_Emu::sample_t), (Music_Emu::sample_t*)stream);
+    gme_play(gme, len / sizeof(Music_Emu::sample_t), (Music_Emu::sample_t*)stream);
 }
 
 static void stop_music_gme(void *userdata)

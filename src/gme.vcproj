@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="shared;libpng"
+				AdditionalIncludeDirectories="shared;zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -85,9 +85,9 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)temp\$(ConfigurationName)\$(ProjectName)"
+			OutputDirectory="$(SolutionDir)bin"
 			IntermediateDirectory="$(SolutionDir)temp\$(ConfigurationName)\$(ProjectName)"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -113,7 +113,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="shared;libpng"
+				AdditionalIncludeDirectories="shared;zlib"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_HAS_EXCEPTIONS=0"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -138,13 +138,14 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
-				AdditionalDependencies=""
-				AdditionalLibraryDirectories="lib\win32"
-				IgnoreDefaultLibraryNames="libcmt.lib"
+				Name="VCLinkerTool"
+				ImportLibrary="$(OutDir)\$(ProjectName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -154,6 +155,9 @@
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
