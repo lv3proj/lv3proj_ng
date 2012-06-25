@@ -1,7 +1,7 @@
 #include "LuaEngine.h"
 #include "LuaDefines.h"
 #include "LuaInterface.h"
-#include "Engine.h"
+#include "ScriptedEngine.h"
 #include "Quad.h"
 #include "MemResource.h"
 #include "ResourceMgr.h"
@@ -13,6 +13,7 @@
 #include "SoundCore.h"
 #include "GL/gl.h"
 #include "PlatformSpecific.h"
+#include "ScriptedEntity.h"
 
 struct LuaFunctions
 {
@@ -180,6 +181,14 @@ static SoundFile *getSound(lua_State *L, int idx = 1)
     ScriptObjectUserStruct *su = (ScriptObjectUserStruct*)lua_touserdata(L, idx);
     if(su && ((su->type & OT_SOUND) == OT_SOUND))
         return (SoundFile*)su->obj;
+    return NULL;
+}
+
+static Entity *getEntity(lua_State *L, int idx = 1)
+{
+    ScriptObjectUserStruct *su = (ScriptObjectUserStruct*)lua_touserdata(L, idx);
+    if(su && ((su->type & OT_ENTITY) == OT_ENTITY))
+        return (Entity*)su->obj;
     return NULL;
 }
 
@@ -372,6 +381,18 @@ luaFn(quad_texture)
     luaReturnSelf();
 }
 
+luaFn(entity_new)
+{
+    Entity *e = new ScriptedEntity(scriptedEngine->script);
+    RenderLayer *lr = getLayerByID(L, 2);
+    if(!lr || lr->GetID() == 0)
+        lr = engine->layers->GetLayer(10);
+    lr->Add(e);
+    return registerObject(L, e, OT_ENTITY, NULL);
+}
+
+
+
 luaFn(_sound_gc)
 {
     SoundFile *sound = getSound(L);
@@ -382,7 +403,6 @@ luaFn(_sound_gc)
     }
     luaReturnNil();
 }
-
 
 luaFn(sound_new)
 {
@@ -633,6 +653,14 @@ static const luaL_Reg quadlib[] =
     {NULL, NULL}
 };
 
+static const luaL_Reg entitylib[] =
+{
+    { "new", entity_new },
+    // TODO: more
+
+    {NULL, NULL}
+};
+
 static const luaL_Reg cameralib[] =
 {
     { "position", camera_position },
@@ -667,6 +695,12 @@ int luaopen_music(lua_State *L)
 int luaopen_quad(lua_State *L)
 {
     luaL_newlib(L, quadlib);
+    return 1;
+}
+
+int luaopen_entity(lua_State *L)
+{
+    luaL_newlib(L, entitylib);
     return 1;
 }
 

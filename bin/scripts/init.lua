@@ -7,6 +7,7 @@ dofile("string.lua")
 dofile("table.lua")
 dofile("ro.lua")
 dofile("quad.lua")
+dofile("entity.lua")
 dofile("sound.lua")
 dofile("class.lua")
 dofile("font.lua")
@@ -73,6 +74,14 @@ rawset(_G, "onInit", function()
     --local ff = quad.new("insanity.png", 10):blend(BLEND_ADD)
     
     --q:addChild(ff)
+    
+    local e = entity.new()
+    e:texture("test3.png"):position(400, 300)
+    
+    function e:update()
+        local x, y = self:getPosition()
+        self:position(x + math.random(-2, 2), y + math.random(-2, 2))
+    end
     
 end)
 

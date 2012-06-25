@@ -10,6 +10,7 @@ enum ScriptObjectType
     OT_RENDEROBJECT = 0x00000001,
     OT_QUAD         = 0x00000002 | OT_RENDEROBJECT,
     OT_SOUND        = 0x00000004,
+    OT_ENTITY       = 0x00000008 | OT_QUAD
 };
 
 class ScriptObject

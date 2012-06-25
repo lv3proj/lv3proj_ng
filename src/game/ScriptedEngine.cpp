@@ -9,13 +9,17 @@
 #include "ObsRender.h"
 #include "TestRenderObject.h"
 
+ScriptedEngine *scriptedEngine = NULL;
+
 ScriptedEngine::ScriptedEngine()
  : script(NULL), _obsRender(NULL)
 {
+    scriptedEngine = this;
 }
 
 ScriptedEngine::~ScriptedEngine()
 {
+    scriptedEngine = NULL;
 }
 
 void ScriptedEngine::Shutdown()
@@ -61,8 +65,8 @@ bool ScriptedEngine::OnInit()
         }
     }
 
-    for(unsigned int y = 0; y < 20; ++y)
-        for(unsigned int x = 0; x < 20; ++x)
+    for(unsigned int y = 0; y < 64; ++y)
+        for(unsigned int x = 0; x < 64; ++x)
         {
             layers->GetLayer(3)->tiles.SetTileByName(x, y, "blocktest.png");
         }

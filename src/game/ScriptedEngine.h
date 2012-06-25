@@ -31,5 +31,7 @@ protected:
 
 };
 
+extern ScriptedEngine *scriptedEngine;
+
 
 #endif

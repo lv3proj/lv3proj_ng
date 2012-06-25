@@ -14,5 +14,7 @@ ScriptedEntity::~ScriptedEntity()
 void ScriptedEntity::update(float dt)
 {
     _script->callMethod(this, "update", dt);
+
+    Entity::update(dt);
 }
 

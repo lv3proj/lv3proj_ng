@@ -23,6 +23,7 @@ public:
     void Render();
     void MoveToFront(RenderObject *);
     void MoveToBack(RenderObject *);
+    inline unsigned int GetID() const { return _id; }
 
     TileGrid tiles;
 

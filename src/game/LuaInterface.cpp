@@ -42,6 +42,7 @@ unsigned int LuaInterface::MemUsed()
 static const luaL_Reg customLibs[] = {
     {"ro", luaopen_renderobject},
     {"quad", luaopen_quad},
+    {"entity", luaopen_entity},
     {"sound", luaopen_sound},
     {"music", luaopen_music},
     {"camera", luaopen_camera},
