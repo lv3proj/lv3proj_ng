@@ -26,6 +26,7 @@ void ObsGrid::Clear()
 {
     for(size_t i = 0; i < _spare.size(); ++i)
         delete [] _spare[i];
+    _spare.clear();
     for(unsigned int y = 0; y < _grid.size1d(); ++y)
         for(unsigned int x = 0; x < _grid.size1d(); ++x)
         {
