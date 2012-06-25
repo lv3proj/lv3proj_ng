@@ -9,6 +9,7 @@ class TileGrid : public RenderObject
 public:
     TileGrid();
     virtual ~TileGrid();
+    void Clear();
 
     void SetSize(unsigned int dim);
     void SetTile(unsigned int x, unsigned int y, Tile *tile);

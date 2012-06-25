@@ -100,11 +100,13 @@ bool EngineBase::Setup(void)
 // this should not be called from inside EngineBase::Run()
 void EngineBase::Shutdown(void)
 {
+    obsgrid.Clear();
     layers->ClearAll();
     objmgr->ClearAll();
     sound->Shutdown();
     ClearGarbage(true);
     render->Shutdown();
+    resMgr.Shutdown();
 
     for(uint32 i = 0; i < s_joysticks.size(); ++i)
         if(s_joysticks[i] && SDL_JoystickOpened(SDL_JoystickIndex(s_joysticks[i]))) // this is maybe a bit overcomplicated, but safe at least
@@ -461,7 +463,7 @@ void EngineBase::_Render(void)
     screenCenter.y = camera->position.y + (rr.virtualH / 2) * camera->invScale.y;
 
     render->clear();
-    render->setupRenderPositionAndScale();
+    //render->setupRenderPositionAndScale();
 
     layers->Render();
 

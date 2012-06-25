@@ -63,6 +63,21 @@ ResourceMgr::~ResourceMgr()
 {
 }
 
+void ResourceMgr::Shutdown()
+{
+    DropUnused();
+    for(int i = 0; i < RESOURCE_MAX; ++i)
+    {
+        ResourceStore& res = _res[i];
+
+        for(ResourceStore::iterator it = res.begin(); it != res.end(); ++it)
+        {
+            Resource *r = it->second;
+            logerror("WARNING: [type %u] Forgot to free resource %s (ref %u, mem %u)",
+                r->type(), r->name(), r->refcount(), r->usedMem());
+        }
+    }
+}
 
 void ResourceMgr::DropUnused(void)
 {
@@ -471,6 +486,7 @@ Tile *ResourceMgr::LoadTile(const char *name)
     }
 
     tile = new Tile(tex);
+    tile->CalcCollision();
     tex->decref();
 
     Add(tile);

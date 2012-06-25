@@ -18,6 +18,14 @@ ScriptedEngine::~ScriptedEngine()
 {
 }
 
+void ScriptedEngine::Shutdown()
+{
+    _obsRender->kill();
+    _obsRender = NULL;
+
+    EngineBase::Shutdown();
+}
+
 bool ScriptedEngine::OnInit()
 {
     if(!EngineBase::OnInit())
@@ -37,7 +45,6 @@ bool ScriptedEngine::OnInit()
     for(unsigned int y = 0; y < 64; ++y)
     {
         layers->GetLayer(4)->tiles.SetTileByName(0, y, "block4.png");
-        layers->GetLayer(4)->tiles.GetTile(0, y)->CalcCollision();
         for(unsigned int x = 1; x < 64; ++x)
         {
             if(rand() & 1)
@@ -45,13 +52,11 @@ bool ScriptedEngine::OnInit()
             /*if(rand() % 6 == 0)
             {
                 layers->GetLayer(4)->tiles.SetTileByName(x, y, "en.anim");
-                layers->GetLayer(4)->tiles.GetTile(x, y)->CalcCollision();
             }
             else*/
             {
                 sprintf(buf, "block%u.png", (rand() % 4) + 1);
                 layers->GetLayer(4)->tiles.SetTileByName(x, y, &buf[0]);
-                layers->GetLayer(4)->tiles.GetTile(x, y)->CalcCollision();
             }
         }
     }
@@ -60,7 +65,6 @@ bool ScriptedEngine::OnInit()
         for(unsigned int x = 0; x < 20; ++x)
         {
             layers->GetLayer(3)->tiles.SetTileByName(x, y, "blocktest.png");
-            layers->GetLayer(3)->tiles.GetTile(x, y)->CalcCollision();
         }
 
     /*ObsRender *o = new ObsRender(4);

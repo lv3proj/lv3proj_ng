@@ -21,6 +21,7 @@ class ResourceMgr
 public:
     ResourceMgr();
     ~ResourceMgr();
+    void Shutdown();
 
     void DropUnused(void);
     void Add(Resource *r);

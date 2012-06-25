@@ -11,6 +11,7 @@ int luaopen_quad(lua_State *);
 int luaopen_sound(lua_State *);
 int luaopen_music(lua_State *);
 int luaopen_camera(lua_State *);
+int luaopen_stats(lua_State *);
 
 struct ScriptObjectUserStruct
 {

@@ -47,6 +47,7 @@ public:
     void clear();
     void show();
     void setupRenderPositionAndScale();
+    void loadIdentity();
 
     void renderObject(const RenderObject *);
     void renderQuad(const Quad *);
@@ -62,8 +63,8 @@ public:
     Texture *createNullTexture();
 
     unsigned int getFreeVideoMemoryKB();
-    unsigned int getUsedVideoMemoryKB();
-    unsigned int getTotalVideoMemoryKB();
+    unsigned int getRenderedObjects() const { return _renderedObjects; }
+    unsigned int getRenderedVerts() const { return _renderedVerts; }
 
     inline const Vector& getGlobalResolutionScale() const { return globalResolutionScale; }
 
@@ -84,6 +85,8 @@ private:
 
     int _clientState;
     BlendType _activeBlend;
+    unsigned int _renderedObjects;
+    unsigned int _renderedVerts;
 
     void _enableVertexAndTexCoords(); // 1
     void _disableVertexAndTexCoords(); // 1

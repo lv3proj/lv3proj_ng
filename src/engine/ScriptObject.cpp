@@ -37,8 +37,11 @@ void LifeObject::update(float dt)
 
 void LifeObject::onEndOfLife()
 {
-    _dead = true;
-    engine->UnregisterObject(this);
+    if(!_dead)
+    {
+        _dead = true;
+        engine->UnregisterObject(this);
+    }
 }
 
 void LifeObject::kill(float decay)

@@ -207,6 +207,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\engine\Entity.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\Entity.h"
+				>
+			</File>
+			<File
 				RelativePath=".\engine\FileAPI.cpp"
 				>
 			</File>

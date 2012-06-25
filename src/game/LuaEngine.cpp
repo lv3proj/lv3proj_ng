@@ -127,6 +127,12 @@ luaFunc(msgbox)
     luaReturnNil();
 }
 
+luaFunc(clearGarbage)
+{
+    engine->ClearGarbage(true);
+    luaReturnNil();
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -139,6 +145,7 @@ static LuaFunctions s_functab[] =
     luaRegister(getMouseWorldPos),
     luaRegister(getMouseWheelRel),
     luaRegister(msgbox),
+    luaRegister(clearGarbage),
 
     { NULL, NULL }
 };
@@ -277,6 +284,17 @@ luaFn(ro_blend)
     luaReturnSelf();
 }
 
+luaFn(ro_addChild)
+{
+    RenderObject *ro = getRO(L);
+    RenderObject *child = getRO(L, 2);
+    if(ro && child)
+        ro->addChild(child);
+    luaReturnSelf();
+}
+
+
+
 // ----------- Evil define hackery -----------------
 #define MAKE_RO_VEC_MTH(name, v, c) \
 luaFn(ro_##name) \
@@ -316,6 +334,12 @@ luaFn(ro_parallax)
     if(ro)
         ro->parallax = Vector(lua_tonumber(L, 2), lua_tonumber(L, 3));
     luaReturnSelf();
+}
+
+luaFn(ro_getLayer)
+{
+    RenderObject *ro = getRO(L);
+    luaReturnInt(ro ? ro->getLayer() : 0);
 }
 
 #undef MAKE_RO_VEC_MTH
@@ -516,7 +540,47 @@ luaFn(camera_getScale)
 }
 
 
+luaFn(stats_getResourceMem)
+{
+    luaReturnInt(resMgr.GetUsedMem() / 1024); // scale to KB
+}
 
+luaFn(stats_getResourceCount)
+{
+    luaReturnInt(resMgr.GetUsedCount());
+}
+
+luaFn(stats_getObsGridMem)
+{
+    luaReturnInt(engine->obsgrid.GetMemoryUsage() / 1024);
+}
+
+luaFn(stats_getRenderedObjects)
+{
+    luaReturnInt(engine->GetRenderer()->getRenderedObjects());
+}
+
+luaFn(stats_getFreeVideoMemory)
+{
+    luaReturnInt(engine->GetRenderer()->getFreeVideoMemoryKB());
+}
+
+luaFn(stats_getRenderedVertices)
+{
+    luaReturnInt(engine->GetRenderer()->getRenderedVerts());
+}
+
+
+static const luaL_Reg statslib[] =
+{
+    { "getResourceMem", stats_getResourceMem },
+    { "getObsGridMem", stats_getObsGridMem },
+    { "getResourceCount", stats_getResourceCount },
+    { "getRenderedObjects", stats_getRenderedObjects },
+    { "getRenderedVertices", stats_getRenderedVertices },
+    { "getFreeVideoMemory", stats_getFreeVideoMemory },
+    {NULL, NULL}
+};
 
 static const luaL_Reg renderobjectlib[] =
 {
@@ -526,6 +590,8 @@ static const luaL_Reg renderobjectlib[] =
     { "getPosition", ro_getPosition },
     { "parallax", ro_parallax },
     { "blend", ro_blend },
+    { "addChild", ro_addChild },
+    { "getLayer", ro_getLayer },
 
     // TODO: more
 
@@ -607,5 +673,11 @@ int luaopen_quad(lua_State *L)
 int luaopen_camera(lua_State *L)
 {
     luaL_newlib(L, cameralib);
+    return 1;
+}
+
+int luaopen_stats(lua_State *L)
+{
+    luaL_newlib(L, statslib);
     return 1;
 }

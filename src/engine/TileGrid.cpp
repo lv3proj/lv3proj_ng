@@ -12,6 +12,15 @@ TileGrid::TileGrid()
 
 TileGrid::~TileGrid()
 {
+    Clear();
+}
+
+void TileGrid::Clear()
+{
+    const unsigned int dim = _tiles.size1d();
+    for(unsigned int y = 0; y < dim; ++y)
+        for(unsigned int x = 0; x < dim; ++x)
+            SetTile(x, y, NULL);
 }
 
 void TileGrid::SetSize(unsigned int dim)

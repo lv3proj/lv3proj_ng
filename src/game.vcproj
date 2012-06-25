@@ -199,6 +199,14 @@
 				RelativePath=".\game\ScriptedEngine.h"
 				>
 			</File>
+			<File
+				RelativePath=".\game\ScriptedEntity.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\game\ScriptedEntity.h"
+				>
+			</File>
 			<Filter
 				Name="Lua"
 				>

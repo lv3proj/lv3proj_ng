@@ -49,7 +49,7 @@ void ObjectMgr::ClearGarbage()
         for(size_t i = 0; i < _garbage.size(); ++i)
         {
             _alive.erase(_garbage[i]);
-            delete [] _garbage[i];
+            delete _garbage[i];
         }
         _garbage.clear();
     }

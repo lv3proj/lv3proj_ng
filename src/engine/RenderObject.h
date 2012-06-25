@@ -4,6 +4,7 @@
 #include "ScriptObject.h"
 #include "Vector.h"
 #include "collision/Collidable.h"
+#include <set>
 
 class RenderLayer;
 class Collidable;
@@ -27,9 +28,14 @@ class RenderObject : public LifeObject
     friend class RenderLayer;
 
 protected:
+
     RenderObject();
 
 public:
+
+    typedef std::set<RenderObject*> Children;
+
+
     ~RenderObject();
 
     virtual void update(float dt);
@@ -64,15 +70,19 @@ public:
     inline void setBlendType(BlendType b) {_blend = b; }
 
     inline unsigned int getLayer() const { return _layer; }
+    inline RenderObject *getParent() const { return _parent; }
 
     void toLayer(unsigned int target);
     void moveToFront();
     void moveToBack();
 
+    void addChild(RenderObject *);
+    void removeChild(RenderObject *);
+    inline const Children& getChildren() const { return _children; }
+
     inline Vector getParallaxRenderPosition(const Vector& refPoint) const;
 
     inline bool collidesWith(const RenderObject *other, Vector *result);
-
 
 protected:
 
@@ -80,6 +90,11 @@ protected:
 
     BlendType _blend;
     unsigned int _layer;
+    RenderObject *_parent;
+
+private:
+
+    Children _children;
 
 };
 
@@ -87,12 +102,13 @@ protected:
 Vector RenderObject::getParallaxRenderPosition(const Vector& refPoint) const
 {
     Vector pos = position;
-    pos += offset;
+    //pos += offset;
 
     pos -= refPoint;
     pos *= parallax;
     pos += refPoint;
-    return pos;
+    //return pos;
+    return pos + offset;
 }
 
 bool RenderObject::collidesWith(const RenderObject *other, Vector *result)

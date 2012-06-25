@@ -283,12 +283,18 @@ void Renderer::setupRenderPositionAndScale()
     //glRotatef(180, 0, 1, 0);
 }
 
+void Renderer::loadIdentity()
+{
+    glLoadIdentity();
+}
 
 
 void Renderer::clear()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
     Texture::clearLastApplied();
+    _renderedObjects = 0;
+    _renderedVerts = 0;
 }
 
 void Renderer::show()
@@ -321,13 +327,16 @@ void Renderer::renderObject(const RenderObject *ro)
 
     glScalef(ro->scale.x, ro->scale.y, 1);
 
+    // TODO: push/pop color, to allow proper parent+child color mixing
     glColor4f(renderCol.x, renderCol.y, renderCol.z, renderAlpha);
 
     _applyBlendType(ro->getBlendType());
 
     ro->onRender();
 
-    // TODO: render children
+    const RenderObject::Children& ch = ro->getChildren();
+    for(RenderObject::Children::const_iterator it = ch.begin(); it != ch.end(); ++it)
+        renderObject(*it);
 
 
     /*if(DEBUG_RENDER)
@@ -342,6 +351,8 @@ void Renderer::renderObject(const RenderObject *ro)
     }*/
 
     glPopMatrix();
+
+    ++_renderedObjects;
 }
 
 void Renderer::_applyBlendType(BlendType blend)
@@ -422,6 +433,7 @@ void Renderer::renderQuad(const Quad *q)
     glVertexPointer(2, GL_FLOAT, 0, &vertexData);
     glTexCoordPointer(2, GL_FLOAT, 0, &texCoords);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    _renderedVerts += 4;
 }
 
 static const GLfloat simpleTexCoords[] =
@@ -475,7 +487,10 @@ void Renderer::renderSingleTexture(Texture *tex, const Vector& pos, const Vector
     glVertexPointer(2, GL_FLOAT, 0, &vertexData);
     glTexCoordPointer(2, GL_FLOAT, 0, &simpleTexCoords);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    _renderedVerts += 4;
     glPopMatrix();
+
+    ++_renderedObjects;
 }
 
 void Renderer::renderTextureArray(Texture **textures, unsigned int size, const Vector& start, const Vector& step, const Vector& halfsize)
@@ -522,7 +537,10 @@ void Renderer::renderTextureArray(Texture **textures, unsigned int size, const V
             glTranslatef(trans.x, trans.y, trans.z);
             tex->apply();
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            _renderedVerts += 4;
             trans.x = trans.y = trans.z = 0;
+
+            ++_renderedObjects;
         }
         trans += step;
     }
@@ -535,6 +553,7 @@ void Renderer::render2DVertexArray(float *verts, unsigned int size)
 {
     glVertexPointer(2, GL_FLOAT, 0, verts);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, size);
+    _renderedVerts += 4;
 }
 
 void Renderer::_enableVertexAndTexCoords()

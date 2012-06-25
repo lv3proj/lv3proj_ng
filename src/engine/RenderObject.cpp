@@ -16,6 +16,7 @@ RenderObject::RenderObject()
     alpha2 = 1;
     parallax = Vector(1, 1, 1);
     collider = NULL;
+    _parent = NULL;
 }
 
 RenderObject::~RenderObject()
@@ -61,6 +62,20 @@ void RenderObject::update(float dt)
 
 void RenderObject::onEndOfLife()
 {
+    for(Children::iterator it = _children.begin(); it != _children.end(); ++it)
+    {
+        RenderObject *child = *it;
+        child->_parent = NULL;
+        child->onEndOfLife();
+    }
+    _children.clear();
+
+    if(_parent)
+    {
+        _parent->removeChild(this);
+    }
+
+
     LifeObject::onEndOfLife();
 
     engine->layers->GetLayer(getLayer())->Remove(this);
@@ -84,5 +99,31 @@ void RenderObject::moveToBack()
 void RenderObject::moveToFront()
 {
     engine->layers->GetLayer(getLayer())->MoveToFront(this);
+}
+
+void RenderObject::addChild(RenderObject *child)
+{
+    if(child == this || child == _parent)
+    {
+        logerror("addChild gone wrong!");
+        return;
+    }
+
+    if(child->_parent)
+    {
+        child->_parent->removeChild(child);
+    }
+
+    child->_parent = this;
+    _children.insert(child);
+}
+
+void RenderObject::removeChild(RenderObject *child)
+{
+    if(child->_parent == this)
+    {
+        _children.erase(child);
+        child->_parent = NULL;
+    }
 }
 

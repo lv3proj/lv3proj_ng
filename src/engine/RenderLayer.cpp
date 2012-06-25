@@ -5,7 +5,7 @@
 #include "Engine.h"
 
 RenderLayer::RenderLayer()
- : _id(-1)
+ : _id(-1), noCamera(false)
 {
 }
 
@@ -16,6 +16,8 @@ RenderLayer::~RenderLayer()
 
 void RenderLayer::RemoveAll()
 {
+    tiles.Clear();
+
     if(_objs.empty())
         return;
 
@@ -76,9 +78,18 @@ void RenderLayer::MoveToFront(RenderObject *ro)
 void RenderLayer::Render()
 {
     Renderer *r = engine->GetRenderer();
+    
+    if(noCamera)
+        r->loadIdentity();
+    else
+        r->setupRenderPositionAndScale();
 
     tiles.onRender();
 
     for(std::list<RenderObject*>::const_iterator it = _objs.begin(); it != _objs.end(); ++it)
-        r->renderObject(*it);
+    {
+        RenderObject *ro = *it;
+        if(!ro->getParent())
+            r->renderObject(*it);
+    }
 }

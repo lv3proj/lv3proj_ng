@@ -11,6 +11,10 @@ RenderLayerMgr::RenderLayerMgr()
         _layers[i] = new RenderLayer();
         _layers[i]->_id = i;
     }
+
+    // HACK: this is just for testing
+    _layers[30]->noCamera = true;
+    _layers[31]->noCamera = true;
 }
 
 RenderLayerMgr::~RenderLayerMgr()

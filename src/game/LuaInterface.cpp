@@ -45,6 +45,7 @@ static const luaL_Reg customLibs[] = {
     {"sound", luaopen_sound},
     {"music", luaopen_music},
     {"camera", luaopen_camera},
+    {"stats", luaopen_stats},
     {NULL, NULL}
 };
 
@@ -164,4 +165,28 @@ bool LuaInterface::call(const char *func, float f)
     lookupFunc(func);
     lua_pushnumber(_lua, f);
     return doCall(1);
+}
+
+// TODO: this should be made faster. Use global registry?
+void LuaInterface::lookupMethod(ScriptObject *obj, const char *func)
+{
+    lua_getglobal(_lua, "_OBJECTREGISTRY");
+    // now [t]
+    lua_pushlightuserdata(_lua, obj);
+    // now [t][obj]
+    lua_gettable(_lua, -2);
+    // now [t][su]
+    lua_pushstring(_lua, func);
+    // now [t][su]["func"]
+    lua_gettable(_lua, -2);
+    // now [t][su][func]
+    lua_replace(_lua, -3);
+    // now [func][su]
+}
+
+bool LuaInterface::callMethod(ScriptObject *obj, const char *func, float f)
+{
+    lookupMethod(obj, func);
+    lua_pushnumber(_lua, f);
+    return doCall(2);
 }

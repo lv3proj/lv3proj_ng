@@ -17,6 +17,7 @@ public:
 
     virtual void UnregisterObject(ScriptObject *obj);
     virtual void ClearGarbage(bool deep);
+    virtual void Shutdown();
 
 protected:
 

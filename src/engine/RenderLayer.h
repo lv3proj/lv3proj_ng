@@ -27,6 +27,7 @@ public:
     TileGrid tiles;
 
     std::string name;
+    bool noCamera; // FIXME: want to do this somehow else
 
 protected:
     unsigned int _id; // position in vector in RenderLayerMgr

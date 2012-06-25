@@ -27,11 +27,13 @@ public:
     bool call(const char *f);
     bool call(const char *f, float);
 
+    bool callMethod(ScriptObject *, const char *f, float);
 
 
 protected:
 
     void lookupFunc(const char *f);
+    void lookupMethod(ScriptObject *obj, const char *f);
     bool doCall(int nparams, int nrets = 0);
 
     lua_State *_lua;
