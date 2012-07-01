@@ -193,6 +193,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\shared\pugiconfig.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\shared\pugixml.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\shared\pugixml.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\shared\tools.cpp"
 				>
 			</File>
