@@ -13,10 +13,11 @@ public:
 
     void SetSize(unsigned int dim);
     void SetTile(unsigned int x, unsigned int y, Tile *tile);
-    bool SetTileByName(unsigned int x, unsigned int y, const char *name);
+    void SetTileByName(unsigned int x, unsigned int y, const char *name);
 
     inline unsigned int GetSize() const { return _tiles.size1d(); }
     inline Tile *GetTile(unsigned int x, unsigned int y) const { return _tiles(x, y); }
+    inline Tile *GetTileSafe(unsigned int x, unsigned int y) const { return x < _tiles.size1d() && y < _tiles.size1d() ? _tiles(x, y) : NULL; }
     inline float GetTileSizef() const { return _tileSize; }
 
     virtual void onRender();

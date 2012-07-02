@@ -214,6 +214,9 @@ void ObsGrid::Setup()
 
 void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
 {
+    if(x >= _grid.size1d() || y >= _grid.size1d())
+        return;
+
     mask *block = _grid(x, y);
     if(block == _full)
         return;

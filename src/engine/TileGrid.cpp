@@ -57,15 +57,20 @@ void TileGrid::SetSize(unsigned int dim)
     _tiles.resize(newsize, NULL);
 }
 
-bool TileGrid::SetTileByName(unsigned int x, unsigned int y, const char *name)
+void TileGrid::SetTileByName(unsigned int x, unsigned int y, const char *name)
 {
-    Tile *tile = resMgr.LoadTile(name);
-    if(!tile)
-        return false;
+    if(name && *name)
+    {
+        Tile *tile = resMgr.LoadTile(name);
+        if(!tile)
+            return;
 
-    SetTile(x, y, tile);
-    tile->decref();
-    return true;
+        SetTile(x, y, tile);
+        tile->decref();
+        return;
+    }
+
+    SetTile(x, y, NULL);
 }
 
 // Puts a tile to location (x,y). Set tile to NULL to remove current tile. Does ref-counting.

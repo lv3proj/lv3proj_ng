@@ -75,13 +75,15 @@ rawset(_G, "onInit", function()
     
     --q:addChild(ff)
     
-    local e = entity.new()
+    --[[local e = entity.new()
     e:texture("test3.png"):position(400, 300)
     
-    function e:update()
+    function e:update(dt)
         local x, y = self:getPosition()
         self:position(x + math.random(-2, 2), y + math.random(-2, 2))
-    end
+    end]]
+    
+    dofile("testmap.lua")
     
 end)
 

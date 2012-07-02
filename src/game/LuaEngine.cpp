@@ -14,6 +14,7 @@
 #include "GL/gl.h"
 #include "PlatformSpecific.h"
 #include "ScriptedEntity.h"
+#include "Texture.h"
 
 struct LuaFunctions
 {
@@ -134,6 +135,40 @@ luaFunc(clearGarbage)
     luaReturnNil();
 }
 
+luaFunc(setTile)
+{
+    unsigned int lr = lua_tointeger(L, 1);
+    RenderLayer *layer = engine->layers->GetLayer(lr);
+    if(!layer)
+    {
+        logerror("setTile(): Invalid layer");
+        luaReturnNil();
+    }
+    unsigned int x = lua_tointeger(L, 2);
+    unsigned int y = lua_tointeger(L, 3);
+    layer->tiles.SetTileByName(x, y, getCStr(L, 4)); // can be NULL
+    engine->obsgrid.UpdateTile(x, y);
+    luaReturnNil();
+}
+
+luaFunc(getTile)
+{
+    unsigned int lr = lua_tointeger(L, 1);
+    RenderLayer *layer = engine->layers->GetLayer(lr);
+    if(!layer)
+    {
+        logerror("getTile(): Invalid layer");
+        luaReturnNil();
+    }
+    unsigned int x = lua_tointeger(L, 2);
+    unsigned int y = lua_tointeger(L, 3);
+    Tile *tile = layer->tiles.GetTileSafe(x, y);
+    if(tile && tile->getTexture())
+        luaReturnStr(tile->getTexture()->name());
+
+    luaReturnNil();
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -147,6 +182,8 @@ static LuaFunctions s_functab[] =
     luaRegister(getMouseWheelRel),
     luaRegister(msgbox),
     luaRegister(clearGarbage),
+    luaRegister(setTile),
+    luaRegister(getTile),
 
     { NULL, NULL }
 };

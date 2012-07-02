@@ -39,37 +39,12 @@ bool ScriptedEngine::OnInit()
     if(!script->Init())
         return false;
 
-    script->call("onInit");
-
     layers->GetLayer(4)->tiles.SetSize(64);
     layers->GetLayer(4)->tiles.colliding = true;
     layers->GetLayer(3)->tiles.SetSize(64);
     layers->GetLayer(3)->tiles.colliding = true;
-    char buf[20];
-    for(unsigned int y = 0; y < 64; ++y)
-    {
-        layers->GetLayer(4)->tiles.SetTileByName(0, y, "block4.png");
-        for(unsigned int x = 1; x < 64; ++x)
-        {
-            if(rand() & 1)
-                continue;
-            /*if(rand() % 6 == 0)
-            {
-                layers->GetLayer(4)->tiles.SetTileByName(x, y, "en.anim");
-            }
-            else*/
-            {
-                sprintf(buf, "block%u.png", (rand() % 4) + 1);
-                layers->GetLayer(4)->tiles.SetTileByName(x, y, &buf[0]);
-            }
-        }
-    }
 
-    for(unsigned int y = 0; y < 64; ++y)
-        for(unsigned int x = 0; x < 64; ++x)
-        {
-            layers->GetLayer(3)->tiles.SetTileByName(x, y, "blocktest.png");
-        }
+    script->call("onInit");
 
     /*ObsRender *o = new ObsRender(4);
     o->alpha = 0.4f;

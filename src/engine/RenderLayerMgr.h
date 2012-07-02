@@ -16,7 +16,7 @@ public:
     void ClearAll();
     void Render();
 
-    inline RenderLayer *GetLayer(unsigned int id) const { return _layers[id]; }
+    inline RenderLayer *GetLayer(unsigned int id) const { return id < _layers.size() ? _layers[id] : NULL; }
     RenderLayer *GetLayer(const char *name);
     inline unsigned int GetLayerCount() const { return (unsigned int)_layers.size(); }
 
