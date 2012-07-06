@@ -4,6 +4,7 @@
 #include "ScriptObject.h"
 #include "Vector.h"
 #include "collision/Collidable.h"
+#include "RenderLayer.h"
 #include <set>
 
 class RenderLayer;
@@ -63,7 +64,6 @@ public:
 
     Collidable *collider;
 
-
     virtual void onRender() const {}
 
     inline BlendType getBlendType() const { return _blend; }
@@ -81,6 +81,7 @@ public:
     inline const Children& getChildren() const { return _children; }
 
     inline Vector getParallaxRenderPosition(const Vector& refPoint) const;
+    inline Vector getParallaxFactor() const;
 
     inline bool collidesWith(const RenderObject *other, Vector *result);
 
@@ -91,6 +92,7 @@ protected:
     BlendType _blend;
     unsigned int _layer;
     RenderObject *_parent;
+    RenderLayer *_layerPtr;
 
 private:
 
@@ -105,10 +107,17 @@ Vector RenderObject::getParallaxRenderPosition(const Vector& refPoint) const
     //pos += offset;
 
     pos -= refPoint;
-    pos *= parallax;
+    pos *= getParallaxFactor();
     pos += refPoint;
     //return pos;
     return pos + offset;
+}
+
+Vector RenderObject::getParallaxFactor() const
+{
+    if(_layerPtr->parallax.isZero())
+        return parallax;
+    return parallax * _layerPtr->parallax;
 }
 
 bool RenderObject::collidesWith(const RenderObject *other, Vector *result)

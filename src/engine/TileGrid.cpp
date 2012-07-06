@@ -112,7 +112,7 @@ void TileGrid::SetTile(unsigned int x, unsigned int y, Tile *tile)
     tileref = tile;
 }
 
-void TileGrid::onRender()
+void TileGrid::onRender() const
 {
     if(!_used)
         return;
@@ -137,7 +137,7 @@ void TileGrid::onRender()
     Texture **texarray = (Texture**)alloca(dim * sizeof(Texture*));
     for(int y = ystart; y < yend; ++y)
     {
-        Tile **tileptr = &_tiles(0, y);
+        Tile * const * tileptr = &_tiles(0, y);
         for(int x = xstart; x < xend; ++x)
         {
             Tile *tile = tileptr[x];
@@ -148,7 +148,7 @@ void TileGrid::onRender()
     }
 }
 
-void TileGrid::CalcRenderLimits(int& x, int& y, int& x2, int& y2)
+void TileGrid::CalcRenderLimits(int& x, int& y, int& x2, int& y2) const
 {
     engine->CalcRenderLimits(_tiles.size1d(), _tileSize, x, y, x2, y2);
 }

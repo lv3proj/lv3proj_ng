@@ -53,3 +53,36 @@ rawset(_G, "class", function(name)
     return setmetatable(newclass, { __index = mt_class, __call = define, __tostring = classtostring } )
 end)
 
+
+
+----------------------------------------------------------
+
+
+
+local function makeclass(base)
+    local cls = {
+        __index = base,
+        __classname = "UNDEFINED",
+    }
+    return setmetatable(cls, cls)
+end
+
+local function newclass(name, base)
+    local cls = makeclass(base)
+    rawset(_G, name, cls)
+    cls.__classname = name
+    return cls
+end
+
+local function setclass(obj, cls)
+    local members = getmetatable(obj)
+    local oldcls = getmetatable(members)
+    setmetatable(members, cls)
+    obj.super = oldcls
+    obj.__classname = cls.__classname
+end
+
+
+rawset(_G, "newclass", newclass)
+rawset(_G, "setclass", setclass)
+

@@ -51,6 +51,11 @@ LAYERS[4] =
     "########################################",
 }
 
+
+
+setTileGridSize(4, 64)
+setTileGridCollision(4, true)
+
 for id, lr in pairs(LAYERS) do
     for y, line in pairs(lr) do
         for x = 1, #line do
@@ -63,6 +68,9 @@ for id, lr in pairs(LAYERS) do
     end
 end
 
+initObsGrid(64, 16)
+setLayerParallax(30, 0, 0)
+setLayerParallax(31, 0, 0)
 
 
 --return TILES, LAYERS

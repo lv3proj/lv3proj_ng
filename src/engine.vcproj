@@ -299,14 +299,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\engine\TestRenderObject.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\TestRenderObject.h"
-				>
-			</File>
-			<File
 				RelativePath=".\engine\Tile.cpp"
 				>
 			</File>

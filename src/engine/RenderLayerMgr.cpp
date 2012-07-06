@@ -8,13 +8,8 @@ RenderLayerMgr::RenderLayerMgr()
 
     for(size_t i = 0; i < _layers.size(); ++i)
     {
-        _layers[i] = new RenderLayer();
-        _layers[i]->_id = i;
+        _layers[i] = new RenderLayer(i);
     }
-
-    // HACK: this is just for testing
-    _layers[30]->noCamera = true;
-    _layers[31]->noCamera = true;
 }
 
 RenderLayerMgr::~RenderLayerMgr()

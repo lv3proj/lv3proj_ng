@@ -283,6 +283,14 @@ void Renderer::setupRenderPositionAndScale()
     //glRotatef(180, 0, 1, 0);
 }
 
+void Renderer::setupScreenScale()
+{
+    glLoadIdentity();
+    glScalef(globalResolutionScale.x,
+             globalResolutionScale.y,
+             globalResolutionScale.z);
+}
+
 void Renderer::loadIdentity()
 {
     glLoadIdentity();

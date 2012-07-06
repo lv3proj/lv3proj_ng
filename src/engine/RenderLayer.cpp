@@ -1,22 +1,27 @@
 #include "common.h"
 #include "RenderLayer.h"
+#include "TileGrid.h"
 #include "RenderObject.h"
 #include "Renderer.h"
 #include "Engine.h"
 
-RenderLayer::RenderLayer()
- : _id(-1), noCamera(false)
+RenderLayer::RenderLayer(unsigned int id)
+ : _id(id), parallax(1, 1)
 {
+    tiles = new TileGrid();
+    tiles->_layer = _id;
+    tiles->_layerPtr = this;
 }
 
 RenderLayer::~RenderLayer()
 {
     RemoveAll();
+    delete tiles;
 }
 
 void RenderLayer::RemoveAll()
 {
-    tiles.Clear();
+    tiles->Clear();
 
     if(_objs.empty())
         return;
@@ -41,6 +46,7 @@ void RenderLayer::Add(RenderObject *ro)
         logerror("RenderLayer(%u)::Add: Object %p already has a layer set, may go haywire later!", _id, ro);
     _objs.push_back(ro);
     ro->_layer = _id;
+    ro->_layerPtr = this;
 }
 
 void RenderLayer::AddFront(RenderObject *ro)
@@ -49,6 +55,7 @@ void RenderLayer::AddFront(RenderObject *ro)
         logerror("RenderLayer(%u)::AddFront: Object %p already has a layer set (%u), may go haywire later!", _id, ro, ro->getLayer());
     _objs.push_front(ro);
     ro->_layer = _id;
+    ro->_layerPtr = this;
 }
 
 void RenderLayer::Remove(RenderObject *ro)
@@ -57,6 +64,7 @@ void RenderLayer::Remove(RenderObject *ro)
         logerror("RenderLayer(%u)::Remove: Object %p is on wrong layer (%u), may go haywire later!", _id, ro, ro->getLayer());
     _objs.remove(ro);
     ro->_layer = LR_INVALID;
+    ro->_layerPtr = NULL;
 }
 
 void RenderLayer::MoveToBack(RenderObject *ro)
@@ -79,12 +87,13 @@ void RenderLayer::Render()
 {
     Renderer *r = engine->GetRenderer();
     
-    if(noCamera)
-        r->loadIdentity();
+    if(parallax.isZero())
+        r->setupScreenScale();
     else
         r->setupRenderPositionAndScale();
 
-    tiles.onRender();
+    //tiles->onRender();
+    r->renderObject(tiles);
 
     for(std::list<RenderObject*>::const_iterator it = _objs.begin(); it != _objs.end(); ++it)
     {

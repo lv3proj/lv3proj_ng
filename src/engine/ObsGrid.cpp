@@ -228,10 +228,10 @@ void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
         RenderLayer *layer = engine->layers->GetLayer(lr);
         if(!layer)
             continue;
-        if(!layer->tiles.colliding)
+        if(!layer->tiles->colliding)
             continue;
 
-        TileGrid& tg = layer->tiles;
+        TileGrid& tg = *(layer->tiles);
 
         Tile *tile = tg.GetTile(x, y);
         if(!tile)

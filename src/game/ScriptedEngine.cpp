@@ -7,7 +7,6 @@
 
 #include "GL/gl.h"
 #include "ObsRender.h"
-#include "TestRenderObject.h"
 
 ScriptedEngine *scriptedEngine = NULL;
 
@@ -39,11 +38,6 @@ bool ScriptedEngine::OnInit()
     if(!script->Init())
         return false;
 
-    layers->GetLayer(4)->tiles.SetSize(64);
-    layers->GetLayer(4)->tiles.colliding = true;
-    layers->GetLayer(3)->tiles.SetSize(64);
-    layers->GetLayer(3)->tiles.colliding = true;
-
     script->call("onInit");
 
     /*ObsRender *o = new ObsRender(4);
@@ -51,9 +45,6 @@ bool ScriptedEngine::OnInit()
     o->color = Vector(1, 0, 0);
     layers->GetLayer(4)->Add(o);
     objmgr->AddObject(o);*/
-
-    obsgrid.Init(64, 16);
-    obsgrid.Setup();
 
     _obsRender = new ObsGridRender;
     _obsRender->alpha = 0;

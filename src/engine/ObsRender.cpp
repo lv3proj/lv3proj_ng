@@ -21,7 +21,7 @@ ObsRender::~ObsRender()
 
 void ObsRender::onRender() const
 {
-    TileGrid& grid = engine->layers->GetLayer(_layer)->tiles;
+    TileGrid& grid = *(engine->layers->GetLayer(_layer)->tiles);
 
     int xstart, ystart, xend, yend;
     grid.CalcRenderLimits(xstart, ystart, xend, yend);

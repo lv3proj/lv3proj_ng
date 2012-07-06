@@ -15,6 +15,7 @@
 #include "PlatformSpecific.h"
 #include "ScriptedEntity.h"
 #include "Texture.h"
+#include "TileGrid.h"
 
 struct LuaFunctions
 {
@@ -62,6 +63,17 @@ luaFunc(loadfile_wrap)
         lua_insert(L, -2);  /* put before error message */
         return 2;  /* return nil plus error message */
     }
+}
+
+static RenderLayer *getLayerByID(lua_State *L, int idx = 1)
+{
+    if(lua_isnumber(L, idx))
+        return engine->layers->GetLayer(lua_tointeger(L, idx));
+    else if(lua_isstring(L, idx))
+        return engine->layers->GetLayer(getCStr(L, idx));
+    else if(lua_isnil(L, idx))
+        return engine->layers->GetLayer(0);
+    return NULL;
 }
 
 luaFunc(wait)
@@ -137,8 +149,7 @@ luaFunc(clearGarbage)
 
 luaFunc(setTile)
 {
-    unsigned int lr = lua_tointeger(L, 1);
-    RenderLayer *layer = engine->layers->GetLayer(lr);
+    RenderLayer *layer = getLayerByID(L, 1);
     if(!layer)
     {
         logerror("setTile(): Invalid layer");
@@ -146,15 +157,14 @@ luaFunc(setTile)
     }
     unsigned int x = lua_tointeger(L, 2);
     unsigned int y = lua_tointeger(L, 3);
-    layer->tiles.SetTileByName(x, y, getCStr(L, 4)); // can be NULL
+    layer->tiles->SetTileByName(x, y, getCStr(L, 4)); // can be NULL
     engine->obsgrid.UpdateTile(x, y);
     luaReturnNil();
 }
 
 luaFunc(getTile)
 {
-    unsigned int lr = lua_tointeger(L, 1);
-    RenderLayer *layer = engine->layers->GetLayer(lr);
+    RenderLayer *layer = getLayerByID(L, 1);
     if(!layer)
     {
         logerror("getTile(): Invalid layer");
@@ -162,12 +172,56 @@ luaFunc(getTile)
     }
     unsigned int x = lua_tointeger(L, 2);
     unsigned int y = lua_tointeger(L, 3);
-    Tile *tile = layer->tiles.GetTileSafe(x, y);
+    Tile *tile = layer->tiles->GetTileSafe(x, y);
     if(tile && tile->getTexture())
         luaReturnStr(tile->getTexture()->name());
 
     luaReturnNil();
 }
+
+luaFunc(setTileGridSize)
+{
+    RenderLayer *layer = getLayerByID(L, 1);
+    if(!layer)
+    {
+        logerror("setTileGridSize(): Invalid layer");
+        luaReturnNil();
+    }
+    layer->tiles->SetSize(lua_tointeger(L, 2));
+    luaReturnNil();
+}
+
+luaFunc(setTileGridCollision)
+{
+    RenderLayer *layer = getLayerByID(L, 1);
+    if(!layer)
+    {
+        logerror("setTileGridSize(): Invalid layer");
+        luaReturnNil();
+    }
+    layer->tiles->colliding = getBool(L, 2);
+    luaReturnNil();
+}
+
+luaFunc(initObsGrid)
+{
+    engine->obsgrid.Init(lua_tointeger(L, 1), lua_tointeger(L, 2));
+    engine->obsgrid.Setup();
+    luaReturnNil();
+}
+
+luaFunc(setLayerParallax)
+{
+    RenderLayer *layer = getLayerByID(L, 1);
+    if(!layer)
+    {
+        logerror("setLayerParallax(): Invalid layer");
+        luaReturnNil();
+    }
+    layer->parallax = Vector(lua_tonumber(L, 2), lua_tonumber(L, 3));
+    luaReturnNil();
+}
+
 
 static LuaFunctions s_functab[] =
 {
@@ -184,6 +238,10 @@ static LuaFunctions s_functab[] =
     luaRegister(clearGarbage),
     luaRegister(setTile),
     luaRegister(getTile),
+    luaRegister(setTileGridSize),
+    luaRegister(setTileGridCollision),
+    luaRegister(initObsGrid),
+    luaRegister(setLayerParallax),
 
     { NULL, NULL }
 };
@@ -226,15 +284,6 @@ static Entity *getEntity(lua_State *L, int idx = 1)
     ScriptObjectUserStruct *su = (ScriptObjectUserStruct*)lua_touserdata(L, idx);
     if(su && ((su->type & OT_ENTITY) == OT_ENTITY))
         return (Entity*)su->obj;
-    return NULL;
-}
-
-static RenderLayer *getLayerByID(lua_State *L, int idx = 1)
-{
-    if(lua_isnumber(L, idx))
-        return engine->layers->GetLayer(lua_tointeger(L, idx));
-    else if(lua_isstring(L, idx))
-        return engine->layers->GetLayer(getCStr(L, idx));
     return NULL;
 }
 
@@ -401,7 +450,7 @@ luaFn(quad_new)
     if(!lr)
     {
         // TODO: nicer output, add stack
-        logerror("ERROR: quad:new() invalid target layer");
+        logerror("ERROR: quad.new() invalid target layer");
         luaReturnNil();
     }
 
@@ -416,6 +465,15 @@ luaFn(quad_texture)
     if(q)
         q->setTexture(getCStrSafe(L, 2));
     luaReturnSelf();
+}
+
+luaFn(quad_getWH)
+{
+    Quad *q = getQuad(L);
+    if(q)
+        luaReturnVec2(q->getWidth(), q->getHeight());
+
+    luaReturnVec2(0, 0);
 }
 
 luaFn(entity_new)
@@ -685,6 +743,7 @@ static const luaL_Reg quadlib[] =
 {
     { "new", quad_new },
     { "texture", quad_texture },
+    { "getWH", quad_getWH },
     // TODO: more
 
     {NULL, NULL}

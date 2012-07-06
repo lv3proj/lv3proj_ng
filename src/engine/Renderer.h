@@ -47,6 +47,7 @@ public:
     void clear();
     void show();
     void setupRenderPositionAndScale();
+    void setupScreenScale();
     void loadIdentity();
 
     void renderObject(const RenderObject *);

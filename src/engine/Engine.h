@@ -96,7 +96,7 @@ public:
     Vector ToWorldPosition(const Vector& v) const; // window -> world
     Vector ToWindowPosition(const Vector& v) const; // world -> window
 
-    void CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, int& y, int& x2, int& y2);
+    void CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, int& y, int& x2, int& y2) const;
 
 protected:
 

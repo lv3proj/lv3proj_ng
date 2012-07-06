@@ -3,17 +3,17 @@
 
 #include <list>
 #include <string>
-#include "TileGrid.h"
+#include "Vector.h"
 
 class RenderObject;
-
+class TileGrid;
 
 class RenderLayer
 {
     friend class RenderLayerMgr;
 
 public:
-    RenderLayer();
+    RenderLayer(unsigned int id);
     ~RenderLayer();
 
     void Add(RenderObject *);
@@ -25,10 +25,10 @@ public:
     void MoveToBack(RenderObject *);
     inline unsigned int GetID() const { return _id; }
 
-    TileGrid tiles;
+    TileGrid *tiles;
 
     std::string name;
-    bool noCamera; // FIXME: want to do this somehow else
+    Vector parallax;
 
 protected:
     unsigned int _id; // position in vector in RenderLayerMgr

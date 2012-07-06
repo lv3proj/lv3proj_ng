@@ -20,9 +20,9 @@ public:
     inline Tile *GetTileSafe(unsigned int x, unsigned int y) const { return x < _tiles.size1d() && y < _tiles.size1d() ? _tiles(x, y) : NULL; }
     inline float GetTileSizef() const { return _tileSize; }
 
-    virtual void onRender();
+    virtual void onRender() const;
 
-    void CalcRenderLimits(int& x, int& y, int& x2, int& y2);
+    void CalcRenderLimits(int& x, int& y, int& x2, int& y2) const;
 
     bool colliding;
 

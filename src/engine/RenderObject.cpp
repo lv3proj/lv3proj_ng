@@ -17,6 +17,7 @@ RenderObject::RenderObject()
     parallax = Vector(1, 1, 1);
     collider = NULL;
     _parent = NULL;
+    _layerPtr = NULL;
 }
 
 RenderObject::~RenderObject()
@@ -87,7 +88,8 @@ void RenderObject::toLayer(unsigned int target)
         return;
     engine->layers->GetLayer(getLayer())->Remove(this);
     _layer = LR_INVALID; // to avoid warnings
-    engine->layers->GetLayer(target)->Add(this);
+    _layerPtr = engine->layers->GetLayer(target);
+    _layerPtr->Add(this);
     _layer = target;
 }
 
@@ -126,4 +128,3 @@ void RenderObject::removeChild(RenderObject *child)
         child->_parent = NULL;
     }
 }
-

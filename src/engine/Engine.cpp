@@ -559,7 +559,7 @@ Vector EngineBase::ToWindowPosition(const Vector& v) const
     return ret;
 }
 
-void EngineBase::CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, int& y, int& x2, int& y2)
+void EngineBase::CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, int& y, int& x2, int& y2) const
 {
     const RenderSettings& rr = render->getSettings();
 
