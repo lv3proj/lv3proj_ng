@@ -98,6 +98,9 @@ public:
 
     void CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, int& y, int& x2, int& y2) const;
 
+    inline bool IsPause(int32 level = 1) const { return level <= _pause; }
+    inline void SetPause(int32 level) { _pause = level; }
+
 protected:
 
     virtual bool OnInit();
@@ -133,6 +136,7 @@ protected:
     bool _paused;
     bool _reset;
     int32 _recursionDepth;
+    int32 _pause;
 
     static std::vector<SDL_Joystick*> s_joysticks;
     static uint32 s_curFrameTime; // game time (scaled by speed)

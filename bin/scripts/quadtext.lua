@@ -28,9 +28,9 @@ function quadtext:_writeRow(row, s, y)
         else
             q = quad.new(tex, 1):position(x, y)
             row[i] = q
+            self:addChild(q)
         end
         x = x + self.font:getCharSize()
-        self:addChild(q)
     end
     
     len = len + 1

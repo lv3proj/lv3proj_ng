@@ -11,6 +11,7 @@ function entity.new(...)
 end
 
 entity.__index = entity
+entity.__classname = "entity"
 setmetatable(entity, { __index = quad } )
 
 function entity:update()

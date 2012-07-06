@@ -86,8 +86,6 @@ bool LuaInterface::Init()
         return false;
     }
 
-
-
     return true;
 }
 
@@ -183,6 +181,12 @@ void LuaInterface::lookupMethod(ScriptObject *obj, const char *func)
     // now [t][su][func]
     lua_replace(_lua, -3);
     // now [func][su]
+}
+
+bool LuaInterface::callMethod(ScriptObject *obj, const char *func)
+{
+    lookupMethod(obj, func);
+    return doCall(1);
 }
 
 bool LuaInterface::callMethod(ScriptObject *obj, const char *func, float f)

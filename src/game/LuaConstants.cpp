@@ -10,6 +10,7 @@ struct LuaConstants
 
 LuaConstants constants[] =
 {
+    // blend modes
     luaConstant(BLEND_NONE),
     luaConstant(BLEND_DEFAULT),
     luaConstant(BLEND_ADD),

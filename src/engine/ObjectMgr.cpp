@@ -24,8 +24,9 @@ void ObjectMgr::Update(float dt)
 {
     for(std::set<ScriptObject*>::iterator it = _alive.begin(); it != _alive.end(); ++it)
     {
-        if(!(*it)->isDead())
-            (*it)->update(dt);
+        ScriptObject *obj = *it;
+        if(!(obj->isDead() || obj->isPaused()))
+            obj->update(dt);
     }
 }
 

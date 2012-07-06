@@ -11,4 +11,5 @@ function quad.new(...)
 end
 
 quad.__index = quad
+quad.__classname = "quad"
 setmetatable(quad, { __index = ro } )

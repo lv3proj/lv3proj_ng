@@ -61,10 +61,12 @@ end)
 
 local function makeclass(base)
     local cls = {
-        __index = base,
+        __index = 0,
         __classname = "UNDEFINED",
     }
-    return setmetatable(cls, cls)
+    cls.__index = cls
+    setmetatable(cls, { __index = base } )
+    return cls
 end
 
 local function newclass(name, base)

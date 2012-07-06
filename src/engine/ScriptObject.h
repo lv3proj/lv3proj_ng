@@ -24,11 +24,13 @@ protected:
 public:
 
     virtual void update(float dt) {}
+    virtual bool isPaused() const { return false; }
 
     void *scriptBindings;
 
     inline bool isDead() const { return _dead; }
     inline bool isManaged() const { return _managed; }
+
 
 protected:
 
@@ -44,6 +46,8 @@ public:
     virtual ~LifeObject();
 
     virtual void update(float dt);
+    virtual bool isPaused() const { return false; }
+
     void kill(float decay = -1);
 
 protected:

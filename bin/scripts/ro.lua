@@ -9,3 +9,4 @@ local inh =
 
 setmetatable(ro, inh)
 
+ro.__classname = "ro"

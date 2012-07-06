@@ -35,16 +35,8 @@ bool ScriptedEngine::OnInit()
         return false;
 
     script = new LuaInterface();
-    if(!script->Init())
-        return false;
-
+    script->Init();
     script->call("onInit");
-
-    /*ObsRender *o = new ObsRender(4);
-    o->alpha = 0.4f;
-    o->color = Vector(1, 0, 0);
-    layers->GetLayer(4)->Add(o);
-    objmgr->AddObject(o);*/
 
     _obsRender = new ObsGridRender;
     _obsRender->alpha = 0;
@@ -58,6 +50,9 @@ bool ScriptedEngine::OnInit()
 void ScriptedEngine::OnReset()
 {
     EngineBase::OnReset();
+    script->Shutdown();
+    script->Init();
+    script->call("onInit");
 }
 
 void ScriptedEngine::OnUpdate(float dt)
@@ -100,5 +95,9 @@ void ScriptedEngine::OnKeyDown(SDLKey key, SDLMod mod)
             _obsRender->alpha.interpolateTo(0.5f, 0);
         else
             _obsRender->alpha.interpolateTo(0, 0);
+    }
+    else if(key == SDLK_F5 && (mod & KMOD_CTRL))
+    {
+        SetReset(true);
     }
 }

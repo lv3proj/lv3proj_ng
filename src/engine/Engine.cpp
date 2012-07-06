@@ -38,7 +38,8 @@ mouseWheelRel(0),
 render(NULL),
 sound(NULL),
 layers(NULL),
-camera(NULL)
+camera(NULL),
+_pause(0)
 {
     log("Game Engine start.");
     engine = this;
@@ -476,15 +477,10 @@ void EngineBase::_Render(void)
 void EngineBase::_Reset(void)
 {
     logdetail("EngineBase: Reset!");
-    OnReset();
     _reset = false;
-    //objmgr->RemoveAll();
-    //_layermgr->Clear();
-    //physmgr->SetDefaults();
-    //resMgr.pool.Cleanup();
-    //resMgr.DropUnused();
-    //resMgr.vfs.Prepare(true);
-    //resMgr.vfs.Reload(true);
+    layers->ClearAll();
+    objmgr->ClearAll();
+    OnReset();
     ClearGarbage(true);
     ResetTime();
 }

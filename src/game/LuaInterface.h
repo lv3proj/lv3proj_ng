@@ -27,6 +27,7 @@ public:
     bool call(const char *f);
     bool call(const char *f, float);
 
+    bool callMethod(ScriptObject *, const char *f);
     bool callMethod(ScriptObject *, const char *f, float);
 
 

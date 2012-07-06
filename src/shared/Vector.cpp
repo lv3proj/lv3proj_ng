@@ -159,6 +159,7 @@ float InterpolatedVector::interpolateTo(Vector vec, float timePeriod, int loop, 
 {
     if (timePeriod == 0)
     {
+        this->stop();
         this->x = vec.x;
         this->y = vec.y;
         this->z = vec.z;

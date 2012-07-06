@@ -222,6 +222,21 @@ luaFunc(setLayerParallax)
     luaReturnNil();
 }
 
+luaFunc(setPause)
+{
+    engine->SetPause(lua_tointeger(L, 1));
+    luaReturnNil();
+}
+
+luaFunc(isPause)
+{
+    luaReturnBool(engine->IsPause(lua_tointeger(L, 1)));
+}
+
+luaFunc(isKey)
+{
+    luaReturnBool(engine->IsKeyPressed((SDLKey)lua_tointeger(L, 1)));
+}
 
 static LuaFunctions s_functab[] =
 {
@@ -242,6 +257,9 @@ static LuaFunctions s_functab[] =
     luaRegister(setTileGridCollision),
     luaRegister(initObsGrid),
     luaRegister(setLayerParallax),
+    luaRegister(isPause),
+    luaRegister(setPause),
+    luaRegister(isKey),
 
     { NULL, NULL }
 };
@@ -479,11 +497,19 @@ luaFn(quad_getWH)
 luaFn(entity_new)
 {
     Entity *e = new ScriptedEntity(scriptedEngine->script);
-    RenderLayer *lr = getLayerByID(L, 2);
+    RenderLayer *lr = getLayerByID(L, 1);
     if(!lr || lr->GetID() == 0)
-        lr = engine->layers->GetLayer(10);
+        lr = engine->layers->GetLayer(10); // FIXME: which layer is good?
     lr->Add(e);
     return registerObject(L, e, OT_ENTITY, NULL);
+}
+
+luaFn(entity_setPauseLevel)
+{
+    Entity *e = getEntity(L);
+    if(e)
+        e->setPauseLevel(lua_tointeger(L, 2));
+    luaReturnSelf();
 }
 
 
@@ -752,6 +778,7 @@ static const luaL_Reg quadlib[] =
 static const luaL_Reg entitylib[] =
 {
     { "new", entity_new },
+    { "setPauseLevel", entity_setPauseLevel },
     // TODO: more
 
     {NULL, NULL}

@@ -12,6 +12,7 @@ public:
     virtual ~ScriptedEntity();
 
     virtual void update(float dt);
+    virtual void onEndOfLife();
 
 protected:
 

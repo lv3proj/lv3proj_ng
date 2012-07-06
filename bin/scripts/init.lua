@@ -2,6 +2,7 @@
 print("----- Lua init... -----")
 
 
+dofile("defines.lua")
 dofile("debug.lua")
 dofile("string.lua")
 dofile("table.lua")
@@ -13,6 +14,10 @@ dofile("class.lua")
 dofile("font.lua")
 dofile("pixfont.lua")
 dofile("quadtext.lua")
+dofile("camera.lua")
+dofile("ui.lua")
+dofile("editor.lua")
+dofile("player.lua")
 
 -- forbid os functions, these are dangerous.
 --os = nil -- TODO: add replacement functions in engine
@@ -75,15 +80,20 @@ rawset(_G, "onInit", function()
     
     --q:addChild(ff)
     
-    --[[local e = entity.new()
+    local e = entity.new()
     e:texture("test3.png"):position(400, 300)
     
     function e:update(dt)
         local x, y = self:getPosition()
         self:position(x + math.random(-2, 2), y + math.random(-2, 2))
-    end]]
+    end
     
     dofile("testmap.lua")
+    
+    local p = player.new()
+    p:position(400, 300)
+    p:texture("sprites/olaf1.anim")
+    camera.follow(p)
     
 end)
 
@@ -93,14 +103,20 @@ local dbgstring =
            .. "Resource mem:  %u KB, amount: %u\n"
            .. "Rendered Objs: %u, Verts: %u\n"
            .. "Video mem free:%u\n"
+           .. "Cam:  (%.3f, %.3f)\n"
+           .. "Zoom: (%.3f, %.3f)\n"
     
 local function updateDebugText()
+    local zx, zy = camera.getScale()
+    local cx, cy = camera.getPosition()
     local s = string.format(dbgstring,
         collectgarbage("count"),
         stats.getObsGridMem(),
         stats.getResourceMem(), stats.getResourceCount(),
         stats.getRenderedObjects(), stats.getRenderedVertices(),
-        stats.getFreeVideoMemory()
+        stats.getFreeVideoMemory(),
+        cx, cy,
+        zx, zy
     )
     debugtext:setText(s)
 end
@@ -116,31 +132,6 @@ rawset(_G, "onUpdate", function(dt)
         clearGarbage()
     end
     
-    local z = camera.getScale()
-
-    local wr = getMouseWheelRel()
-    if wr ~= 0 then
-        local oldz = z
-        wr = 1 + (wr * 0.1)
-        z = z * wr
-        if z < 0.01 then z = 0.01 end
-        --print("Zoom: " .. z)
-        camera.scale(z, z)
-        
-        local mx, my = getMouseWindowPos()
-        local cx, cy = camera.getPosition()
-        cx = cx + mx/oldz - mx/z
-        cy = cy + my/oldz - my/z
-        camera.position(cx, cy)
-    end
-    
-    if isMouseButton(2) then
-        local rx, ry = getMouseWindowRel()
-        local cx, cy = camera.getPosition()
-        local iz = 1 / z
-        camera.position(cx - (iz * rx), cy - (iz * ry))
-    end
-    
     if dbgTextT >= 0 then
         dbgTextT = dbgTextT - dt
         if dbgTextT <= 0 then
@@ -148,6 +139,8 @@ rawset(_G, "onUpdate", function(dt)
             dbgTextT = 0.2
         end
     end
+    
+    camera.update(dt)
 end)
 
 
