@@ -85,6 +85,8 @@ public:
 
     inline bool collidesWith(const RenderObject *other, Vector *result);
 
+    bool isVisible() const;
+
 protected:
 
     virtual void onEndOfLife();

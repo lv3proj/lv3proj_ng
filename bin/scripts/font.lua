@@ -1,4 +1,6 @@
 
+rawset(_G, "FONTS", {})
+
 class "font"
 {
     glyphsize = 0;

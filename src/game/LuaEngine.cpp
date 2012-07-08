@@ -441,6 +441,12 @@ luaFn(ro_getPosition)
     luaReturnVec2(0, 0);
 }
 
+luaFn(ro_isVisible)
+{
+    RenderObject *ro = getRO(L);
+    luaReturnBool(ro ? ro->isVisible() : false);
+}
+
 luaFn(ro_parallax)
 {
     RenderObject *ro = getRO(L);
@@ -492,6 +498,15 @@ luaFn(quad_getWH)
         luaReturnVec2(q->getWidth(), q->getHeight());
 
     luaReturnVec2(0, 0);
+}
+
+luaFn(quad_setWH)
+{
+    Quad *q = getQuad(L);
+    if(q)
+        q->setWH(lua_tonumber(L, 2), lua_tonumber(L, 3));
+
+    luaReturnSelf();
 }
 
 luaFn(entity_new)
@@ -733,6 +748,7 @@ static const luaL_Reg renderobjectlib[] =
     { "blend", ro_blend },
     { "addChild", ro_addChild },
     { "getLayer", ro_getLayer },
+    { "isVisible", ro_isVisible },
 
     // TODO: more
 
@@ -770,6 +786,7 @@ static const luaL_Reg quadlib[] =
     { "new", quad_new },
     { "texture", quad_texture },
     { "getWH", quad_getWH },
+    { "setWH", quad_setWH },
     // TODO: more
 
     {NULL, NULL}

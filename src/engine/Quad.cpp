@@ -45,10 +45,7 @@ bool Quad::setTexture(const char *tex)
         _texture->decref();
 
     _texture = newtex;
-    width = newtex->getWidth();
-    height = newtex->getHeight();
-    halfWidth = newtex->getHalfWidth();
-    halfHeight = newtex->getHalfHeight();
+    setWH(newtex->getWidth(), newtex->getHeight());
     return true;
 }
 
@@ -56,3 +53,12 @@ void Quad::onRender() const
 {
     engine->GetRenderer()->renderQuad(this);
 }
+
+void Quad::setWH(float w, float h)
+{
+    width = w;
+    height = h;
+    halfWidth =  w / 2.0f;
+    halfHeight = h / 2.0f;
+}
+

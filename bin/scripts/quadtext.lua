@@ -1,15 +1,12 @@
 
-rawset(_G, "quadtext", {} )
-quadtext.__index = quadtext
-setmetatable(quadtext, { __index = quad } )
+newclass("quadtext", quad)
 
 function quadtext.new(font, layer)
     layer = layer or 30
     local q = quad.new("", layer)
+    setclass(q, quadtext)
     q.lines = {}
     q.font = font
-    local members = getmetatable(q)
-    setmetatable(members, quadtext) -- we're now a class member of quadtext
     return q
 end
 

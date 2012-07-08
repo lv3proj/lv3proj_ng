@@ -6,6 +6,7 @@ dofile("defines.lua")
 dofile("debug.lua")
 dofile("string.lua")
 dofile("table.lua")
+dofile("mouse.lua")
 dofile("ro.lua")
 dofile("quad.lua")
 dofile("entity.lua")
@@ -71,6 +72,9 @@ rawset(_G, "onInit", function()
                
     f:load("font/tlv2_font.png", chars, 8, 16, 0, 0)
     
+    FONTS.lv2 = f
+    FONTS.default = f
+    
     --f:createText("Hello world!", 30, 30, empty, 2)
     
     debugtext = quadtext.new(f, 30):position(10, 10)
@@ -95,6 +99,8 @@ rawset(_G, "onInit", function()
     p:texture("sprites/olaf1.anim")
     camera.follow(p)
     
+    --local b = button.new(300, 150, "Blarg"):position(400, 400)
+    
 end)
 
 local dbgstring =
@@ -102,7 +108,7 @@ local dbgstring =
            .. "ObsGrid mem:   %u KB\n"
            .. "Resource mem:  %u KB, amount: %u\n"
            .. "Rendered Objs: %u, Verts: %u\n"
-           .. "Video mem free:%u\n"
+           .. "Video mem free:%u KB\n"
            .. "Cam:  (%.3f, %.3f)\n"
            .. "Zoom: (%.3f, %.3f)\n"
     
@@ -141,6 +147,8 @@ rawset(_G, "onUpdate", function(dt)
     end
     
     camera.update(dt)
+    
+    UI.update(dt)
 end)
 
 

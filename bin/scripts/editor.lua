@@ -10,9 +10,12 @@ local editorZoom = 1
 local editorPosX = 0
 local editorPosY = 0
 
-local editor = uibase.new("", 31)
+local editor = uibase.new(31)
 editor.on = false
 editor.wasTab = false
+editor.needinit = true
+editor.ui = {}
+
 
 function editor:setOn(on)
     self.on = on
@@ -23,9 +26,20 @@ function editor:setOn(on)
     end
 end
 
+function editor:init()
+    self.ui.test = button.new(200, 100, "Test"):position(200, 200)
+    self:addChild(self.ui.test)
+end
+
+
 function editor:onEnable()
+    if self.needinit then
+        self.needinit = false
+        self:init()
+    end
+    
     print("Editor on")
-    self:alpha(1, 0.2)
+    self:alpha(1)
     setPause(1)
     beforeEditorPosX, beforeEditorPosY = camera.getPosition()
     beforeEditorScaleX, beforeEditorScaleY = camera.getScale()
@@ -36,7 +50,7 @@ end
 
 function editor:onDisable()
     print("Editor off")
-    self:alpha(0, 0.2)
+    self:alpha(0)
     setPause(0)
     
     editorPosX, editorPosY = camera.getPosition()
@@ -85,6 +99,10 @@ function editor:update(dt)
     end
     
     editor:updateCamera()
+    editor:updateSelection()
 end
 
 
+function editor:updateSelection()
+
+end

@@ -21,6 +21,7 @@ public:
     inline int getHeight() const { return height; }
     inline float getHalfWidth() const { return halfWidth; }
     inline float getHalfHeight() const { return halfHeight; }
+    void setWH(float w, float h);
 
     Vector upperLeftTextureCoordinates;
     Vector lowerRightTextureCoordinates;

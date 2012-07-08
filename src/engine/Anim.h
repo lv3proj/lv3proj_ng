@@ -55,7 +55,7 @@ class Anim : public Resource
 {
 public:
     Anim(const char *n)
-        : Resource(n, RESOURCE_ANIM)
+        : Resource(n, RESOURCE_ANIM), first(NULL), mem(0)
     {
     }
 
@@ -63,6 +63,7 @@ public:
 
     AnimMap anims;
     AnimFrameStore *first;
+    unsigned int mem;
 };
 
 #endif

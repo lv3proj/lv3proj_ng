@@ -505,7 +505,10 @@ Texture *EngineBase::GetTexture(const char *name)
         {
             Anim *ani = resMgr.LoadAnim(name);
             if(ani)
+            {
                 tex = new AnimatedTexture(ani);
+                ani->decref();
+            }
         }
         else
             tex = render->createTexture(name);

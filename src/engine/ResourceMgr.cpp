@@ -83,22 +83,29 @@ void ResourceMgr::DropUnused(void)
 {
     logdev("ResourceMgr before clear: %u resources, %u KB", GetUsedCount(), GetUsedMem() / 1024);
     // Start with resources that are likely to have the most dependencies
-    for(int i = RESOURCE_MAX-1; i >= 0; --i)
+    bool changed;
+    do
     {
-        ResourceStore& res = _res[i];
-
-        for(ResourceStore::iterator it = res.begin(); it != res.end(); )
+        changed = false;
+        for(int i = RESOURCE_MAX-1; i >= 0; --i)
         {
-            if(!it->second->refcount())
+            ResourceStore& res = _res[i];
+
+            for(ResourceStore::iterator it = res.begin(); it != res.end(); )
             {
-                _unaccountMem(it->second->usedMem());
-                delete it->second;
-                res.erase(it++);
+                if(!it->second->refcount())
+                {
+                    changed = true;
+                    _unaccountMem(it->second->usedMem());
+                    delete it->second;
+                    res.erase(it++);
+                }
+                else
+                    ++it;
             }
-            else
-                ++it;
         }
     }
+    while(changed);
     vfs.ClearGarbage();
 
     logdev("ResourceMgr after clear: %u resources, %u KB", GetUsedCount(), GetUsedMem() / 1024);
@@ -303,6 +310,7 @@ Anim *ResourceMgr::_LoadAnimInternal(const char *name)
     }
 
     ani = ParseAnimData((const char*)memRes->ptr(), name + 4); // HACK: drop "gfx/"
+    ani->mem = memRes->size(); // rough guess; is probably more
     memRes->decref(); // text data are no longer needed
 
     if(!ani)
@@ -322,7 +330,6 @@ Anim *ResourceMgr::_LoadAnimInternal(const char *name)
                 // we keep the NULL-ptr anyways
                 continue;
             }
-            tex->incref();
             af->tex = tex;
         }
 
@@ -365,7 +372,7 @@ SDLMusicResource *ResourceMgr::LoadMusic(const char *name)
 
         if(!music)
         {
-            logerror("LoadMusic failed: '%s' (format not recognized)", name);
+            // SDL_mixer didn't recognize the format...
             mr->decref();
             SDL_RWclose(rwop);
             return NULL;

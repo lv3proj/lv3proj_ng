@@ -128,3 +128,15 @@ void RenderObject::removeChild(RenderObject *child)
         child->_parent = NULL;
     }
 }
+
+bool RenderObject::isVisible() const
+{
+    if(!(alpha.x && alpha2.x))
+        return false;
+
+    if(_parent && !_parent->isVisible())
+        return false;
+
+    return true;
+}
+
