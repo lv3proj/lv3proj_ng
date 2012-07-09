@@ -1,10 +1,10 @@
 
-class "pixfont" : extends(font)
-{
-}
+newclass("pixfont", font)
 
-function pixfont:__init()
-    print("pixfont:__init()")
+function pixfont.new()
+    local f = font.new()
+    setmetatable(f, pixfont)
+    return f
 end
 
 function pixfont:load(file, chars, sz, rowlen, x, y) -- assumes (sz)x(sz) tiles
