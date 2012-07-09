@@ -47,6 +47,7 @@ public:
     InterpolatedVector scale;
 
     InterpolatedVector color;
+    InterpolatedVector color2;
 
     InterpolatedVector alpha;
     InterpolatedVector alpha2;

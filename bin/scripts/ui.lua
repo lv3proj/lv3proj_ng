@@ -51,7 +51,7 @@ function button.new(w, h, str)
     local b = uibase.new()
     setclass(b, button)
     b.selectable = true
-    b:color(0.5, 0.5, 0.5)
+    b:color2(0.5, 0.5, 0.5)
     b:texture("white.png")
     b:setWH(w, h)
     b:alpha(0.75)

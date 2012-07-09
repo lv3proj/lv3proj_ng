@@ -196,6 +196,11 @@ bool Renderer::ApplySettings()
         logdetail("Unable to query free video memory");
     }
 
+    _colorstack.clear();
+    _RenderColor col;
+    col.r = col.g = col.b = col.a = 1;
+    _colorstack.push_back(col);
+
     return true;
 }
 
@@ -320,8 +325,8 @@ void Renderer::renderObject(const RenderObject *ro)
 
     const Vector renderPos = ro->getParallaxRenderPosition(engine->screenCenter); //ro->position + ro->offset;
     const Vector renderRot = ro->rotation + ro->rotation2;
-    const float renderAlpha = ro->alpha.x * ro->alpha2.x;
-    const Vector renderCol = ro->color;
+    const Vector& renderCol = ro->color;
+    const Vector& renderCol2 = ro->color2;
 
     glPushMatrix();
     glTranslatef(renderPos.x, renderPos.y, renderPos.z);
@@ -335,12 +340,17 @@ void Renderer::renderObject(const RenderObject *ro)
 
     glScalef(ro->scale.x, ro->scale.y, 1);
 
-    // TODO: push/pop color, to allow proper parent+child color mixing
-    glColor4f(renderCol.x, renderCol.y, renderCol.z, renderAlpha);
-
     _applyBlendType(ro->getBlendType());
 
+    _pushColor();
+    _multColor(renderCol.x, renderCol.y, renderCol.z, ro->alpha.x);
+    _pushColor();
+    _multColor(renderCol2.x, renderCol2.y, renderCol2.z, ro->alpha2.x);
+    _applyColor();
+
     ro->onRender();
+
+    _popColor();
 
     const RenderObject::Children& ch = ro->getChildren();
     for(RenderObject::Children::const_iterator it = ch.begin(); it != ch.end(); ++it)
@@ -359,6 +369,7 @@ void Renderer::renderObject(const RenderObject *ro)
     }*/
 
     glPopMatrix();
+    _popColor();
 
     ++_renderedObjects;
 }
@@ -609,3 +620,31 @@ void Renderer::drawLine(float x1, float y1, float x2, float y2, float width, flo
     glVertexPointer(2, GL_FLOAT, 0, &verts);
     glDrawArrays(GL_LINES, 0, 2);
 }
+
+void Renderer::_multColor(float r, float g, float b, float a)
+{
+    _RenderColor& col = _topColor();
+    col.r *= r;
+    col.g *= g;
+    col.b *= b;
+    col.a *= a;
+}
+
+void Renderer::_popColor()
+{
+    // at least one element must stay in the vector
+    assert(_colorstack.size() > 1);
+    _colorstack.pop_back();
+}
+
+void Renderer::_pushColor()
+{
+    _colorstack.push_back(_topColor());
+}
+
+void Renderer::_applyColor()
+{
+    const _RenderColor& col = _topColor();
+    glColor4f(col.r, col.g, col.b, col.a);
+}
+

@@ -12,6 +12,7 @@ RenderObject::RenderObject()
     _blend = BLEND_DEFAULT;
     scale = Vector(1, 1, 1);
     color = Vector(1, 1, 1);
+    color2 = Vector(1, 1, 1);
     alpha = 1;
     alpha2 = 1;
     parallax = Vector(1, 1, 1);
@@ -33,6 +34,7 @@ void RenderObject::update(float dt)
     offset.update(dt);
     scale.update(dt);
     color.update(dt);
+    color2.update(dt);
     alpha.update(dt);
     alpha2.update(dt);
     rotation.update(dt);

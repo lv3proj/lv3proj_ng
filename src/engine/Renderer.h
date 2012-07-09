@@ -5,6 +5,8 @@
 #include "Vector.h"
 #include "RenderObject.h"
 
+#include <vector>
+
 struct SDL_Surface;
 class RenderObject;
 class Texture;
@@ -92,6 +94,19 @@ private:
 
     void _enableVertexAndTexCoords(); // 1
     void _disableVertexAndTexCoords(); // 1
+
+    struct _RenderColor
+    {
+        float r, g, b, a;
+    };
+
+    std::vector<_RenderColor> _colorstack;
+
+    void _multColor(float r, float g, float b, float a);
+    void _pushColor();
+    void _popColor();
+    void _applyColor();
+    inline _RenderColor& _topColor() { return _colorstack.back(); }
 };
 
 

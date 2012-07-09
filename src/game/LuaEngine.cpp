@@ -434,6 +434,7 @@ MAKE_RO_VEC_MTH(position, position, 2) \
 MAKE_RO_VEC_MTH(offset, offset, 2) \
 MAKE_RO_VEC_MTH(scale, scale, 2) \
 MAKE_RO_VEC_MTH(color, color, 3) \
+MAKE_RO_VEC_MTH(color2, color2, 3) \
 MAKE_RO_VEC_MTH(alpha, alpha, 1) \
 MAKE_RO_VEC_MTH(alpha2, alpha2, 1) \
 MAKE_RO_VEC_MTH(rotate, rotation, 1) \
