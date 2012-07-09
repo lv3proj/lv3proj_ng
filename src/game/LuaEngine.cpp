@@ -11,7 +11,6 @@
 #include "Camera.h"
 #include "Renderer.h"
 #include "SoundCore.h"
-#include "GL/gl.h"
 #include "PlatformSpecific.h"
 #include "ScriptedEntity.h"
 #include "Texture.h"
@@ -116,16 +115,7 @@ luaFunc(drawLine)
     float b = lua_tonumber(L, 8);
     float a = lua_tonumber(L, 9);
 
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glLineWidth(lw);
-    glDisable(GL_CULL_FACE);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glBegin(GL_LINES);
-        glColor4f(r, g, b, a);
-        glVertex3f(x1, y1, 0);
-        glVertex3f(x2, y2, 0);
-    glEnd();
+    engine->GetRenderer()->drawLine(x1, y1, x2, y2, lw, r, g, b, a);
 
     luaReturnNil();
 }

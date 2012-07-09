@@ -1,5 +1,5 @@
 #include "SDLMusicResource.h"
-#include <SDL/SDL_Mixer.h>
+#include <SDL/SDL_mixer.h>
 #include "log.h"
 
 SDLMusicResource::SDLMusicResource(const char *name, Mix_Music *m, SDL_RWops *rwop)

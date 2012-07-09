@@ -590,3 +590,22 @@ Texture *Renderer::createNullTexture()
     tex->setID(0);
     return tex;
 }
+
+void Renderer::drawLine(float x1, float y1, float x2, float y2, float width, float r, float g, float b, float a)
+{
+    // FIXME: this isn't so nice
+    glBindTexture(GL_TEXTURE_2D, 0);
+    Texture::clearLastApplied();
+
+    glLineWidth(width);
+    _applyBlendType(BLEND_DEFAULT);
+
+    glColor4f(r, g, b, a);
+    const GLfloat verts[] =
+    {
+        x1, y1,
+        x2, y2,
+    };
+    glVertexPointer(2, GL_FLOAT, 0, &verts);
+    glDrawArrays(GL_LINES, 0, 2);
+}

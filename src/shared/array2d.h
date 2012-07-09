@@ -2,6 +2,7 @@
 #define ARRAY2D_H
 
 #include <assert.h>
+#include <stdlib.h>
 
 // TODO: This can be better organized.
 // Only row count needs to be a power of 2!
