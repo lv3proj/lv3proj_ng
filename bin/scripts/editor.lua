@@ -1,6 +1,4 @@
 
-newclass("editorclass", uibase)
-
 -- camera state
 local beforeEditorScaleX = 1
 local beforeEditorScaleY = 1
@@ -10,7 +8,8 @@ local editorZoom = 1
 local editorPosX = 0
 local editorPosY = 0
 
-local editor = uibase.new(31)
+local editor = entity.new(30)
+editor:setPauseLevel(PAUSELEVEL_EDITOR)
 editor.on = false
 editor.wasTab = false
 editor.needinit = true
@@ -40,7 +39,7 @@ function editor:onEnable()
     
     print("Editor on")
     self:alpha(1)
-    setPause(1)
+    setPause(PAUSELEVEL_EDITOR)
     beforeEditorPosX, beforeEditorPosY = camera.getPosition()
     beforeEditorScaleX, beforeEditorScaleY = camera.getScale()
     

@@ -89,6 +89,8 @@ void ScriptedEngine::OnKeyDown(SDLKey key, SDLMod mod)
 {
     EngineBase::OnKeyDown(key, mod);
 
+    script->call("onKeyDown", key, mod);
+
     if(key == SDLK_F9)
     {
         if(_obsRender->alpha.x <= 0)
@@ -101,3 +103,9 @@ void ScriptedEngine::OnKeyDown(SDLKey key, SDLMod mod)
         SetReset(true);
     }
 }
+
+void ScriptedEngine::OnKeyUp(SDLKey key, SDLMod mod)
+{
+    script->call("onKeyUp", key, mod);
+}
+

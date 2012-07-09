@@ -140,3 +140,11 @@ bool RenderObject::isVisible() const
     return true;
 }
 
+Vector RenderObject::getAbsolutePosition() const
+{
+    Vector p = position;
+    for(RenderObject *pa = _parent; pa; pa = pa->_parent)
+        p += pa->position;
+    return p;
+}
+

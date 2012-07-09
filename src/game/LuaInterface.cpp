@@ -166,6 +166,14 @@ bool LuaInterface::call(const char *func, float f)
     return doCall(1);
 }
 
+bool LuaInterface::call(const char *func, int a, int b)
+{
+    lookupFunc(func);
+    lua_pushinteger(_lua, a);
+    lua_pushinteger(_lua, b);
+    return doCall(2);
+}
+
 // TODO: this should be made faster. Use global registry?
 void LuaInterface::lookupMethod(ScriptObject *obj, const char *func)
 {

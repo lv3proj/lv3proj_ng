@@ -4,12 +4,12 @@ local UI_DEBUG = true
 
 local UIELEMS = {}
 
-newclass("uibase", entity)
+newclass("uibase", quad)
 
 
 function uibase.new(layer)
     layer = layer or 30 -- FIXME
-    local q = entity.new(layer)
+    local q = quad.new("", layer)
     setclass(q, uibase)
     
     UIELEMS[q] = q
@@ -21,12 +21,22 @@ function uibase.new(layer)
     return q
 end
 
-function uibase:update(dt)
+--function uibase:update(dt)
     --print("uibase: update()")
+--end
+
+function uibase:onClick()
+    print("uibase: onClick()")
 end
 
-function uibase:onClick(dt)
-    print("uibase: onClick()")
+function uibase:onAction()
+    print("uibase: onAction()")
+end
+
+function uibase:onFocus()
+end
+
+function uibase:onFocusLost()
 end
 
 function uibase:onEndOfLife()
@@ -53,15 +63,31 @@ function button.new(w, h, str)
     return b
 end
 
+function button:onClick()
+    self:color(1, 1, 1)
+    self:color(0.8, 0.8, 0.8, 0.2)
+    self:onAction()
+end
+
 function button:setText(str)
     return self.text:setText(str)
 end
 
+function button:onFocus()
+    self:color(0.8, 0.8, 0.8, 0.2)
+end
+
+function button:onFocusLost()
+    self:color(0.5, 0.5, 0.5, 0.2)
+end
+
+
+newclass("dropdown", uibase)
 
 
 local function isInFocus(e, mx, my)
     local w, h = e:getWH()
-    local x, y = e:getPosition()
+    local x, y = e:getAbsolutePosition()
     w = w / 2
     h = h / 2
     
@@ -77,16 +103,14 @@ local function updateSelection(e)
     local lmb = isLeftMouse()
     if e and lmb and not wasLMB then
         e:onClick()
-        e:color(1, 1, 1)
-        e:color(0.8, 0.8, 0.8, 0.2)
     end
     
     if cursel ~= e then
         if e then
-            e:color(0.8, 0.8, 0.8, 0.2)
+            e:onFocus()
         end
         if cursel then
-            cursel:color(0.5, 0.5, 0.5, 0.2)
+            cursel:onFocusLost()
         end
         cursel = e
     end

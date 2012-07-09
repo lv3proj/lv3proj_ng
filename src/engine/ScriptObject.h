@@ -24,18 +24,21 @@ protected:
 public:
 
     virtual void update(float dt) {}
-    virtual bool isPaused() const { return false; }
 
     void *scriptBindings;
 
     inline bool isDead() const { return _dead; }
     inline bool isManaged() const { return _managed; }
 
+    inline void setPauseLevel(char level) { _pauseLevel = level; }
+    bool isPaused() const;
 
 protected:
 
     bool _dead;
     bool _managed; // If true, object will go to objmgr.
+    char _pauseLevel;
+
 };
 
 

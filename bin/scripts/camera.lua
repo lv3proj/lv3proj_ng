@@ -27,7 +27,7 @@ function camera.setZoomTime(t)
 end
 
 function camera.update(dt)
-    if isPause(1) then
+    if isPause(0) then
         return
     end
     

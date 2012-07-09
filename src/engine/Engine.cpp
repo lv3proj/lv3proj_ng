@@ -29,7 +29,7 @@ std::vector<SDL_Joystick*> EngineBase::s_joysticks;
 
 EngineBase::EngineBase()
 : _fps(0), _sleeptime(0), _framecounter(0), _paused(false),
-_reset(false),
+_reset(false), _quitRecursion(0),
 _fpsMin(60), _fpsMax(70),
 virtualOffX(0),
 virtualOffY(0),
@@ -193,6 +193,12 @@ void EngineBase::Run(float runtime /* = -1 */)
     float diff_scaled;
     while(!s_quit)
     {
+        if(_quitRecursion)
+        {
+            --_quitRecursion;
+            break;
+        }
+
         if(IsReset())
             _Reset();
 
@@ -442,6 +448,7 @@ void EngineBase::OnUpdate(float dt)
 
 void EngineBase::OnReset()
 {
+    _pause = 0;
 }
 
 void EngineBase::OnRender()
@@ -476,6 +483,12 @@ void EngineBase::_Render(void)
 
 void EngineBase::_Reset(void)
 {
+    if(_recursionDepth)
+    {
+        _quitRecursion = _recursionDepth;
+        return;
+    }
+
     logdetail("EngineBase: Reset!");
     _reset = false;
     layers->ClearAll();

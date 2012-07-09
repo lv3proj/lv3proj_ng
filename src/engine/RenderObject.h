@@ -86,6 +86,7 @@ public:
     inline bool collidesWith(const RenderObject *other, Vector *result);
 
     bool isVisible() const;
+    Vector getAbsolutePosition() const; // for UI elements
 
 protected:
 

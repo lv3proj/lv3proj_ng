@@ -5,6 +5,7 @@ ScriptObject::ScriptObject()
 : scriptBindings(NULL)
 , _dead(false)
 , _managed(false)
+ , _pauseLevel(0)
 {
 }
 
@@ -12,10 +13,16 @@ ScriptObject::~ScriptObject()
 {
 }
 
+bool ScriptObject::isPaused() const
+{
+    return engine->IsPause(_pauseLevel);
+}
+
 
 LifeObject::LifeObject()
 : _life(1)
  , _decay(0)
+
 {
     _managed = true;
 }
@@ -51,4 +58,3 @@ void LifeObject::kill(float decay)
     else
         _decay = decay;
 }
-

@@ -26,6 +26,7 @@ protected:
     virtual void OnUpdate(float dt);
     virtual void OnRender();
     virtual void OnKeyDown(SDLKey key, SDLMod mod);
+    virtual void OnKeyUp(SDLKey key, SDLMod mod);
 
     ObsGridRender *_obsRender;
 

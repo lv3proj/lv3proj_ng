@@ -233,9 +233,19 @@ luaFunc(isPause)
     luaReturnBool(engine->IsPause(lua_tointeger(L, 1)));
 }
 
+luaFunc(getPause)
+{
+    luaReturnInt(engine->GetPause());
+}
+
 luaFunc(isKey)
 {
     luaReturnBool(engine->IsKeyPressed((SDLKey)lua_tointeger(L, 1)));
+}
+
+luaFunc(getRecursionDepth)
+{
+    luaReturnInt(engine->GetRecursionDepth());
 }
 
 static LuaFunctions s_functab[] =
@@ -259,7 +269,9 @@ static LuaFunctions s_functab[] =
     luaRegister(setLayerParallax),
     luaRegister(isPause),
     luaRegister(setPause),
+    luaRegister(getPause),
     luaRegister(isKey),
+    luaRegister(getRecursionDepth),
 
     { NULL, NULL }
 };
@@ -406,6 +418,15 @@ luaFn(ro_addChild)
     luaReturnSelf();
 }
 
+luaFn(ro_getAbsolutePosition)
+{
+    RenderObject *ro = getRO(L);
+    Vector ret;
+    if(ro)
+        ret = ro->getAbsolutePosition();
+    luaReturnVec2(ret.x, ret.y);
+}
+
 
 
 // ----------- Evil define hackery -----------------
@@ -460,6 +481,15 @@ luaFn(ro_getLayer)
     RenderObject *ro = getRO(L);
     luaReturnInt(ro ? ro->getLayer() : 0);
 }
+
+luaFn(ro_setPauseLevel)
+{
+    RenderObject *ro = getRO(L);
+    if(ro)
+        ro->setPauseLevel(lua_tointeger(L, 2));
+    luaReturnSelf();
+}
+
 
 #undef MAKE_RO_VEC_MTH
 
@@ -517,14 +547,6 @@ luaFn(entity_new)
         lr = engine->layers->GetLayer(10); // FIXME: which layer is good?
     lr->Add(e);
     return registerObject(L, e, OT_ENTITY, NULL);
-}
-
-luaFn(entity_setPauseLevel)
-{
-    Entity *e = getEntity(L);
-    if(e)
-        e->setPauseLevel(lua_tointeger(L, 2));
-    luaReturnSelf();
 }
 
 
@@ -749,6 +771,8 @@ static const luaL_Reg renderobjectlib[] =
     { "addChild", ro_addChild },
     { "getLayer", ro_getLayer },
     { "isVisible", ro_isVisible },
+    { "setPauseLevel", ro_setPauseLevel },
+    { "getAbsolutePosition", ro_getAbsolutePosition },
 
     // TODO: more
 
@@ -795,7 +819,6 @@ static const luaL_Reg quadlib[] =
 static const luaL_Reg entitylib[] =
 {
     { "new", entity_new },
-    { "setPauseLevel", entity_setPauseLevel },
     // TODO: more
 
     {NULL, NULL}
