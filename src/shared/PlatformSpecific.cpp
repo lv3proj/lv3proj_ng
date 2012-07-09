@@ -1,4 +1,6 @@
-#if PLATFORM == PLATFORM_WIN32
+#include "SysDefs.h"
+
+#if _WIN32
 #   define WIN32_LEAN_AND_MEAN
 #   include <windows.h>
 #   include <direct.h>
@@ -73,47 +75,6 @@ std::string GetProgramDir(void)
     CFRelease(url);
     CFRelease(url2);
     return path;
-
-    // eh.. no idea what that is, but does not compile.
-    // must be mac OS legacy code or something
-#if 0
-    std::string path = "./";
-    ProcessSerialNumber PSN;
-    ProcessInfoRec pinfo;
-    FSSpec pspec;
-    FSRef fsr;
-    OSStatus err;
-    /* set up process serial number */
-    PSN.highLongOfPSN = 0;
-    PSN.lowLongOfPSN = kCurrentProcess;
-    /* set up info block */
-    pinfo.processInfoLength = sizeof(pinfo);
-    pinfo.processName = NULL;
-    pinfo.processAppSpec = &pspec;
-    /* grab the vrefnum and directory */
-    err = GetProcessInformation(&PSN, &pinfo);
-    if (!err)
-    {
-        char c_path[2048];
-        FSSpec fss2;
-        int tocopy;
-        err = FSMakeFSSpec(pspec.vRefNum, pspec.parID, 0, &fss2);
-        if (!err)
-        {
-            err = FSpMakeFSRef(&fss2, &fsr);
-            if (!err)
-            {
-                char c_path2[2049];
-                err = (OSErr)FSRefMakePath(&fsr, (UInt8*)c_path2, 2048);
-                if (!err)
-                {
-                    path = c_path2;
-                }
-            }
-        }
-    }
-    return path;
-#endif // #if 0
 
 #endif
 }

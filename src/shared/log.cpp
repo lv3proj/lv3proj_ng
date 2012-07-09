@@ -1,5 +1,5 @@
 
-#if PLATFORM == PLATFORM_WIN32
+#ifdef _WIN32
 #include <windows.h>
 #undef DBG
 #endif
@@ -285,7 +285,7 @@ void log_close()
 
 void _log_setcolor(bool stdout_stream, ConsoleColor color)
 {
-#if PLATFORM == PLATFORM_WIN32
+#ifdef _WIN32
 
     static WORD WinColorFG[Color_count] =
     {
@@ -361,7 +361,7 @@ void _log_setcolor(bool stdout_stream, ConsoleColor color)
 
 void _log_resetcolor(bool stdout_stream)
 {
-#if PLATFORM == PLATFORM_WIN32
+#ifdef _WIN32
     HANDLE hConsole = GetStdHandle(stdout_stream ? STD_OUTPUT_HANDLE : STD_ERROR_HANDLE );
     SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED );
 #else
