@@ -154,7 +154,7 @@ bool SoundCore::Init()
     Uint16 format;
     Mix_QuerySpec(&_sampleRate, &format, &_channels);
 
-    char *fmt = "Unknown";
+    const char *fmt = "Unknown";
     _sampleSize = 1;
     switch(format)
     {

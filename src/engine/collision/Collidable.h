@@ -21,7 +21,7 @@ public:
 
     virtual AABB getAABB() const = 0;
     
-    inline bool collidesWith(const Collidable *other, Vector *point = NULL) const
+    inline bool collidesWith(const Collidable *other, Vector *point = 0) const
     {
         return other && Collision::Check(*this, *other, point);
     }

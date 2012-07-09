@@ -163,9 +163,9 @@ void TriggerBreakpoint()
 #ifdef _MSC_VER
     _CrtDbgBreak();
 #elif defined(__GNUC__) && ((__i386__) || (__x86_64__))
-    __asm__ __volatile__ ( "int $3\n\t" )
+    __asm__ __volatile__ ( "int $3\n\t" );
 #else
-    raise(SIGTRAP)
+    raise(SIGTRAP);
 #endif
 }
 
