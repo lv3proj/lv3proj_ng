@@ -21,11 +21,9 @@ dofile("textinput.lua")
 dofile("player.lua")
 
 -- forbid os functions, these are dangerous.
---os = nil -- TODO: add replacement functions in engine
+os = nil -- TODO: add replacement functions in engine
 package = nil
 require = nil
-
-local debugtext
 
 
 rawset(_G, "onInit", function()
@@ -77,8 +75,6 @@ rawset(_G, "onInit", function()
     
     --f:createText("Hello world!", 30, 30, empty, 2)
     
-    debugtext = quadtext.new(f, 30):position(10, 10)
-    
     
     --local ff = quad.new("insanity.png", 10):blend(BLEND_ADD)
     
@@ -93,6 +89,7 @@ rawset(_G, "onInit", function()
     end
     
     dofile("testmap.lua")
+    dofile("debug_overlay.lua")
     
     --[[local p = player.new()
     p:position(400, 300)
@@ -101,56 +98,21 @@ rawset(_G, "onInit", function()
     
     --local b = button.new(300, 150, "Blarg"):position(400, 400)
     
-    TEXTINP = textinput.new(31):position(400, 300):texture("white.png"):color(0,0,0.4):setWH(500, 50):alpha(0)
+    TEXTINP = textinput.new(31):position(400, 300):texture("white.png"):color2(0,0,0.4):setWH(500, 50):alpha(0)
     
     dofile("editor.lua")
     
 end)
 
-local dbgstring =
-              "Lua mem:       %u KB\n"
-           .. "ObsGrid mem:   %u KB\n"
-           .. "Resource mem:  %u KB, amount: %u\n"
-           .. "Rendered Objs: %u, Verts: %u\n"
-           .. "Video mem free:%u KB\n"
-           .. "Cam:  (%.3f, %.3f)\n"
-           .. "Zoom: (%.3f, %.3f)\n"
-           .. "Recursion: %d\n"
-    
-local function updateDebugText()
-    local zx, zy = camera.getScale()
-    local cx, cy = camera.getPosition()
-    local rec = getRecursionDepth()
-    local s = string.format(dbgstring,
-        collectgarbage("count"),
-        stats.getObsGridMem(),
-        stats.getResourceMem(), stats.getResourceCount(),
-        stats.getRenderedObjects(), stats.getRenderedVertices(),
-        stats.getFreeVideoMemory(),
-        cx, cy,
-        zx, zy,
-        rec
-    )
-    debugtext:setText(s)
-end
 
 
 local firstUpdate = true
-local dbgTextT = 0
 
 rawset(_G, "onUpdate", function(dt)
 
     if firstUpdate then
         firstUpdate = false
         clearGarbage()
-    end
-    
-    if dbgTextT >= 0 then
-        dbgTextT = dbgTextT - dt
-        if dbgTextT <= 0 then
-            updateDebugText()
-            dbgTextT = 0.2
-        end
     end
     
     camera.update(dt)

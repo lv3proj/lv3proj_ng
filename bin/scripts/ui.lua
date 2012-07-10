@@ -21,10 +21,6 @@ function uibase.new(layer)
     return q
 end
 
---function uibase:update(dt)
-    --print("uibase: update()")
---end
-
 function uibase:onClick()
     print("uibase: onClick()")
 end
@@ -64,8 +60,8 @@ function button.new(w, h, str)
 end
 
 function button:onClick()
-    self:color(1, 1, 1)
-    self:color(0.8, 0.8, 0.8, 0.2)
+    self:color2(1, 1, 1)
+    self:color2(0.8, 0.8, 0.8, 0.2)
     self:onAction()
 end
 
@@ -74,15 +70,51 @@ function button:setText(str)
 end
 
 function button:onFocus()
-    self:color(0.8, 0.8, 0.8, 0.2)
+    self:color2(0.8, 0.8, 0.8, 0.2)
 end
 
 function button:onFocusLost()
-    self:color(0.5, 0.5, 0.5, 0.2)
+    self:color2(0.5, 0.5, 0.5, 0.2)
 end
 
 
 newclass("dropdown", uibase)
+
+function dropdown.new()
+    local d = uibase.new()
+    d.ins = 0
+    setclass(d, dropdown)
+    return d
+end
+
+function dropdown:close()
+    self:alpha(0)
+end
+
+function dropdown:open()
+    self:alpha(1)
+end
+
+function dropdown:isOpen()
+    return self:getAlpha() > 0.5
+end
+
+function dropdown:add(obj)
+    self:addChild(obj)
+    local w, h = obj:getWH()
+    obj:position(0, self.ins)
+    self.ins = self.ins + h
+    
+    -- monkey-patch callback to auto-close the dropdown menu
+    -- if the associated object's action callback is triggered
+    local a = obj.onAction
+    if a then
+        obj.onAction = function()
+            a()
+            self:close()
+        end
+    end
+end
 
 
 local function isInFocus(e, mx, my)

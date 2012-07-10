@@ -26,8 +26,25 @@ function editor:setOn(on)
 end
 
 function editor:init()
-    self.ui.test = button.new(200, 100, "Test"):position(200, 200)
-    self:addChild(self.ui.test)
+
+    self.ui.bar = button.new(700, 20, "--[ Test ]--"):position(400, 15)
+    self:addChild(self.ui.bar)
+    
+    local dd = dropdown.new():position(-200, 20):alpha(0)
+    self.ui.bar:addChild(dd)
+    self.ui.bar.onAction = function()
+        if dd:isOpen() then
+            dd:close()
+        else
+            dd:open()
+        end
+    end
+    
+    local bLoad = button.new(250, 20, "Load")
+    local bSave = button.new(250, 20, "Save")
+    
+    dd:add(bLoad)
+    dd:add(bSave)
 end
 
 
@@ -96,6 +113,9 @@ function editor:update(dt)
     if not self.on then
         return
     end
+    
+    local vw, vh = getVirtualOffs()
+    self.ui.bar:position(400, 15-vh)
     
     editor:updateCamera()
     editor:updateSelection()

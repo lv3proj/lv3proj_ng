@@ -20,7 +20,6 @@ local function setclass(obj, cls)
     local members = getmetatable(obj)
     local oldcls = getmetatable(members)
     setmetatable(members, cls)
-    obj.super = oldcls
     obj.__classname = cls.__classname
 end
 

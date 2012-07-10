@@ -238,6 +238,11 @@ luaFunc(getRecursionDepth)
     luaReturnInt(engine->GetRecursionDepth());
 }
 
+luaFunc(getVirtualOffs)
+{
+    luaReturnVec2(engine->virtualOffX, engine->virtualOffY);
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -262,6 +267,7 @@ static LuaFunctions s_functab[] =
     luaRegister(getPause),
     luaRegister(isKey),
     luaRegister(getRecursionDepth),
+    luaRegister(getVirtualOffs),
 
     { NULL, NULL }
 };
@@ -333,6 +339,48 @@ static void doInterpolateVec3(InterpolatedVector& v, lua_State *L, int startidx)
                     lua_tointeger(L, startidx+4),
                     getBool(L, startidx+5),
                     getBool(L, startidx+6));
+}
+
+static inline int doPushVec1(const Vector& v, lua_State *L)
+{
+    lua_pushnumber(L, v.x);
+    return 1;
+}
+
+static inline int doPushVec2(const Vector& v, lua_State *L)
+{
+    lua_pushnumber(L, v.x);
+    lua_pushnumber(L, v.y);
+    return 2;
+}
+
+static inline int doPushVec3(const Vector& v, lua_State *L)
+{
+    lua_pushnumber(L, v.x);
+    lua_pushnumber(L, v.y);
+    lua_pushnumber(L, v.z);
+    return 3;
+}
+
+static inline int doPushVecNull1(lua_State *L)
+{
+    lua_pushnumber(L, 0);
+    return 1;
+}
+
+static inline int doPushVecNull2(lua_State *L)
+{
+    lua_pushnumber(L, 0);
+    lua_pushnumber(L, 0);
+    return 2;
+}
+
+static inline int doPushVecNull3(lua_State *L)
+{
+    lua_pushnumber(L, 0);
+    lua_pushnumber(L, 0);
+    lua_pushnumber(L, 0);
+    return 3;
 }
 
 // ScriptObjectUserStruct must be on top of stack; leaves it there.
@@ -420,38 +468,37 @@ luaFn(ro_getAbsolutePosition)
 
 
 // ----------- Evil define hackery -----------------
-#define MAKE_RO_VEC_MTH(name, v, c) \
-luaFn(ro_##name) \
+#define MAKE_RO_VEC_MTH(setter, getter, v, c) \
+luaFn(ro_##setter) \
 { \
     RenderObject *ro = getRO(L); \
     if(ro) \
         doInterpolateVec##c(ro->v, L, 2); \
     luaReturnSelf(); \
 } \
+luaFn(ro_##getter) \
+{ \
+    RenderObject *ro = getRO(L); \
+    if(ro) \
+        return doPushVec##c(ro->v, L); \
+    return doPushVecNull##c(L); \
+} \
 
 #define RO_SET_STUFF \
-MAKE_RO_VEC_MTH(position, position, 2) \
-MAKE_RO_VEC_MTH(offset, offset, 2) \
-MAKE_RO_VEC_MTH(scale, scale, 2) \
-MAKE_RO_VEC_MTH(color, color, 3) \
-MAKE_RO_VEC_MTH(color2, color2, 3) \
-MAKE_RO_VEC_MTH(alpha, alpha, 1) \
-MAKE_RO_VEC_MTH(alpha2, alpha2, 1) \
-MAKE_RO_VEC_MTH(rotate, rotation, 1) \
-MAKE_RO_VEC_MTH(rotate2, rotation2, 1) \
-MAKE_RO_VEC_MTH(velocity, velocity, 2) \
-MAKE_RO_VEC_MTH(gravity, gravity, 2)
+MAKE_RO_VEC_MTH(position,   getPosition,    position,   2) \
+MAKE_RO_VEC_MTH(offset,     getOffset,      offset,     2) \
+MAKE_RO_VEC_MTH(scale,      getScale,       scale,      2) \
+MAKE_RO_VEC_MTH(color,      getColor,       color,      3) \
+MAKE_RO_VEC_MTH(color2,     getColor2,      color2,     3) \
+MAKE_RO_VEC_MTH(alpha,      getAlpha,       alpha,      1) \
+MAKE_RO_VEC_MTH(alpha2,     getAlpha2,      alpha2,     1) \
+MAKE_RO_VEC_MTH(rotate,     getRotation,    rotation,   1) \
+MAKE_RO_VEC_MTH(rotate2,    getRotation2,   rotation2,  1) \
+MAKE_RO_VEC_MTH(velocity,   getVelocity,    velocity,   2) \
+MAKE_RO_VEC_MTH(gravity,    getGravity,     gravity,    2)
 
 RO_SET_STUFF // Create the functions
 
-luaFn(ro_getPosition)
-{
-    RenderObject *ro = getRO(L);
-    if(ro)
-        luaReturnVec2(ro->position.x, ro->position.y);
-    
-    luaReturnVec2(0, 0);
-}
 
 luaFn(ro_isVisible)
 {
@@ -481,10 +528,20 @@ luaFn(ro_setPauseLevel)
     luaReturnSelf();
 }
 
+/*luaFn(ro_getParent)
+{
+    RenderObject *ro = getRO(L);
+    if(ro && ro->getParent())
+        luaReturnObject(ro->getParent());
+    luaReturnNil();
+}*/
+
 
 #undef MAKE_RO_VEC_MTH
 
-#define MAKE_RO_VEC_MTH(name, v, c){ #name, ro_##name },
+#define MAKE_RO_VEC_MTH(setter, getter, v, c) \
+{ #setter, ro_##setter }, \
+{ #getter, ro_##getter },
 
 //-------------------------------------------
 
