@@ -386,21 +386,12 @@ static inline int doPushVecNull3(lua_State *L)
 // ScriptObjectUserStruct must be on top of stack; leaves it there.
 static void registerScriptObjectStruct(lua_State *L, lua_CFunction gcfunc)
 {
-    // -- Register object in global object table --
+    // -- Register object in global registry table --
     // now [su]
     ScriptObjectUserStruct *su = (ScriptObjectUserStruct*)lua_touserdata(L, -1);
     if(su->obj->isManaged())
     {
-        lua_getglobal(L, "_OBJECTREGISTRY");
-        // now [su][t]
-        lua_pushlightuserdata(L, su->obj);
-        // now [su][t][q]
-        lua_pushvalue(L, -3);
-        // now [su][t][q][su]
-        lua_settable(L, -3); // t[su->obj] = su
-        // now [su][t]
-        lua_pop(L, 1);
-        // now [su]
+        registerUserdata(L, su->obj);
     }
 
     // -- Assign metatable -- (Will be populated in the scripts)

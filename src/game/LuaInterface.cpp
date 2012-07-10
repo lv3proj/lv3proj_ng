@@ -69,10 +69,6 @@ bool LuaInterface::Init()
         }
 
         lua_register_constants(_lua);
-
-        lua_newtable(_lua);
-        lua_setglobal(_lua, "_OBJECTREGISTRY");
-
     }
 
     // Execute scripts/init.lua
@@ -101,15 +97,35 @@ void LuaInterface::UnregisterObject(ScriptObject *obj)
     su->obj = NULL;
     su->type = OT_NONE;
 
-    lua_getglobal(_lua, "_OBJECTREGISTRY");
-    // now [t]
-    lua_pushlightuserdata(_lua, obj);
-    // now [t][obj]
-    lua_pushnil(_lua);
-    // now [t][obj][nil]
-    lua_settable(_lua, -3); // t[obj] = nil
-    // now [t]
-    lua_pop(_lua, 1);
+    deleteUserdata(_lua, obj);
+}
+
+void registerUserdata(lua_State *L, void *ptr)
+{
+    // now [obj]
+    lua_pushlightuserdata(L, ptr);
+    // now [obj][ptr]
+    lua_pushvalue(L, -2);
+    // now [obj][ptr][obj]
+    lua_settable(L, LUA_REGISTRYINDEX); // REG[ptr] = obj
+    // now [obj]
+}
+
+void deleteUserdata(lua_State *L, void *ptr)
+{
+    lua_pushlightuserdata(L, ptr);
+    // now [key]
+    lua_pushnil(L);
+    // now [key][nil]
+    lua_settable(L, LUA_REGISTRYINDEX);
+}
+
+void lookupUserdata(lua_State *L, void *ptr)
+{
+    lua_pushlightuserdata(L, ptr);
+    // now [obj]
+    lua_gettable(L, LUA_REGISTRYINDEX);
+    // now [su]
 }
 
 static std::string luaFormatStackInfo(lua_State *L, int level = 1)
@@ -174,20 +190,15 @@ bool LuaInterface::call(const char *func, int a, int b)
     return doCall(2);
 }
 
-// TODO: this should be made faster. Use global registry?
 void LuaInterface::lookupMethod(ScriptObject *obj, const char *func)
 {
-    lua_getglobal(_lua, "_OBJECTREGISTRY");
-    // now [t]
-    lua_pushlightuserdata(_lua, obj);
-    // now [t][obj]
-    lua_gettable(_lua, -2);
-    // now [t][su]
+    lookupUserdata(_lua, obj);
+    // now [su]
     lua_pushstring(_lua, func);
-    // now [t][su]["func"]
-    lua_gettable(_lua, -2);
-    // now [t][su][func]
-    lua_replace(_lua, -3);
+    // now [su]["func"]
+    lua_gettable(_lua, -2); // invokes metamethod
+    // now [su][func]
+    lua_insert(_lua, -2);
     // now [func][su]
 }
 

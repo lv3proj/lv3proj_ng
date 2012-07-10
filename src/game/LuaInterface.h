@@ -41,6 +41,16 @@ protected:
     lua_State *_lua;
 };
 
+// registers the object on top of the stack having index 'ptr'
+// leaves object on the stack.
+void registerUserdata(lua_State *L, void *ptr);
+
+// looks up userdata associated with 'ptr'
+void lookupUserdata(lua_State *L, void *ptr);
+
+// unreferences userdata associated with 'ptr'
+void deleteUserdata(lua_State *L, void *ptr);
+
 
 #endif
 
