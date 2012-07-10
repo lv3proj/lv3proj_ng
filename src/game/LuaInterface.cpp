@@ -103,29 +103,21 @@ void LuaInterface::UnregisterObject(ScriptObject *obj)
 void registerUserdata(lua_State *L, void *ptr)
 {
     // now [obj]
-    lua_pushlightuserdata(L, ptr);
-    // now [obj][ptr]
-    lua_pushvalue(L, -2);
-    // now [obj][ptr][obj]
-    lua_settable(L, LUA_REGISTRYINDEX); // REG[ptr] = obj
+    lua_pushvalue(L, -1);
+    // now [obj][obj]
+    lua_rawsetp(L, LUA_REGISTRYINDEX, ptr); // REG[ptr] = obj
     // now [obj]
 }
 
 void deleteUserdata(lua_State *L, void *ptr)
 {
-    lua_pushlightuserdata(L, ptr);
-    // now [key]
     lua_pushnil(L);
-    // now [key][nil]
-    lua_settable(L, LUA_REGISTRYINDEX);
+    lua_rawsetp(L, LUA_REGISTRYINDEX, ptr);
 }
 
 void lookupUserdata(lua_State *L, void *ptr)
 {
-    lua_pushlightuserdata(L, ptr);
-    // now [obj]
-    lua_gettable(L, LUA_REGISTRYINDEX);
-    // now [su]
+    lua_rawgetp(L, LUA_REGISTRYINDEX, ptr);
 }
 
 static std::string luaFormatStackInfo(lua_State *L, int level = 1)
