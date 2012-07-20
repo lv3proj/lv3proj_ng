@@ -15,8 +15,6 @@ set(SHARED_INCLUDE_DIR ${TOP_INCLUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/shared")
 set(ENGINE_INCLUDE_DIR ${SHARED_INCLUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/engine")
 
 # dependencies
-add_subdirectory (zlib)
-add_subdirectory (png)
 add_subdirectory (lua)
 add_subdirectory (gme)
 add_subdirectory (ttvfs)

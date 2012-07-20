@@ -77,4 +77,4 @@ GL/glext.h
 
 include_directories (${SHARED_INCLUDE_DIR})
 add_library(engine ${engine_SRC})
-target_link_libraries(engine ${SDL_ALL_LIBS} zlib png gme ttvfs)
+target_link_libraries(engine ${SDL_ALL_LIBS} gme ttvfs)
