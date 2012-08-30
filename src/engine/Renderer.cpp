@@ -323,7 +323,7 @@ void Renderer::renderObject(const RenderObject *ro)
     if(ro->alpha.x <= 0)
         return;
 
-    const Vector renderPos = ro->getParallaxRenderPosition(engine->screenCenter); //ro->position + ro->offset;
+    const Vector renderPos = ro->getParallaxRenderPosition(engine->camera->screenCenter); //ro->position + ro->offset;
     const Vector renderRot = ro->rotation + ro->rotation2;
     const Vector& renderCol = ro->color;
     const Vector& renderCol2 = ro->color2;

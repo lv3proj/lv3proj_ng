@@ -34,7 +34,6 @@ _fpsMin(60), _fpsMax(70),
 virtualOffX(0),
 virtualOffY(0),
 _recursionDepth(-1),
-mouseWheelRel(0),
 render(NULL),
 sound(NULL),
 layers(NULL),
@@ -237,9 +236,8 @@ void EngineBase::Run(float runtime /* = -1 */)
 
 void EngineBase::_ProcessEvents(void)
 {
-    mouseWheelRel = 0;
-    mouseRel.x = 0;
-    mouseRel.y = 0;
+    mouse.worldRel = mouse.winRel = Vector(0, 0);
+    mouse.wheelRel = 0;
 
     SDL_Event evt;
     while(!s_quit && SDL_PollEvent(&evt))
@@ -345,10 +343,6 @@ void EngineBase::_Process(void)
 
     camera->update(dt);
 
-    const RenderSettings& rr = render->getSettings();
-    screenCenter.x = camera->position.x + (rr.virtualW / 2) * camera->invScale.x;
-    screenCenter.y = camera->position.y + (rr.virtualH / 2) * camera->invScale.y;
-
     objmgr->Update(dt);
 
     resMgr.Update(dt);
@@ -360,7 +354,7 @@ void EngineBase::_Process(void)
 
 bool EngineBase::IsMouseButton(unsigned int btn)
 {
-    return btn < _mouseState.size() ? _mouseState[btn] : 0;
+    return mouse.buttons & SDL_BUTTON(btn);
 }
 
 bool EngineBase::OnInit()
@@ -383,30 +377,48 @@ void EngineBase::OnWindowEvent(bool active)
 
 void EngineBase::OnMouseEvent(uint32 type, uint32 button, uint32 state, uint32 x, uint32 y, int32 rx, int32 ry)
 {
-    Vector lastMouse = mouse;
+    logdev("me: %u %u %u", type, button, state);
     const RenderSettings &rr = render->getSettings();
+    Vector lastMouseWinPos = mouse.winPos;
 
-    mouse.x = rangeTransform<float>(x, 0, rr.pixelsW, -virtualOffX, rr.virtualW + virtualOffX);
-    mouse.y = rangeTransform<float>(y, 0, rr.pixelsH, -virtualOffY, rr.virtualH + virtualOffY);
+    mouse.winPos.x = rangeTransform<float>(x, 0, rr.pixelsW, -virtualOffX, rr.virtualW + virtualOffX);
+    mouse.winPos.y = rangeTransform<float>(y, 0, rr.pixelsH, -virtualOffY, rr.virtualH + virtualOffY);
 
-    mouseRel = mouse - lastMouse;
-    
-    // LMB is 1.
-    // So we can safely use button 0 as indicator for dragging or not
-    if(button >= _mouseState.size())
-        _mouseState.resize(button+1, 0);
-    _mouseState[button] = state;
+    //mouse.winRel.x = rangeTransform<float>(rx, 0, rr.pixelsW, -virtualOffX, rr.virtualW + virtualOffX);
+    //mouse.winRel.y = rangeTransform<float>(ry, 0, rr.pixelsH, -virtualOffY, rr.virtualH + virtualOffY);
 
-    // This is reset at the beginning of input handling.
-    switch(button)
+    mouse.winRel = mouse.winPos - lastMouseWinPos;
+
+    mouse.worldPos = ToWorldPosition(mouse.winPos);
+    mouse.worldRel = ToWorldScale(mouse.winRel);
+
+    //logdev("ABS: (%d, %d) -> (%.3f, %.3f) -> (%.3f, %.3f)", x, y, mouse.winPos.x, mouse.winPos.y, mouse.worldPos.x, mouse.worldPos.y);
+    //logdev("REL: (%d, %d) -> (%.3f, %.3f) -> (%.3f, %.3f)", rx, ry, mouse.winRel.x, mouse.winRel.y, mouse.worldRel.x, mouse.worldRel.y);
+
+    if(state)
     {
-        case 4:
-            ++mouseWheelRel;
-            break;
-        case 5:
-            --mouseWheelRel;
-            break;
+        mouse.buttons |= SDL_BUTTON(button);
+
+        // This is reset at the beginning of input handling.
+        // SDL always sends 2 events for wheel movement, one with state 1, and the next one with state 0.
+        // We only handle one of them.
+        switch(button)
+        {
+            case SDL_BUTTON_WHEELUP:
+                ++mouse.wheelRel;
+                break;
+
+            case SDL_BUTTON_WHEELDOWN:
+                --mouse.wheelRel;
+                break;
+        }
     }
+    else
+    {
+        mouse.buttons &= ~SDL_BUTTON(button);
+    }
+
+    logdev("btn: %X", mouse.buttons);
 }
 
 void EngineBase::OnJoystickEvent(uint32 type, uint32 device, uint32 id, int32 val)
@@ -465,10 +477,6 @@ bool EngineBase::IsKeyPressed(SDLKey k)
 void EngineBase::_Render(void)
 {
     camera->update(0);
-
-    const RenderSettings& rr = render->getSettings();
-    screenCenter.x = camera->position.x + (rr.virtualW / 2) * camera->invScale.x;
-    screenCenter.y = camera->position.y + (rr.virtualH / 2) * camera->invScale.y;
 
     render->clear();
     //render->setupRenderPositionAndScale();
@@ -556,7 +564,7 @@ Vector EngineBase::ToWorldPosition(const Vector& v) const
     ret.x -= (rr.virtualW / 2.0f);
     ret.y -= (rr.virtualH / 2.0f);
     ret *= camera->invScale;
-    ret += screenCenter;
+    ret += camera->screenCenter;
     return ret;
 }
 
@@ -564,11 +572,21 @@ Vector EngineBase::ToWindowPosition(const Vector& v) const
 {
     const RenderSettings& rr = render->getSettings();
     Vector ret = v;
-    ret -= screenCenter;
+    ret -= camera->screenCenter;
     ret *= camera->scale;
     ret.x += (rr.virtualW / 2.0f);
     ret.y += (rr.virtualH / 2.0f);
     return ret;
+}
+
+Vector EngineBase::ToWorldScale(const Vector& v) const
+{
+    return v * camera->scale;
+}
+
+Vector EngineBase::ToWindowScale(const Vector& v) const
+{
+    return v * camera->invScale;
 }
 
 void EngineBase::CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, int& y, int& x2, int& y2) const
@@ -592,4 +610,18 @@ void EngineBase::CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, i
     y = (upperLeftTile.y < 0 ? 0 : int(upperLeftTile.y));
     x2 = (lowerRightTile.x > maxdim ? maxdim : int(lowerRightTile.x));
     y2 = (lowerRightTile.y > maxdim ? maxdim : int(lowerRightTile.y));
+}
+
+
+void EngineBase::SetMousePos(const Vector& pos)
+{
+    const RenderSettings &rr = render->getSettings();
+    Vector newpos;
+    mouse.winPos = pos;
+    mouse.worldPos = ToWorldPosition(pos);
+    newpos.x = rangeTransform<float>(pos.x, -virtualOffX, rr.virtualW + virtualOffX, 0, rr.pixelsW);
+    newpos.y = rangeTransform<float>(pos.y, -virtualOffY, rr.virtualH + virtualOffY, 0, rr.pixelsH);
+
+    logdev("Warp mouse (%.3f, %.3f)", pos.x, pos.y);
+    SDL_WarpMouse(newpos.x, newpos.y);
 }

@@ -45,6 +45,10 @@ function editor:init()
     
     dd:add(bLoad)
     dd:add(bSave)
+    
+    local ts = tileset.new("ship/tileset.png")
+    ts:position(400, 300)
+    self:addChild(ts)
 end
 
 
@@ -78,17 +82,18 @@ end
 
 function editor:updateCamera()
     local z = camera.getScale()
+    
+    local mx, my = getMouseWindowPos()
 
     local wr = getMouseWheelRel()
     if wr ~= 0 then
         local oldz = z
-        wr = 1 + (wr * 0.1)
+        wr = 1 + (wr * 0.2)
         z = z * wr
         if z < 0.01 then z = 0.01 end
         --print("Zoom: " .. z)
         camera.scale(z, z)
         
-        local mx, my = getMouseWindowPos()
         local cx, cy = camera.getPosition()
         cx = cx + mx/oldz - mx/z
         cy = cy + my/oldz - my/z
@@ -97,9 +102,16 @@ function editor:updateCamera()
     
     if isMouseButton(2) then
         local rx, ry = getMouseWindowRel()
-        local cx, cy = camera.getPosition()
-        local iz = 1 / z
-        camera.position(cx - (iz * rx), cy - (iz * ry))
+        if rx ~= 0 or ry ~= 0 then
+            local cx, cy = camera.getPosition()
+            local iz = 2 / z
+            
+            local rx, ry = getMouseWindowRel()
+            camera.position(cx + (rx * iz), cy + (ry * iz))
+            
+            mx, my = getMouseWindowPos()
+            setMousePos(mx - rx, my - ry)
+        end
     end
 end
 
@@ -119,6 +131,7 @@ function editor:update(dt)
     
     editor:updateCamera()
     editor:updateSelection()
+
 end
 
 

@@ -88,18 +88,29 @@ luaFunc(isMouseButton)
 
 luaFunc(getMouseWindowPos)
 {
-    luaReturnVec2(engine->mouse.x, engine->mouse.y);
+    luaReturnVec2(engine->mouse.winPos.x, engine->mouse.winPos.y);
 }
 
 luaFunc(getMouseWindowRel)
 {
-    luaReturnVec2(engine->mouseRel.x, engine->mouseRel.y);
+    luaReturnVec2(engine->mouse.winRel.x, engine->mouse.winRel.y);
+}
+
+luaFunc(getMouseWorldRel)
+{
+    luaReturnVec2(engine->mouse.worldRel.x, engine->mouse.worldRel.y);
 }
 
 luaFunc(getMouseWorldPos)
 {
-    Vector t = engine->ToWorldPosition(engine->mouse);
-    luaReturnVec2(t.x, t.y);
+    luaReturnVec2(engine->mouse.worldPos.x, engine->mouse.worldPos.y);
+}
+
+luaFunc(setMousePos)
+{
+    Vector v(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    engine->SetMousePos(v);
+    luaReturnNil();
 }
 
 
@@ -122,7 +133,7 @@ luaFunc(drawLine)
 
 luaFunc(getMouseWheelRel)
 {
-    luaReturnInt(engine->mouseWheelRel);
+    luaReturnInt(engine->mouse.wheelRel);
 }
 
 luaFunc(msgbox)
@@ -243,6 +254,24 @@ luaFunc(getVirtualOffs)
     luaReturnVec2(engine->virtualOffX, engine->virtualOffY);
 }
 
+luaFunc(worldToWindow)
+{
+    Vector t = engine->ToWorldPosition(Vector(lua_tonumber(L, 1), lua_tonumber(L, 2)));
+    luaReturnVec2(t.x, t.y);
+}
+
+luaFunc(windowToWorld)
+{
+    Vector t = engine->ToWindowPosition(Vector(lua_tonumber(L, 1), lua_tonumber(L, 2)));
+    luaReturnVec2(t.x, t.y);
+}
+
+luaFunc(getScreenCenter)
+{
+    const Vector& t = engine->camera->screenCenter;
+    luaReturnVec2(t.x, t.y);
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -253,7 +282,9 @@ static LuaFunctions s_functab[] =
     luaRegister(getMouseWindowPos),
     luaRegister(getMouseWindowRel),
     luaRegister(getMouseWorldPos),
+    luaRegister(getMouseWorldRel),
     luaRegister(getMouseWheelRel),
+    luaRegister(setMousePos),
     luaRegister(msgbox),
     luaRegister(clearGarbage),
     luaRegister(setTile),
@@ -268,6 +299,9 @@ static LuaFunctions s_functab[] =
     luaRegister(isKey),
     luaRegister(getRecursionDepth),
     luaRegister(getVirtualOffs),
+    luaRegister(windowToWorld),
+    luaRegister(worldToWindow),
+    luaRegister(getScreenCenter),
 
     { NULL, NULL }
 };
@@ -735,6 +769,7 @@ luaFn(music_loopPoint)
 luaFn(camera_position)
 {
     doInterpolateVec2(engine->camera->position, L, 1);
+    engine->camera->update(0);
     luaReturnNil();
 }
 
@@ -747,6 +782,7 @@ luaFn(camera_getPosition)
 luaFn(camera_scale)
 {
     doInterpolateVec2(engine->camera->scale, L, 1);
+    engine->camera->update(0);
     luaReturnNil();
 }
 

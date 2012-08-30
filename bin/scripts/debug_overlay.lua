@@ -8,11 +8,13 @@ local dbgstring =
            .. "Cam:  (%.3f, %.3f)\n"
            .. "Zoom: (%.3f, %.3f)\n"
            .. "Recursion: %d\n"
+           .. "ScreenCenter: (%.3f, %.3f)\n"
     
 local function updateDebugText(obj)
     local zx, zy = camera.getScale()
     local cx, cy = camera.getPosition()
     local rec = getRecursionDepth()
+    local scx, scy = getScreenCenter()
     local s = string.format(dbgstring,
         collectgarbage("count"),
         stats.getObsGridMem(),
@@ -21,7 +23,8 @@ local function updateDebugText(obj)
         stats.getFreeVideoMemory(),
         cx, cy,
         zx, zy,
-        rec
+        rec,
+        scx, scy
     )
     obj:setText(s)
 end

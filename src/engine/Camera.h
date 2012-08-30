@@ -12,6 +12,7 @@ public:
     virtual void update(float dt);
 
     Vector invScale;
+    Vector screenCenter; // world position where the center of the screen is at
 };
 
 

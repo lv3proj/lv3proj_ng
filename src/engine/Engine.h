@@ -14,6 +14,23 @@ class ObjectMgr;
 class RenderLayerMgr;
 class Camera;
 
+struct MouseState
+{
+    MouseState() : active(true), buttons(0), wheelAbs(0), wheelRel(0) {}
+    bool active;
+    Vector worldPos;
+    Vector worldRel;
+    Vector winPos;
+    Vector winRel;
+    unsigned int buttons;
+    int wheelAbs;
+    int wheelRel;
+
+    inline bool isLeft() const { return buttons & SDL_BUTTON_LMASK; }
+    inline bool isRight() const { return buttons & SDL_BUTTON_RMASK; }
+    inline bool isMiddle() const { return buttons & SDL_BUTTON_MMASK; }
+};
+
 class EngineBase
 {
 public:
@@ -71,10 +88,7 @@ public:
     inline void FrameLimitMin(uint32 fps) { _fpsMin = fps; }
     inline void FrameLimitMax(uint32 fps) { _fpsMax = fps; }
 
-    Vector mouse; // mouse position relative to window size.
-    Vector mouseRel;
-    Vector screenCenter; // world position where the center of the screen is at
-    int mouseWheelRel;
+    MouseState mouse;
 
     Camera *camera;
     float virtualOffX;
@@ -92,9 +106,13 @@ public:
     virtual void ClearGarbage(bool deep);
 
     bool IsMouseButton(unsigned int btn);
+    void SetMousePos(const Vector& pos);
 
     Vector ToWorldPosition(const Vector& v) const; // window -> world
     Vector ToWindowPosition(const Vector& v) const; // world -> window
+
+    Vector ToWorldScale(const Vector& v) const; // window -> world
+    Vector ToWindowScale(const Vector& v) const; // world -> window
 
     void CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, int& y, int& x2, int& y2) const;
 
@@ -150,8 +168,6 @@ protected:
     static uint32 s_diffTime; // time diff per tick [uint32(s_fracTime)]
     static uint32 s_diffTimeReal; // time diff per tick, real time (not scaled by s_speed)
     static float s_fracTime; // (_diffTime * _speed) / 1000.0f
-
-    std::vector<unsigned int> _mouseState;
     
     Renderer *render;
 
