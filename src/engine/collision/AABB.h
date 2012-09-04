@@ -28,6 +28,7 @@ public:
     }
 
     virtual AABB getAABB() const { return *this; }
+    virtual void updatePosition(const Vector& pos, const Vector& rot);
 
     AABB getUnion(const AABB& other) const;
     AABB getOverlap(const AABB& other) const;
@@ -40,7 +41,10 @@ public:
         downright = c + half;
     }
 
-
+    inline float x1() const { return upleft.x; }
+    inline float y1() const { return upleft.y; }
+    inline float x2() const { return downright.x; }
+    inline float y2() const { return downright.y; }
 
     Vector upleft;
     Vector downright;

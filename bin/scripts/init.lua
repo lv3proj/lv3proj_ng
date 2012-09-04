@@ -1,6 +1,8 @@
 
 print("----- Lua init... -----")
 
+collectgarbage("generational")
+
 
 dofile("defines.lua")
 dofile("debug.lua")
@@ -19,6 +21,7 @@ dofile("camera.lua")
 dofile("ui.lua")
 dofile("textinput.lua")
 dofile("player.lua")
+dofile("editor_tileset.lua")
 
 -- forbid os functions, these are dangerous.
 os = nil -- TODO: add replacement functions in engine
@@ -39,15 +42,6 @@ rawset(_G, "onInit", function()
     local fr2 = quad.new("fractal01.png", 1):position(400, 300):scale(4, 4):parallax(0.5, 0.5)
     local fr2 = quad.new("fractal02.png", 6):position(400, 300):parallax(1.35, 1.35):rotate(90):alpha(0.3):alpha(0.4, 1, -1, true, true)
         --:scale(4, 6):scale(6, 4, 3, -1, true, true)
-    
-    --local s = sound.new("klaxonloop.ogg")
-    --local s = sound.new("alarm.ogg")
-    --s:play()
-    --sound.new("klaxonloop.ogg"):play(2)
-    
-    --music.play("green.spc")
-    
-    
     
     
     
@@ -73,37 +67,19 @@ rawset(_G, "onInit", function()
     FONTS.lv2 = f
     FONTS.default = f
     
-    --f:createText("Hello world!", 30, 30, empty, 2)
-    
-    
-    --local ff = quad.new("insanity.png", 10):blend(BLEND_ADD)
-    
-    --q:addChild(ff)
-    
-    local e = entity.new()
-    e:texture("test3.png"):position(400, 300)
-    
-    function e:update(dt)
-        local x, y = self:getPosition()
-        self:position(x + math.random(-2, 2), y + math.random(-2, 2))
-    end
-    
-    dofile("testmap.lua")
     dofile("debug_overlay.lua")
-    
-    --[[local p = player.new()
-    p:position(400, 300)
-    p:texture("sprites/olaf1.anim")
-    camera.follow(p)]]
-    
-    --local b = button.new(300, 150, "Blarg"):position(400, 400)
+ 
     
     TEXTINP = textinput.new(31):position(400, 300):texture("white.png"):color2(0,0,0.4):setWH(500, 50):alpha(0)
     
     dofile("editor.lua")
     
+    setLayerParallax(30, 0, 0)
+    setLayerParallax(31, 0, 0)
+    
+    dofile("lv3.lua")
+    
 end)
-
 
 
 local firstUpdate = true

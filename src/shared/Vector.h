@@ -194,13 +194,6 @@ public:
         return Vector(s*x, s*y, s*z);
     }
 
-
-    // cross product
-    const Vector CrossProduct(const Vector &vec) const
-    {
-        return Vector(y*vec.z - z*vec.y, z*vec.x - x*vec.z, x*vec.y - y*vec.x);
-    }
-
     Vector inline getPerpendicularLeft() const
     {
         return Vector(-y, x);

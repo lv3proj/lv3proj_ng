@@ -1,5 +1,10 @@
 #include "AABB.h"
 
+void AABB::updatePosition(const Vector& pos, const Vector& /*rot*/)
+{
+    setCenter(pos);
+}
+
 AABB AABB::getOverlap(const AABB& o) const
 {
     float nx = upleft.x;

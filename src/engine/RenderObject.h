@@ -3,7 +3,6 @@
 
 #include "ScriptObject.h"
 #include "Vector.h"
-#include "collision/Collidable.h"
 #include "RenderLayer.h"
 #include <set>
 
@@ -63,8 +62,6 @@ public:
     // 0 = scroll with the camera (for world objects)
     Vector parallax;
 
-    Collidable *collider;
-
     virtual void onRender() const {}
 
     inline BlendType getBlendType() const { return _blend; }
@@ -122,11 +119,6 @@ Vector RenderObject::getParallaxFactor() const
     if(_layerPtr->parallax.isZero())
         return parallax;
     return parallax * _layerPtr->parallax;
-}
-
-bool RenderObject::collidesWith(const RenderObject *other, Vector *result)
-{
-    return collider && collider->collidesWith(other->collider, result);
 }
 
 #endif

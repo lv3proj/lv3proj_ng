@@ -4,9 +4,16 @@
 class Collidable;
 class AABB;
 class Circle;
-class PixMap;
 class Vector;
 class Line;
+
+enum CollisionShape
+{
+    COLL_CIRCLE,
+    COLL_AABB,
+    COLL_LINE,
+    // TODO: Polygon = ?x line collision /w point point transformation/rotation
+};
 
 class Collision
 {
@@ -18,15 +25,10 @@ public:
 
     static bool AABB_vs_AABB(const AABB& a, const AABB& b, Vector *v);
     static bool AABB_vs_Circle(const AABB& a, const Circle& b, Vector *v);
-    static bool AABB_vs_Pixmap(const AABB& a, const PixMap& b, Vector *v);
     static bool AABB_vs_Line(const AABB& a, const Line& b, Vector *v);
 
     static bool Circle_vs_Circle(const Circle& a, const Circle& b, Vector *v);
-    static bool Circle_vs_Pixmap(const Circle& a, const PixMap& b, Vector *v);
     static bool Circle_vs_Line(const Circle& a, const Line& b, Vector *v);
-
-    static bool Pixmap_vs_Pixmap(const PixMap& a, const PixMap& b, Vector *v);
-    static bool Pixmap_vs_Line(const PixMap& a, const Line& b, Vector *v);
 
     static bool Line_vs_Line(const Line& a, const Line& b, Vector *v);
 };

@@ -19,7 +19,6 @@ bool Collision::Check(const Collidable& a, const Collidable& b, Vector *v)
             {
                 case COLL_AABB:     return AABB_vs_AABB((const AABB&)a, (const AABB&)b, v);
                 case COLL_CIRCLE:   return AABB_vs_Circle((const AABB&)a, (const Circle&)b, v);
-                case COLL_PIXMAP:   return AABB_vs_Pixmap((const AABB&)a, (const PixMap&)b, v);
                 case COLL_LINE:     return AABB_vs_Line((const AABB&)a, (const Line&)b, v);
             }
             break;
@@ -29,18 +28,7 @@ bool Collision::Check(const Collidable& a, const Collidable& b, Vector *v)
             {
                 case COLL_AABB:     return AABB_vs_Circle((const AABB&)b, (const Circle&)a, v);
                 case COLL_CIRCLE:   return Circle_vs_Circle((const Circle&)a, (const Circle&)b, v);
-                case COLL_PIXMAP:   return Circle_vs_Pixmap((const Circle&)a, (const PixMap&)b, v);
                 case COLL_LINE:     return Circle_vs_Line((const Circle&)a, (const Line&)b, v);
-            }
-            break;
-
-        case COLL_PIXMAP:
-            switch(b.getShape())
-            {
-                case COLL_AABB:     return AABB_vs_Pixmap((const AABB&)b, (const PixMap&)a, v);
-                case COLL_CIRCLE:   return Circle_vs_Pixmap((const Circle&)b, (const PixMap&)a, v);
-                case COLL_PIXMAP:   return Pixmap_vs_Pixmap((const PixMap&)a, (const PixMap&)b, v);
-                case COLL_LINE:     return Pixmap_vs_Line((const PixMap&)a, (const Line&)b, v);
             }
             break;
 
@@ -49,7 +37,6 @@ bool Collision::Check(const Collidable& a, const Collidable& b, Vector *v)
             {
                 case COLL_AABB:     return AABB_vs_Line((const AABB&)b, (const Line&)a, v);
                 case COLL_CIRCLE:   return Circle_vs_Line((const Circle&)b, (const Line&)a, v);
-                case COLL_PIXMAP:   return Pixmap_vs_Line((const PixMap&)b, (const Line&)a, v);
                 case COLL_LINE:     return Line_vs_Line((const Line&)a, (const Line&)b, v);
             }
             break;
@@ -160,15 +147,10 @@ bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
     return false;
 }
 
-bool Collision::AABB_vs_Pixmap(const AABB& a, const PixMap& b, Vector *v)
-{
-    return false;
-}
-
 bool Collision::AABB_vs_Line(const AABB& a, const Line& b, Vector *v)
 {
     // Fast AABB check first
-    if(!AABB_vs_AABB(a, AABB(b.start, b.end), NULL))
+    if(!AABB_vs_AABB(a, b.getAABB(), NULL))
         return false;
 
     /*       (u)
@@ -214,25 +196,20 @@ bool Collision::Circle_vs_Circle(const Circle& a, const Circle& b, Vector *v)
     return c;
 }
 
-bool Collision::Circle_vs_Pixmap(const Circle& a, const PixMap& b, Vector *v)
-{
-    // TODO
-    return false;
-}
-
 bool Collision::Circle_vs_Line(const Circle& a, const Line& b, Vector *v)
 {
-    Vector dir = b.end - b.start;
-    Vector diff = a.position - b.start;
+    const Vector dir = b.direction();
+    const Vector bstart = b.startpos();
+    Vector diff = a.position - bstart;
     Vector closest;
     if (!dir.isZero())
     {
         float t = diff.dot2D(dir) / dir.getLength2DSq();
         t = clamp(t, 0.0f, 1.0f);
-        closest = b.start + (t * dir);
+        closest = bstart + (t * dir);
     }
     else
-        closest = b.start;
+        closest = bstart;
 
     diff = a.position - closest;
     bool c = diff.isLength2DIn(a.radius);
@@ -241,50 +218,43 @@ bool Collision::Circle_vs_Line(const Circle& a, const Line& b, Vector *v)
     return c;
 }
 
-bool Collision::Pixmap_vs_Pixmap(const PixMap& a, const PixMap& b, Vector *v)
-{
-    // TODO
-    return false;
-}
-
-bool Collision::Pixmap_vs_Line(const PixMap& a, const Line& b, Vector *v)
-{
-    // TODO: bresenham line casting
-    return false;
-}
-
 // http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/
 // Based on implementation by Damian Coventry.
 bool Collision::Line_vs_Line(const Line& a, const Line& b, Vector *v)
 {
-    float denom = ((b.end.y - b.start.y)*(a.end.x - a.start.x)) -
-        ((b.end.x - b.start.x)*(a.end.y - a.start.y));
+    const Vector astart = a.startpos();
+    const Vector aend = a.endpos();
+    const Vector bstart = b.startpos();
+    const Vector bend = b.endpos();
 
-    float nume_a = ((b.end.x - b.start.x)*(a.start.y - b.start.y)) -
-        ((b.end.y - b.start.y)*(a.start.x - b.start.x));
+    const float denom = ((bend.y - bstart.y)*(aend.x - astart.x)) -
+        ((bend.x - bstart.x)*(aend.y - astart.y));
 
-    float nume_b = ((a.end.x - a.start.x)*(a.start.y - b.start.y)) -
-        ((a.end.y - a.start.y)*(a.start.x - b.start.x));
+    const float nume_a = ((bend.x - bstart.x)*(astart.y - bstart.y)) -
+        ((bend.y - bstart.y)*(astart.x - bstart.x));
+
+    const float nume_b = ((aend.x - astart.x)*(astart.y - bstart.y)) -
+        ((aend.y - astart.y)*(astart.x - bstart.x));
 
     if(denom == 0.0f)
     {
         if(nume_a == 0.0f && nume_b == 0.0f)
         {
             if(v)
-                *v = a.start + (a.end * 0.5);
+                *v = astart + (aend * 0.5);
             return true; // coincident
         }
         return false; // parallel
     }
 
-    float ua = nume_a / denom;
-    float ub = nume_b / denom;
+    const float ua = nume_a / denom;
+    const float ub = nume_b / denom;
 
     if(ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f)
     {
         if(v)
         {
-            *v = a.start + ua*(a.end - a.start);
+            *v = astart + ua*(aend - astart);
         }
 
         return true; // intersecting

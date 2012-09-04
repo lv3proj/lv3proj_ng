@@ -377,23 +377,16 @@ void EngineBase::OnWindowEvent(bool active)
 
 void EngineBase::OnMouseEvent(uint32 type, uint32 button, uint32 state, uint32 x, uint32 y, int32 rx, int32 ry)
 {
-    logdev("me: %u %u %u", type, button, state);
     const RenderSettings &rr = render->getSettings();
     Vector lastMouseWinPos = mouse.winPos;
 
     mouse.winPos.x = rangeTransform<float>(x, 0, rr.pixelsW, -virtualOffX, rr.virtualW + virtualOffX);
     mouse.winPos.y = rangeTransform<float>(y, 0, rr.pixelsH, -virtualOffY, rr.virtualH + virtualOffY);
 
-    //mouse.winRel.x = rangeTransform<float>(rx, 0, rr.pixelsW, -virtualOffX, rr.virtualW + virtualOffX);
-    //mouse.winRel.y = rangeTransform<float>(ry, 0, rr.pixelsH, -virtualOffY, rr.virtualH + virtualOffY);
-
     mouse.winRel = mouse.winPos - lastMouseWinPos;
 
     mouse.worldPos = ToWorldPosition(mouse.winPos);
     mouse.worldRel = ToWorldScale(mouse.winRel);
-
-    //logdev("ABS: (%d, %d) -> (%.3f, %.3f) -> (%.3f, %.3f)", x, y, mouse.winPos.x, mouse.winPos.y, mouse.worldPos.x, mouse.worldPos.y);
-    //logdev("REL: (%d, %d) -> (%.3f, %.3f) -> (%.3f, %.3f)", rx, ry, mouse.winRel.x, mouse.winRel.y, mouse.worldRel.x, mouse.worldRel.y);
 
     if(state)
     {
@@ -417,8 +410,6 @@ void EngineBase::OnMouseEvent(uint32 type, uint32 button, uint32 state, uint32 x
     {
         mouse.buttons &= ~SDL_BUTTON(button);
     }
-
-    logdev("btn: %X", mouse.buttons);
 }
 
 void EngineBase::OnJoystickEvent(uint32 type, uint32 device, uint32 id, int32 val)
@@ -622,6 +613,14 @@ void EngineBase::SetMousePos(const Vector& pos)
     newpos.x = rangeTransform<float>(pos.x, -virtualOffX, rr.virtualW + virtualOffX, 0, rr.pixelsW);
     newpos.y = rangeTransform<float>(pos.y, -virtualOffY, rr.virtualH + virtualOffY, 0, rr.pixelsH);
 
-    logdev("Warp mouse (%.3f, %.3f)", pos.x, pos.y);
+    //logdev("Warp mouse (%.3f, %.3f)", pos.x, pos.y);
     SDL_WarpMouse(newpos.x, newpos.y);
+}
+
+Vector EngineBase::GetCameraPositionFor(const Vector &pos)
+{
+    Vector dest = pos;
+    dest.x += (-400 * camera->invScale.x);
+    dest.y += (-300 * camera->invScale.y);
+    return dest;
 }

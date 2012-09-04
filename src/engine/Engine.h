@@ -116,11 +116,14 @@ public:
 
     void CalcRenderLimits(unsigned int maxdim, float tileSize, int &x, int& y, int& x2, int& y2) const;
 
+    Vector GetCameraPositionFor(const Vector &pos);
+
     inline bool IsPause(int8 level = 0) const { return level < _pause; }
     inline void SetPause(int8 level) { _pause = level; }
     inline int8 GetPause() const { return _pause; }
 
     inline unsigned int GetRecursionDepth() const { return _recursionDepth; }
+
 
 protected:
 

@@ -15,6 +15,9 @@
 #include "ScriptedEntity.h"
 #include "Texture.h"
 #include "TileGrid.h"
+#include "Collision/AABB.h"
+#include "Collision/Circle.h"
+#include "Collision/Line.h"
 
 struct LuaFunctions
 {
@@ -622,6 +625,31 @@ luaFn(entity_new)
     return registerObject(L, e, OT_ENTITY, NULL);
 }
 
+luaFn(entity_setAABBCollider)
+{
+    Entity *e = getEntity(L);
+    if(e)
+    {
+        if(lua_gettop(L) > 1)
+            e->setCollider(new AABB(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5)));
+        else if(const Texture *tex = e->getTexture())
+        {
+            const float w2 = tex->getHalfWidth();
+            const float h2 = tex->getHalfHeight();
+            e->setCollider(new AABB(-w2, -h2, w2, h2));
+        }
+        // TODO: else error?
+    }
+    luaReturnSelf();
+}
+
+luaFn(entity_setCircleCollider)
+{
+    Entity *e = getEntity(L);
+    e->setCollider(new Circle(Vector(0, 0), lua_tonumber(L, 2)));
+    luaReturnSelf();
+}
+
 
 
 luaFn(_sound_gc)
@@ -792,6 +820,12 @@ luaFn(camera_getScale)
     luaReturnVec2(cpos.x, cpos.y);
 }
 
+luaFn(camera_getPositionFor)
+{
+    Vector p = engine->GetCameraPositionFor(Vector(lua_tonumber(L, 1), lua_tonumber(L, 2)));
+    luaReturnVec2(p.x, p.y);
+}
+
 
 luaFn(stats_getResourceMem)
 {
@@ -894,6 +928,9 @@ static const luaL_Reg quadlib[] =
 static const luaL_Reg entitylib[] =
 {
     { "new", entity_new },
+    { "setAABBCollider", entity_setAABBCollider },
+    { "setCircleCollider", entity_setCircleCollider },
+    //{ "setLineCollider", entity_setLineCollider },
     // TODO: more
 
     {NULL, NULL}
@@ -905,6 +942,7 @@ static const luaL_Reg cameralib[] =
     { "getPosition", camera_getPosition },
     { "scale", camera_scale },
     { "getScale", camera_getScale },
+    { "getPositionFor", camera_getPositionFor },
 
     // TODO: more
 

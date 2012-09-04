@@ -621,6 +621,53 @@ void Renderer::drawLine(float x1, float y1, float x2, float y2, float width, flo
     glDrawArrays(GL_LINES, 0, 2);
 }
 
+void Renderer::drawAABB(float x1, float y1, float x2, float y2, float rotation, float r, float g, float b, float a)
+{
+    // FIXME: this isn't so nice
+    glBindTexture(GL_TEXTURE_2D, 0);
+    Texture::clearLastApplied();
+
+    _applyBlendType(BLEND_DEFAULT);
+
+    glColor4f(r, g, b, a);
+    const GLfloat verts[] =
+    {
+        x1, y1,
+        x2, y1,
+        x1, y2,
+        x2, y2,
+    };
+    glPushMatrix();
+    glRotatef(-rotation, 0, 0, 1); 
+    glVertexPointer(2, GL_FLOAT, 0, &verts);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glPopMatrix();
+}
+
+
+void Renderer::drawCircle(float x, float y, float radius, float r, float g, float b, float a)
+{
+    // FIXME: this isn't so nice
+    glBindTexture(GL_TEXTURE_2D, 0);
+    Texture::clearLastApplied();
+
+    glColor4f(r, g, b, a);
+    _applyBlendType(BLEND_DEFAULT);
+
+    GLfloat verts[2 * (360 / 5)];
+
+    for(int i = 0; i < (360/5); ++i)
+    {
+        const float rad = degToRad(i * 5); // FIXME: just use float step
+        verts[2 * i    ] = cosf(rad) * radius;
+        verts[2 * i + 1] = sinf(rad) * radius;
+    }
+
+    glVertexPointer(2, GL_FLOAT, 0, verts);
+    glDrawArrays(GL_POLYGON, 0, (360 / 5));
+    _renderedVerts += (360 / 5);
+}
+
 void Renderer::_multColor(float r, float g, float b, float a)
 {
     _RenderColor& col = _topColor();

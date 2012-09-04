@@ -49,7 +49,7 @@ function debugtext:update(dt)
         end
     end
     
-    local k = isKey(KEY_F1) and isKey(KEY_LCTRL)
+    local k = isKey(KEY_F1)
     if k and not keyDown then
         if self:getAlpha() > 0.5 then
             self:alpha(0, 0.1)

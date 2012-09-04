@@ -29,6 +29,7 @@ public:
     }
 
     virtual AABB getAABB() const;
+    virtual void updatePosition(const Vector& pos, const Vector& rot);
 
     inline bool isPointInside(const Vector& point) const
     {

@@ -6,20 +6,13 @@ class AABB;
 #include "Vector.h"
 #include "Collision.h"
 
-enum CollisionShape
-{
-    COLL_CIRCLE,
-    COLL_AABB,
-    COLL_PIXMAP,
-    COLL_LINE,
-};
-
 class Collidable
 {
 public:
     virtual ~Collidable() {}
 
     virtual AABB getAABB() const = 0;
+    virtual void updatePosition(const Vector& pos, const Vector& rot) = 0;
     
     inline bool collidesWith(const Collidable *other, Vector *point = 0) const
     {

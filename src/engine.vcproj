@@ -470,14 +470,6 @@
 					RelativePath=".\engine\collision\Line.h"
 					>
 				</File>
-				<File
-					RelativePath=".\engine\collision\PixelMap.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\collision\PixelMap.h"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter

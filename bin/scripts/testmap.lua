@@ -69,8 +69,6 @@ for id, lr in pairs(LAYERS) do
 end
 
 initObsGrid(64, 16)
-setLayerParallax(30, 0, 0)
-setLayerParallax(31, 0, 0)
 
 
 --return TILES, LAYERS

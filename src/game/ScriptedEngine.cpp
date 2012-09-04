@@ -4,6 +4,7 @@
 #include "RenderLayer.h"
 #include "RenderLayerMgr.h"
 #include "Renderer.h"
+#include "ScriptedEntity.h"
 
 #include "GL/gl.h"
 #include "ObsRender.h"
@@ -97,6 +98,10 @@ void ScriptedEngine::OnKeyDown(SDLKey key, SDLMod mod)
             _obsRender->alpha.interpolateTo(0.5f, 0);
         else
             _obsRender->alpha.interpolateTo(0, 0);
+    }
+    else if(key == SDLK_F8)
+    {
+        Entity::s_renderCollisionShapes = !Entity::s_renderCollisionShapes;
     }
     else if(key == SDLK_F5 && (mod & KMOD_CTRL))
     {

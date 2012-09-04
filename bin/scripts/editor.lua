@@ -46,9 +46,9 @@ function editor:init()
     dd:add(bLoad)
     dd:add(bSave)
     
-    local ts = tileset.new("ship/tileset.png")
-    ts:position(400, 300)
-    self:addChild(ts)
+    --local ts = tileset.new("ship/tileset.png")
+    --ts:position(400, 300)
+    --self:addChild(ts)
 end
 
 

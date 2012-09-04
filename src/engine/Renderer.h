@@ -62,6 +62,8 @@ public:
 
     void render2DVertexArray(float *verts, unsigned int size);
     void drawLine(float x1, float y1, float x2, float y2, float width, float r, float g, float b, float a);
+    void drawAABB(float x1, float y1, float x2, float y2, float rotation, float r, float g, float b, float a);
+    void drawCircle(float x, float y, float radius, float r, float g, float b, float a);
 
     Texture *createTexture(const char *name);
     Texture *createNullTexture();
