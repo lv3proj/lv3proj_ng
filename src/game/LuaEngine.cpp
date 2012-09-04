@@ -650,7 +650,20 @@ luaFn(entity_setCircleCollider)
     luaReturnSelf();
 }
 
+luaFn(entity_collideWith)
+{
+    Entity *e = getEntity(L);
+    Vector result;
+    if(e->collidesWith(getEntity(L, 2), &result))
+    {
+        lua_pushboolean(L, 1);
+        lua_pushnumber(L, result.x);
+        lua_pushnumber(L, result.y);
+        return 3;
+    }
 
+    luaReturnBool(false);
+}
 
 luaFn(_sound_gc)
 {
@@ -931,6 +944,7 @@ static const luaL_Reg entitylib[] =
     { "setAABBCollider", entity_setAABBCollider },
     { "setCircleCollider", entity_setCircleCollider },
     //{ "setLineCollider", entity_setLineCollider },
+    { "collideWith", entity_collideWith },
     // TODO: more
 
     {NULL, NULL}

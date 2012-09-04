@@ -64,11 +64,14 @@ bool Collision::AABB_vs_AABB(const AABB& a, const AABB& b, Vector *v)
 
 bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
 {
-    bool inx = c.position.x >= a.upleft.x
-            && c.position.x <= a.downright.x;
+    const bool leftside = c.position.x >= a.upleft.x;
+    const bool rightside  = c.position.x <= a.downright.x;
 
-    bool iny = c.position.y >= a.upleft.y
-            && c.position.y <= a.downright.y;
+    const bool topside = c.position.y >= a.upleft.y;
+    const bool bottomside = c.position.y <= a.downright.y;
+
+    const bool inx = leftside && rightside;
+    const bool iny = topside && bottomside;
     /*
       |       |    
       |  (x)  |    
@@ -99,7 +102,16 @@ bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
     {
         if(v)
         {
-            *v = a.getOverlap(caabb).getCenter(); // FIXME: this is just an estimation, and probably off
+            if(inx)
+            {
+                     if(bottomside) *v = Vector(c.position.x, a.upleft.y);
+                else if(topside)    *v = Vector(c.position.x, a.downright.y);
+            }
+            else
+            {
+                     if(leftside)   *v = Vector(a.downright.x, c.position.y);
+                else if(rightside)  *v = Vector(a.upleft.x,    c.position.y);
+            }
         }
         return true;
     }
@@ -111,7 +123,7 @@ bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
     if(c.position.y <= a.upleft.y)
     {
         // Left of AABB?
-        if(c.position.x <= a.upleft.y)
+        if(c.position.x <= a.upleft.x)
         {
             // Upper left
             corner = a.upleft;
@@ -122,9 +134,9 @@ bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
             corner = Vector(a.downright.x, a.upleft.y);
         }
     }
-    else
+    else if(c.position.y >= a.downright.y)
     {
-        if(c.position.x <= a.upleft.y)
+        if(c.position.x <= a.upleft.x)
         {
             // Lower left
             corner = Vector(a.upleft.x, a.downright.y);
@@ -135,15 +147,19 @@ bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
             corner = a.downright;
         }
     }
+    else
+    {
+        // Circle is too far away, done here.
+        return false;
+    }
 
     if(c.isPointInside(corner))
     {
         if(v)
-            *v = corner; // FIXME: this is off too
+            *v = corner;
         return true;
     }
 
-    // Circle is too far away, done here.
     return false;
 }
 
@@ -185,12 +201,14 @@ bool Collision::AABB_vs_Line(const AABB& a, const Line& b, Vector *v)
 
 bool Collision::Circle_vs_Circle(const Circle& a, const Circle& b, Vector *v)
 {
-    Vector diff = a.position - b.position;
-    bool c = diff.isLength2DIn(a.radius + b.radius);
+    Vector diff = b.position - a.position;
+    const float r = a.radius + b.radius;
+    bool c = diff.isLength2DIn(r);
 
     if(c && v)
     {
-        *v = a.position + (diff * 0.5f);
+        diff.setLength2D(a.radius);
+        *v = a.position + diff;
     }
 
     return c;

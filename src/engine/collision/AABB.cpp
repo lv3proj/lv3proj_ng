@@ -5,25 +5,40 @@ void AABB::updatePosition(const Vector& pos, const Vector& /*rot*/)
     setCenter(pos);
 }
 
+// original code from SDL
 AABB AABB::getOverlap(const AABB& o) const
 {
-    float nx = upleft.x;
-    float ny = upleft.y;
-    float tx2 = downright.x;
-    float ty2 = downright.y;
-    float ox2 = o.downright.x;
-    float oy2 = o.downright.y;
-    if (nx < o.upleft.x) nx = o.upleft.x;
-    if (nx < o.upleft.x) ny = o.upleft.y;
-    if (tx2 > ox2) tx2 = ox2;
-    if (ty2 > oy2) ty2 = oy2;
-    tx2 -= upleft.x;
-    ty2 -= upleft.y;
-    return AABB(nx, ny, tx2, ty2);
+    float Amin, Amax, Bmin, Bmax;
+    AABB result;
+
+    // X Axis
+    Amin = upleft.x;
+    Amax = downright.x;
+    Bmin = o.upleft.x;
+    Bmax = o.downright.x;
+    if (Bmin > Amin)
+        Amin = Bmin;
+    result.upleft.x = Amin;
+    if (Bmax < Amax)
+        Amax = Bmax;
+    result.downright.x = Amax;
+
+    // Y Axis
+    Amin = upleft.y;
+    Amax = downright.y;
+    Bmin = o.upleft.y;
+    Bmax = o.downright.y;
+    if (Bmin > Amin)
+        Amin = Bmin;
+    result.upleft.y = Amin;
+    if (Bmax < Amax)
+        Amax = Bmax;
+    result.downright.y = Amax;
+
+    return result;
 }
 
 // original code from SDL
-// TODO: this can be simplified
 AABB AABB::getUnion(const AABB& o) const
 {
     float Amin, Amax, Bmin, Bmax;

@@ -9,9 +9,27 @@ e:setAABBCollider()
 e:rotate(-90):rotate(90, 5, -1, true, true)
 
 function e:update(dt)
-    local x, y = self:getPosition()
-    self:position(x + math.random(-2, 2), y + math.random(-2, 2))
+    --local x, y = self:getPosition()
+    --self:position(x + math.random(-2, 2), y + math.random(-2, 2))
 end
+
+local q = quad.new("testx.png", 10):scale(4, 4)
+
+local w = entity.new()
+w:setCircleCollider(30)
+function w:update(dt)
+    self:position(getMouseWorldPos())
+    
+    local c, x, y = self:collideWith(e)
+    if c then
+        q:position(x, y)
+        q:alpha(1)
+    else
+        q:alpha(0)
+    end
+end
+
+
 
 
 --local s = sound.new("klaxonloop.ogg")

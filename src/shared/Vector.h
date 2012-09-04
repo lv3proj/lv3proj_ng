@@ -279,11 +279,7 @@ public:
     }
     void inline setLength2D(const float l)
     {
-        if (l == 0)
-        {
-            x = y = 0;
-        }
-        else
+        if (!isZero())
         {
             scalar_t fact = l / getLength2D();
             this->x *= fact;

@@ -48,6 +48,7 @@ void Entity::onRender() const
         {
             case COLL_AABB:
             {
+                // FIXME: this messes up if we're part of a RO hierarchy
                 const AABB& aabb = *(const AABB*)_collider;
                 engine->GetRenderer()->drawAABB(aabb.x1() - position.x,
                                                 aabb.y1() - position.y,
