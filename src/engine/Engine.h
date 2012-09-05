@@ -118,6 +118,8 @@ public:
 
     Vector GetCameraPositionFor(const Vector &pos);
 
+    void UpdateCullData();
+
     inline bool IsPause(int8 level = 0) const { return level < _pause; }
     inline void SetPause(int8 level) { _pause = level; }
     inline int8 GetPause() const { return _pause; }

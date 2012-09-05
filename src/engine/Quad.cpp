@@ -8,10 +8,6 @@ Quad::Quad(const char *tex /* = NULL */, int w /* = 0 */, int h /* = 0 */)
  : upperLeftTextureCoordinates(0, 0)
  , lowerRightTextureCoordinates(1, 1)
  , _texture(NULL)
- , width(0)
- , height(0)
- , halfWidth(0)
- , halfHeight(0)
 {
     if(tex && *tex)
         setTexture(tex);
@@ -52,13 +48,5 @@ bool Quad::setTexture(const char *tex)
 void Quad::onRender() const
 {
     engine->GetRenderer()->renderQuad(this);
-}
-
-void Quad::setWH(float w, float h)
-{
-    width = w;
-    height = h;
-    halfWidth =  w / 2.0f;
-    halfHeight = h / 2.0f;
 }
 

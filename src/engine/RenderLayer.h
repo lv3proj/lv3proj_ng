@@ -24,6 +24,7 @@ public:
     void MoveToFront(RenderObject *);
     void MoveToBack(RenderObject *);
     inline unsigned int GetID() const { return _id; }
+    inline bool isFixedPos() const { return parallax.isZero(); }
 
     TileGrid *tiles;
 

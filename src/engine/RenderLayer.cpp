@@ -86,9 +86,13 @@ void RenderLayer::MoveToFront(RenderObject *ro)
 void RenderLayer::Render()
 {
     Renderer *r = engine->GetRenderer();
+    bool noCull = false;
     
-    if(parallax.isZero())
+    if(isFixedPos())
+    {
         r->setupScreenScale();
+        noCull = true;
+    }
     else
         r->setupRenderPositionAndScale();
 
@@ -98,7 +102,7 @@ void RenderLayer::Render()
     for(std::list<RenderObject*>::const_iterator it = _objs.begin(); it != _objs.end(); ++it)
     {
         RenderObject *ro = *it;
-        if(!ro->getParent())
+        if(!ro->getParent() && (noCull || ro->isOnScreen()))
             r->renderObject(*it);
     }
 }

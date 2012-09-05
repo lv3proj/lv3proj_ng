@@ -2,22 +2,31 @@
 #include "Engine.h"
 #include "RenderLayer.h"
 #include "RenderLayerMgr.h"
-#include "collision/AABB.h"
-#include "collision/Circle.h"
+#include "Camera.h"
+
+float RenderObject::s_cullX1 = 0;
+float RenderObject::s_cullX2 = 0;
+float RenderObject::s_cullY1 = 0;
+float RenderObject::s_cullY2 = 0;
 
 
 RenderObject::RenderObject()
+    : width(0)
+    , height(0)
+    , halfWidth(0)
+    , halfHeight(0)
+    , _layer(LR_INVALID)
+    , _blend(BLEND_DEFAULT)
+    , scale(1, 1, 1)
+    , color(1, 1, 1)
+    , color2(1, 1, 1)
+    , alpha(1)
+    , alpha2(1)
+    , parallax(1, 1, 1)
+    , _parent(NULL)
+    , _layerPtr(NULL)
+    , _noCull(false)
 {
-    _layer = LR_INVALID;
-    _blend = BLEND_DEFAULT;
-    scale = Vector(1, 1, 1);
-    color = Vector(1, 1, 1);
-    color2 = Vector(1, 1, 1);
-    alpha = 1;
-    alpha2 = 1;
-    parallax = Vector(1, 1, 1);
-    _parent = NULL;
-    _layerPtr = NULL;
 }
 
 RenderObject::~RenderObject()
@@ -111,7 +120,7 @@ void RenderObject::removeChild(RenderObject *child)
 
 bool RenderObject::isVisible() const
 {
-    if(!(alpha.x && alpha2.x))
+    if(!alpha.x)
         return false;
 
     if(_parent && !_parent->isVisible())
@@ -126,5 +135,19 @@ Vector RenderObject::getAbsolutePosition() const
     for(RenderObject *pa = _parent; pa; pa = pa->_parent)
         p += pa->position;
     return p;
+}
+
+bool RenderObject::isOnScreen() const
+{
+    if(_noCull)
+        return true;
+
+    const Vector p = getParallaxRenderPosition(engine->camera->screenCenter);
+    const float ws = halfWidth * scale.x;
+    const float hs = halfHeight * scale.y;
+    return p.x >= s_cullX1 - ws
+        && p.x <= s_cullX2 + ws
+        && p.y >= s_cullY1 - hs
+        && p.y <= s_cullY2 + hs;
 }
 

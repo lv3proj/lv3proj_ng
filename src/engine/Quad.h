@@ -17,21 +17,10 @@ public:
     bool setTexture(const char *tex);
     inline Texture *getTexture() const { return _texture; }
 
-    inline int getWidth() const { return width; }
-    inline int getHeight() const { return height; }
-    inline float getHalfWidth() const { return halfWidth; }
-    inline float getHalfHeight() const { return halfHeight; }
-    void setWH(float w, float h);
-
     Vector upperLeftTextureCoordinates;
     Vector lowerRightTextureCoordinates;
 
 protected:
-
-    int width;
-    int height;
-    float halfWidth;
-    float halfHeight;
 
     virtual void onRender() const;
 

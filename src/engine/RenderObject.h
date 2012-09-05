@@ -80,26 +80,47 @@ public:
 
     inline Vector getParallaxRenderPosition(const Vector& refPoint) const;
     inline Vector getParallaxFactor() const;
+    bool isOnScreen() const;
 
-    inline bool collidesWith(const RenderObject *other, Vector *result);
+    inline int getWidth() const { return width; }
+    inline int getHeight() const { return height; }
+    inline float getHalfWidth() const { return halfWidth; }
+    inline float getHalfHeight() const { return halfHeight; }
+    inline void setWH(float w, float h);
 
     bool isVisible() const;
     Vector getAbsolutePosition() const; // for UI elements
+
+    static float s_cullX1, s_cullX2, s_cullY1, s_cullY2;
 
 protected:
 
     virtual void onEndOfLife();
 
+    int width;
+    int height;
+    float halfWidth;
+    float halfHeight;
+
     BlendType _blend;
     unsigned int _layer;
     RenderObject *_parent;
     RenderLayer *_layerPtr;
+    bool _noCull;
 
 private:
 
     Children _children;
 
 };
+
+void RenderObject::setWH(float w, float h)
+{
+    width = w;
+    height = h;
+    halfWidth =  w / 2.0f;
+    halfHeight = h / 2.0f;
+}
 
 
 Vector RenderObject::getParallaxRenderPosition(const Vector& refPoint) const
@@ -116,9 +137,13 @@ Vector RenderObject::getParallaxRenderPosition(const Vector& refPoint) const
 
 Vector RenderObject::getParallaxFactor() const
 {
-    if(_layerPtr->parallax.isZero())
+    /*if(_layerPtr->parallax.isZero())
         return parallax;
-    return parallax * _layerPtr->parallax;
+    return parallax * _layerPtr->parallax;*/
+
+    if(parallax.isZero())
+        return _layerPtr->parallax;
+    return parallax;
 }
 
 #endif

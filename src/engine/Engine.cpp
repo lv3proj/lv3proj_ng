@@ -347,9 +347,19 @@ void EngineBase::_Process(void)
 
     resMgr.Update(dt);
 
+    UpdateCullData();
+
     OnUpdate(dt);
 
     ClearGarbage(false);
+}
+
+void EngineBase::UpdateCullData()
+{
+    RenderObject::s_cullX1 = camera->position.x;
+    RenderObject::s_cullY1 = camera->position.y;
+    RenderObject::s_cullX2 = camera->position.x + (800 * camera->invScale.x);
+    RenderObject::s_cullY2 = camera->position.y + (600 * camera->invScale.y);
 }
 
 bool EngineBase::IsMouseButton(unsigned int btn)

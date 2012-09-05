@@ -41,6 +41,12 @@ public:
         downright = c + half;
     }
 
+    inline bool isPointInside(const Vector& point) const
+    {
+        return point.x >= upleft.x && point.x <= downright.x
+            && point.y >= upleft.y && point.y <= downright.y;
+    }
+
     inline float x1() const { return upleft.x; }
     inline float y1() const { return upleft.y; }
     inline float x2() const { return downright.x; }
