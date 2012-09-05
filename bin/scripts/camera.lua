@@ -9,6 +9,8 @@ camera._followRO = false
 camera._lerpT = DEFAULT_LERP_TIME
 camera._zoomT = DEFAULT_ZOOM_TIME
 camera._zoom = DEFAULT_ZOOM
+camera._shakeMag = 0
+camera._shakeTime = 0
 
 function camera.follow(ro)
     camera._followRO = ro or false
@@ -24,6 +26,11 @@ end
 
 function camera.setZoomTime(t)
     camera._zoomT = t or 0.5
+end
+
+function camera.shake(mag, tm)
+    camera._shakeMag = mag
+    camera._shakeTime = tm
 end
 
 function camera.update(dt)
@@ -49,5 +56,14 @@ function camera.update(dt)
         
         camera.position(cx, cy, camera._lerpT)
     end
+    
+    if camera._shakeTime > 0 then
+        camera._shakeTime = camera._shakeTime - dt
+        local t = camera._shakeMag / 2
+        camera.offset(math.random(-t, t), math.random(-t, t))
+    else
+        camera.offset(0, 0)
+    end
+        
     
 end

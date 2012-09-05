@@ -821,9 +821,22 @@ luaFn(camera_position)
     luaReturnNil();
 }
 
+luaFn(camera_offset)
+{
+    doInterpolateVec2(engine->camera->offset, L, 1);
+    engine->camera->update(0);
+    luaReturnNil();
+}
+
 luaFn(camera_getPosition)
 {
     const Vector& cpos = engine->camera->position;
+    luaReturnVec2(cpos.x, cpos.y);
+}
+
+luaFn(camera_getOffset)
+{
+    const Vector& cpos = engine->camera->offset;
     luaReturnVec2(cpos.x, cpos.y);
 }
 
@@ -960,7 +973,9 @@ static const luaL_Reg entitylib[] =
 static const luaL_Reg cameralib[] =
 {
     { "position", camera_position },
+    { "offset", camera_offset },
     { "getPosition", camera_getPosition },
+    { "getOffset", camera_getOffset },
     { "scale", camera_scale },
     { "getScale", camera_getScale },
     { "getPositionFor", camera_getPositionFor },
