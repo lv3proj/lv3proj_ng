@@ -48,7 +48,21 @@ void RenderObject::update(float dt)
     rotation2.update(dt);
     velocity.update(dt);
     gravity.update(dt);
+
+    onUpdate(dt);
 }
+
+void RenderObject::onUpdate(float dt)
+{
+    updatePhysics(dt);
+}
+
+void RenderObject::updatePhysics(float dt)
+{
+    velocity += gravity * dt;
+    position += velocity * dt;
+}
+
 
 void RenderObject::onEndOfLife()
 {
@@ -150,4 +164,3 @@ bool RenderObject::isOnScreen() const
         && p.y >= s_cullY1 - hs
         && p.y <= s_cullY2 + hs;
 }
-

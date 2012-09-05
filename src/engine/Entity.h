@@ -21,6 +21,8 @@ public:
 
 protected:
 
+    virtual void onUpdate(float dt);
+
     Collidable *_collider;
 
 };

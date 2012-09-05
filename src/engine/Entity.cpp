@@ -83,3 +83,7 @@ void Entity::onRender() const
 
 }
 
+void Entity::onUpdate(float dt)
+{
+    // Intentionally NOT calling RenderObject::onUpdate().
+}
