@@ -356,10 +356,10 @@ void EngineBase::_Process(void)
 
 void EngineBase::UpdateCullData()
 {
-    RenderObject::s_cullX1 = camera->position.x;
-    RenderObject::s_cullY1 = camera->position.y;
-    RenderObject::s_cullX2 = camera->position.x + (800 * camera->invScale.x);
-    RenderObject::s_cullY2 = camera->position.y + (600 * camera->invScale.y);
+    RenderObject::s_cullX1 = camera->position.x - (virtualOffX * camera->invScale.x);
+    RenderObject::s_cullY1 = camera->position.y - (virtualOffY * camera->invScale.y);
+    RenderObject::s_cullX2 = camera->position.x + ((virtualOffX+800) * camera->invScale.x);
+    RenderObject::s_cullY2 = camera->position.y + ((virtualOffY+600) * camera->invScale.y);
 }
 
 bool EngineBase::IsMouseButton(unsigned int btn)
