@@ -29,13 +29,6 @@ w:setCircleCollider(30)
 
 local vq = quad.new("debug/vector.png", 28):alpha(0)
 
-local RADTODEG = 180.0 / 3.14159265359
-local DEGTORAD = 3.14159265359 / 180.0
-
-local function vector_getAngleDeg(vx, vy)
-    return (math.atan2(vy, vx) * RADTODEG) + 90
-end
-
 function w:update(dt)
     self:position(getMouseWorldPos())
     
@@ -65,11 +58,33 @@ function w:update(dt)
         else
             vq:alpha(1)
             vq:position(mx, my)
-            vq:rotate(vector_getAngleDeg(wx, wy))
+            vq:rotate(vector.angle(wx, wy))
         end
     end
 end
 
+local ball = entity.new():texture("debug/boulder.png"):setCircleCollider(16):gravity(0, 400)
+
+function ball:update(dt)
+    if isMouseButton(3) then
+        self:position(getMouseWorldPos())
+        self:velocity(0, 0)
+        return
+    end
+    
+    self:updatePhysics(dt)
+    
+    local c, x, y = self:collideGrid()
+    if c then
+        local nx, ny = getWallNormal(x, y)
+        local vx, vy = self:getVelocity()
+        vx, vy = vector.reflection(vx, vy, nx, ny)
+        print(vx, vy)
+        self:velocity(vx, vy)
+        self:updatePhysics(dt)
+    end
+        
+end
 
 
 
