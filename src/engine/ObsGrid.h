@@ -56,7 +56,7 @@ public:
     bool collideVsCircle(const Circle& c, Vector *result) const;
     bool collideVsLine(const Line& c, Vector *result) const;
 
-    bool getNormal(const Vector& pos, Vector& result, unsigned int resolution = 5) const;
+    bool getNormal(const Vector& pos, Vector& result, unsigned int resolution = 5, unsigned int skip = 1, unsigned char bits = ~0) const;
 
     inline int width() const { return _width; }
     inline int height() const { return _height; }

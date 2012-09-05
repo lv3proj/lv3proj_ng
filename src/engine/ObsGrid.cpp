@@ -391,9 +391,76 @@ bool ObsGrid::collideVsLine(const Line& c, Vector *v) const
     return c.tracei(tr, v, 1);
 }
 
-bool ObsGrid::getNormal(const Vector& pos, Vector& v, unsigned int resolution /* = 5 */) const
+bool ObsGrid::getNormal(const Vector& pos, Vector& v, unsigned int resolution /* = 5 */,
+                        unsigned int skip /* = 1 */, unsigned char bits /* = ~0 */) const
 {
-    // FIXME: implement me!
-    return false;
+    struct
+    {
+        int x;
+        int y;
+    } points[256];
+
+    int px = pos.x;
+    int py = pos.y;
+    int xmin = px - resolution;
+    int xmax = px + resolution;
+    int ymin = py - resolution;
+    int ymax = py + resolution;
+
+    if(xmin < 0)
+        xmin = 0;
+    if(xmax >= width())
+        xmax = width()-1;
+    if(ymin < 0)
+        ymin = 0;
+    if(ymax >= height())
+        ymax = height()-1;
+
+    unsigned int pointsFound = 0;
+    int sz = resolution * resolution;
+
+    for(int y = ymin; y <= ymax; y += skip)
+        for(int x = xmin; x <= xmax; x += skip)
+        {
+            if(x == px && y == py)
+                continue;
+            if((getObs(x, y) & bits))
+            {
+                int dx = px - x;
+                int dy = py - y;
+                if(dx*dx + dy*dy <= sz)
+                {
+                    points[pointsFound].x = dx;
+                    points[pointsFound++].y = dy;
+                    if(pointsFound >= 256)
+                    {
+                        logerror("Warning: ObsGrid::getNormal() position buffer full");
+                        goto foundEnough;
+                    }
+                }
+            }
+        }
+
+    if(!pointsFound)
+    {
+        v.x = v.y = 0;
+        return false;
+    }
+
+foundEnough:
+
+    int allx = 0;
+    int ally = 0;
+    for(unsigned int i = 0; i < pointsFound; ++i)
+    {
+        allx += points[i].x;
+        ally += points[i].y;
+    }
+
+    Vector normal(allx, ally);
+    normal.normalize2D();
+
+    v = normal;
+    return true;
 }
 

@@ -275,6 +275,23 @@ luaFunc(getScreenCenter)
     luaReturnVec2(t.x, t.y);
 }
 
+luaFunc(getWallNormal)
+{
+    unsigned int resolution = (unsigned int)lua_tointeger(L, 3);
+    unsigned int skip = (unsigned int)lua_tointeger(L, 4);
+    unsigned char bits = (unsigned char)lua_tointeger(L, 5);
+    if(!resolution)
+        resolution = 5;
+    if(!skip)
+        skip = 1;
+    if(!bits)
+        bits = ~0;
+
+    Vector normal;
+    engine->obsgrid.getNormal(Vector(lua_tonumber(L, 1), lua_tonumber(L, 2)), normal, resolution, skip, bits);
+    luaReturnVec2(normal.x, normal.y);
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -305,6 +322,7 @@ static LuaFunctions s_functab[] =
     luaRegister(windowToWorld),
     luaRegister(worldToWindow),
     luaRegister(getScreenCenter),
+    luaRegister(getWallNormal),
 
     { NULL, NULL }
 };
