@@ -132,7 +132,7 @@ void TileGrid::onRender() const
     if(dim <= 0 || (yend - ystart) <= 0)
         return;
 
-    Vector start(_tileSize * xstart, _tileSize * ystart);
+    Vector start(_tileSize * xstart + _tileSize / 2, _tileSize * ystart + _tileSize / 2);
     const Vector step(_tileSize, 0);
     Texture **texarray = (Texture**)alloca(dim * sizeof(Texture*));
     for(int y = ystart; y < yend; ++y)
@@ -152,4 +152,3 @@ void TileGrid::CalcRenderLimits(int& x, int& y, int& x2, int& y2) const
 {
     engine->CalcRenderLimits(_tiles.size1d(), _tileSize, x, y, x2, y2);
 }
-

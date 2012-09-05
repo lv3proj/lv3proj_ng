@@ -34,11 +34,10 @@ void ObsRender::onRender() const
 
     float vertexData[8];
     const float ts = grid.GetTileSizef();
-    const float tsh = ts * 0.5f;
 
     for(int y = ystart; y < yend; ++y)
     {
-        vertexData[1] = vertexData[3] = y * ts - tsh; // current row
+        vertexData[1] = vertexData[3] = y * ts; // current row
         vertexData[5] = vertexData[7] = vertexData[1] + ts; // one block row below
         int c = 0; // how many consecutive obs found in one run
         for(int x = xstart; x < xend; ++x)
@@ -49,7 +48,7 @@ void ObsRender::onRender() const
                 switch(tile->getTileObsType())
                 {
                     case TO_MIXED:
-                        _renderMixedTile(tile, (x * ts) - tsh, (y * ts) - tsh);
+                        _renderMixedTile(tile, x * ts, y * ts);
                         // fall through
 
                     case TO_FULLFREE:
@@ -59,7 +58,7 @@ void ObsRender::onRender() const
                     case TO_FULLSOLID:
                         // Starting a new run? Remember current x pos.
                         if(!c)
-                            vertexData[2] = vertexData[6] = (x * ts) - tsh;
+                            vertexData[2] = vertexData[6] = x * ts;
                         ++c;
                         break;
                 }
@@ -153,11 +152,9 @@ void ObsGridRender::onRender() const
 
     float vertexData[8];
 
-    const float tsh = ts * 0.5f;
-
     for(int y = ystart; y < yend; ++y)
     {
-        vertexData[1] = vertexData[3] = y * ts - tsh; // current row
+        vertexData[1] = vertexData[3] = y * ts; // current row
         vertexData[5] = vertexData[7] = vertexData[1] + ts; // one block row below
         int c = 0; // how many consecutive obs found in one run
         for(int x = xstart; x < xend; ++x)
@@ -167,7 +164,7 @@ void ObsGridRender::onRender() const
             {
                 // Starting a new run? Remember current x pos.
                 if(!c)
-                    vertexData[2] = vertexData[6] = (x * ts) - tsh;
+                    vertexData[2] = vertexData[6] = x * ts;
                 ++c;
                 continue;
             }
@@ -177,7 +174,7 @@ void ObsGridRender::onRender() const
             }
             else
             {
-                _renderMixedBlock(block, (x * ts) - tsh, (y * ts) - tsh);
+                _renderMixedBlock(block, x * ts, y * ts);
                 block = NULL;
             }
 
