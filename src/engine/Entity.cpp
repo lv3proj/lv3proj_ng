@@ -49,6 +49,7 @@ void Entity::onRender() const
             case COLL_AABB:
             {
                 // FIXME: this messes up if we're part of a RO hierarchy
+                // HACK: undo gfx rotation
                 const AABB& aabb = *(const AABB*)_collider;
                 engine->GetRenderer()->drawAABB(aabb.x1() - position.x,
                                                 aabb.y1() - position.y,
@@ -68,8 +69,12 @@ void Entity::onRender() const
             case COLL_LINE:
             {
                 const Line& l = *(const Line*)_collider;
-                const Vector& start = l.start();
-                const Vector& end = l.end();
+                Vector start = l.start();
+                Vector end = l.end();
+                // HACK: undo gfx rotation
+                const float rot = rotation.x + rotation2.x;
+                start.rotate2D(-rot);
+                end.rotate2D(-rot);
                 engine->GetRenderer()->drawLine(start.x, start.y, end.x, end.y, 2, 0, 1, 0, 0.5f);
                 break;
             }
