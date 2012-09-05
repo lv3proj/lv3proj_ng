@@ -292,7 +292,7 @@ public:
         return isZero();
     }
 
-    const bool inline isLength2DIn(float radius) const
+    const bool inline isLength2DIn(scalar_t radius) const
     {
         return (x*x + y*y) <= (radius*radius);
     }

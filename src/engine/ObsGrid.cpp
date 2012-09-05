@@ -335,8 +335,41 @@ bool ObsGrid::collideVsAABB(const AABB &c, Vector *v) const
 
 bool ObsGrid::collideVsCircle(const Circle &c, Vector *v) const
 {
-    // FIXME
-    return collideVsAABB(c.getAABB(), v);
+    const AABB aabb = c.getAABB();
+    int x1 = int(aabb.x1());
+    int x2 = int(aabb.x2());
+    int y1 = int(aabb.y1());
+    int y2 = int(aabb.y2());
+    if(x1 < 0)
+        x1 = 0;
+    if(x2 >= width())
+        x2 = width()-1;
+    if(y1 < 0)
+        y1 = 0;
+    if(y2 >= height())
+        y2 = height()-1;
+
+    int px = (int)c.position.x;
+    int py = (int)c.position.y;
+    int radiusSq = (int)(c.radius * c.radius);
+
+    const unsigned char bits = c.collisionBits;
+    for(int y = y1; y <= y2; ++y)
+        for(int x = x1; x <= x2; ++x)
+            if((getObs(x, y) & bits) /* && c.isPointInside(Vector(x, y))*/)
+            {
+                // this is faster than int->float conversion all the time as isPointInside() would do
+                int cx = px - x;
+                int cy = py - y;
+                if(cx*cx + cy*cy <= radiusSq)
+                {
+                    if(v)
+                        *v = Vector(x, y);
+                    return true;
+                }
+            }
+
+    return false;
 }
 
 struct GridTracer

@@ -21,10 +21,10 @@ end
 local q = quad.new("testx.png", 28):scale(4, 4)
 
 local w = entity.new()
---w:setCircleCollider(30)
+w:setCircleCollider(30)
 --w:setAABBCollider(-20, -20, 20, 20)
-w:setLineCollider(40, -50, -30, 20)
-w:rotate(360, 5, -1)
+--w:setLineCollider(40, -50, -30, 20)
+--w:rotate(360, 5, -1)
 function w:update(dt)
     self:position(getMouseWorldPos())
     

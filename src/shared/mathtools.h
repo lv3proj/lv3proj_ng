@@ -114,4 +114,9 @@ template <typename T> inline T rangeTransform(T t, T lower, T upper, T rangeMin,
     return t;
 }
 
+template <typename T> inline T sq(T a)
+{
+    return a * a;
+}
+
 #endif
