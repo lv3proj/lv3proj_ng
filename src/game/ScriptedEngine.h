@@ -28,6 +28,8 @@ protected:
     virtual void OnKeyDown(SDLKey key, SDLMod mod);
     virtual void OnKeyUp(SDLKey key, SDLMod mod);
 
+    void _CreateInternalObjects();
+
     ObsGridRender *_obsRender;
 
 };

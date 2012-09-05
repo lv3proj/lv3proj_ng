@@ -12,6 +12,7 @@ ObsRender::ObsRender(unsigned int layer)
  : _layer(layer)
 {
     _tex = engine->GetTexture("");
+    _noCull = true;
 }
 
 ObsRender::~ObsRender()
@@ -129,6 +130,7 @@ void ObsRender::_renderMixedTile(Tile *tile, float xpos, float ypos) const
 ObsGridRender::ObsGridRender()
 {
     _tex = engine->GetTexture("");
+    _noCull = true;
 }
 
 ObsGridRender::~ObsGridRender()

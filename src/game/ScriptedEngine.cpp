@@ -39,21 +39,32 @@ bool ScriptedEngine::OnInit()
     script->Init();
     script->call("onInit");
 
-    _obsRender = new ObsGridRender;
-    _obsRender->alpha = 0;
-    _obsRender->color = Vector(1, 0, 0);
-    layers->GetLayer(20)->Add(_obsRender);
-    objmgr->AddObject(_obsRender);
+    _CreateInternalObjects();
 
     return true;
 }
 
 void ScriptedEngine::OnReset()
 {
+    _obsRender = NULL;
     EngineBase::OnReset();
     script->Shutdown();
     script->Init();
     script->call("onInit");
+
+    _CreateInternalObjects();
+}
+
+void ScriptedEngine::_CreateInternalObjects()
+{
+    if(!_obsRender)
+    {
+        _obsRender = new ObsGridRender;
+        _obsRender->alpha = 0;
+        _obsRender->color = Vector(1, 0, 0);
+        layers->GetLayer(20)->Add(_obsRender);
+        objmgr->AddObject(_obsRender);
+    }
 }
 
 void ScriptedEngine::OnUpdate(float dt)
