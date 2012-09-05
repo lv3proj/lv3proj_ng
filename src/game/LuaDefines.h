@@ -19,6 +19,7 @@
 #define luaReturnBool(x) { lua_pushboolean(L, x); return 1; }
 #define luaReturnStr(x) { lua_pushstring(L, x); return 1; }
 #define luaReturnVec2(x, y) { lua_pushnumber(L, x); lua_pushnumber(L, y); return 2; }
+#define luaReturnVec3(x, y, z) { lua_pushnumber(L, x); lua_pushnumber(L, y); lua_pushnumber(L, z); return 3; }
 
 inline const char *getCStrSafe(lua_State *L, int idx = 1)
 {

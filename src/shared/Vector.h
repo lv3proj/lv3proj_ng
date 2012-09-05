@@ -298,7 +298,7 @@ public:
     }
 
     // return angle between two vectors -- not passed by reference intentionally
-    const scalar_t inline angle2D(Vector v) const
+    const scalar_t inline angleRad2D(Vector v) const
     {
         Vector m = *this;
         v.normalize2D();
@@ -306,9 +306,9 @@ public:
         return m._angleNorm2D(v);
     }
 
-    const scalar_t inline angleDeg2D(const Vector& v) const
+    const scalar_t inline angle2D(const Vector& v) const
     {
-        return radToDeg(angle2D(v));
+        return radToDeg(angleRad2D(v));
     }
 
     // return angle between two vectors -- both vectors must already be normalized!
@@ -365,14 +365,17 @@ public:
 
     const inline scalar_t rotationRad2D() const
     {
-        Vector t = *this;
-        t.normalize2D();
-        return t._angleNorm2D(Vector(0, -1));
+        if(x == 0 && y == 0)
+            return 0;
+        return atan2(y, x) + (DEGTORAD * 90); // FIXME: verify this
     }
 
     const inline scalar_t rotation2D() const
     {
-        return radToDeg(rotation2D());
+        if(x == 0 && y == 0)
+            return 0;
+
+        return radToDeg(atan2(y, x)) + 90;
     }
 };
 

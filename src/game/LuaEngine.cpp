@@ -582,6 +582,13 @@ luaFn(ro_setPauseLevel)
     luaReturnNil();
 }*/
 
+luaFn(ro_updatePhysics)
+{
+    RenderObject *ro = getRO(L);
+    if(ro)
+        ro->updatePhysics(lua_tonumber(L, 2));
+    luaReturnSelf();
+}
 
 #undef MAKE_RO_VEC_MTH
 
@@ -923,6 +930,102 @@ luaFn(stats_getRenderedVertices)
     luaReturnInt(engine->GetRenderer()->getRenderedVerts());
 }
 
+luaFn(vec_fromDeg)
+{
+    Vector v = Vector::FromDegAngle2D(lua_tonumber(L, 1));
+    luaReturnVec3(v.x, v.y, 0);
+}
+
+luaFn(vec_fromRad)
+{
+    Vector v = Vector::FromRadAngle2D(lua_tonumber(L, 1));
+    luaReturnVec3(v.x, v.y, 0);
+}
+
+luaFn(vec_dot)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    Vector b(lua_tonumber(L, 3), lua_tonumber(L, 4));
+    Vector c = a.dot2D(b);
+    luaReturnVec2(c.x, c.y);
+}
+
+luaFn(vec_len)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    luaReturnNum(a.getLength2D());
+}
+
+luaFn(vec_setLen)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    a.setLength2D(lua_tonumber(L, 3));
+    luaReturnVec2(a.x, a.y);
+}
+
+luaFn(vec_normalize)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    a.normalize2D();
+    luaReturnVec2(a.x, a.y);
+}
+
+luaFn(vec_isLenIn)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    luaReturnBool(a.isLength2DIn(lua_tonumber(L, 3)));
+}
+
+luaFn(vec_angle)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    luaReturnNum(a.rotation2D());
+}
+
+luaFn(vec_angleRad)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    luaReturnNum(a.rotationRad2D());
+}
+
+luaFn(vec_angleBetween)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    Vector b(lua_tonumber(L, 3), lua_tonumber(L, 4));
+    luaReturnNum(a.angle2D(b));
+}
+
+luaFn(vec_angleRadBetween)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    Vector b(lua_tonumber(L, 3), lua_tonumber(L, 4));
+    luaReturnNum(a.angleRad2D(b));
+}
+
+
+luaFn(vec_reflection)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    Vector n(lua_tonumber(L, 3), lua_tonumber(L, 4));
+    Vector r = a.getReflection2D(n);
+    luaReturnVec2(r.x, r.y);
+}
+
+luaFn(vec_rotate)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    a.rotate2D(lua_tonumber(L, 3));
+    luaReturnVec2(a.x, a.y);
+}
+
+luaFn(vec_rotateRad)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    a.rotateRad2D(lua_tonumber(L, 3));
+    luaReturnVec2(a.x, a.y);
+}
+
+
 
 static const luaL_Reg statslib[] =
 {
@@ -948,6 +1051,7 @@ static const luaL_Reg renderobjectlib[] =
     { "isVisible", ro_isVisible },
     { "setPauseLevel", ro_setPauseLevel },
     { "getAbsolutePosition", ro_getAbsolutePosition },
+    { "updatePhysics", ro_updatePhysics },
 
     // TODO: more
 
@@ -1019,6 +1123,25 @@ static const luaL_Reg cameralib[] =
     {NULL, NULL}
 };
 
+static const luaL_Reg vectorlib[] =
+{
+    { "fromDeg", vec_fromDeg },
+    { "fromRad", vec_fromRad },
+    { "dot", vec_dot },
+    { "len", vec_len },
+    { "setLen", vec_setLen },
+    { "normalize", vec_normalize },
+    { "isLenIn", vec_isLenIn },
+    { "angle", vec_angle },
+    { "angleRad", vec_angleRad },
+    { "angleBetween", vec_angle },
+    { "angleRadBetween", vec_angleRad },
+    { "reflection", vec_reflection },
+    { "rotate", vec_rotate },
+    { "rotateRad", vec_rotateRad },
+
+    {NULL, NULL}
+};
 
 int luaopen_renderobject(lua_State *L)
 {
@@ -1059,5 +1182,11 @@ int luaopen_camera(lua_State *L)
 int luaopen_stats(lua_State *L)
 {
     luaL_newlib(L, statslib);
+    return 1;
+}
+
+int luaopen_vector(lua_State *L)
+{
+    luaL_newlib(L, vectorlib);
     return 1;
 }

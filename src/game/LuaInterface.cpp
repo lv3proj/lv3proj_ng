@@ -47,6 +47,7 @@ static const luaL_Reg customLibs[] = {
     {"music", luaopen_music},
     {"camera", luaopen_camera},
     {"stats", luaopen_stats},
+    {"vector", luaopen_vector},
     {NULL, NULL}
 };
 
