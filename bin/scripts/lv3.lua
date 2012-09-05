@@ -11,7 +11,7 @@ local e = entity.new()
 e:texture("test3.png"):position(400, 300)
 --e:setAABBCollider()
 e:setLineCollider(0, 0, 100, 200)
---e:rotate(-90):rotate(90, 5, -1, true, true)
+e:rotate(90, 5, -1, true, true)
 
 function e:update(dt)
     --local x, y = self:getPosition()
