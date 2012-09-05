@@ -84,23 +84,6 @@ void ObsGrid::Init(unsigned int gridsize, unsigned int blocksize, unsigned int k
     _height = _grid.size1d() * _blockdim;
 }
 
-unsigned char ObsGrid::getObs(unsigned int x, unsigned int y) const
-{
-    mask *block = _lookupBlock(x, y);
-
-    /*if(block == _full)
-        return OBS_ANY;
-    if(block == _empty)
-        return OBS_NONE;*/
-
-    // same effect, but branchless
-
-    x &= _blockbits;
-    y &= _blockbits;
-
-    return block[(y << _blockshift) | x];
-}
-
 void ObsGrid::_dropBlock(mask *block)
 {
     // special; these can't be dropped
@@ -321,11 +304,10 @@ bool ObsGrid::collidesWith(const Collidable& c, Vector *result) const
 
 bool ObsGrid::collideVsAABB(const AABB &c, Vector *v) const
 {
-    int h = _blockdim / 2; // FIXME: this is not so nice. would be better if the upper left corner was actually (0, 0) ...
-    int x1 = int(c.x1()) + h;
-    int x2 = int(c.x2()) + h;
-    int y1 = int(c.y1()) + h;
-    int y2 = int(c.y2()) + h;
+    int x1 = int(c.x1());
+    int x2 = int(c.x2());
+    int y1 = int(c.y1());
+    int y2 = int(c.y2());
     if(x1 < 0)
         x1 = 0;
     if(x2 >= width())
@@ -357,10 +339,23 @@ bool ObsGrid::collideVsCircle(const Circle &c, Vector *v) const
     return collideVsAABB(c.getAABB(), v);
 }
 
+struct GridTracer
+{
+    const ObsGrid &_g;
+    const unsigned char _bits;
+    inline GridTracer(const ObsGrid &g, unsigned char bits) : _g(g), _bits(bits) {}
+    inline bool operator()(int x, int y) const
+    {
+        return x >= 0 && x < _g.width()
+            && y >= 0 && y < _g.height()
+            && (_g.getObs(x, y) & _bits);
+    }
+};
+
 bool ObsGrid::collideVsLine(const Line& c, Vector *v) const
 {
-    // FIXME
-    return collideVsAABB(c.getAABB(), v);
+    GridTracer tr(*this, c.collisionBits);
+    return c.tracei(tr, v, 1);
 }
 
 bool ObsGrid::getNormal(const Vector& pos, Vector& v, unsigned int resolution /* = 5 */) const

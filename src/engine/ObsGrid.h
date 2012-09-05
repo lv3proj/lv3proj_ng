@@ -47,7 +47,7 @@ public:
     void OptimizeIncremental();
     unsigned int GetMemoryUsage() const { return _memInUse; }
 
-    unsigned char getObs(unsigned int x, unsigned int y) const;
+    inline unsigned char getObs(unsigned int x, unsigned int y) const;
     void setObs(unsigned int x, unsigned int y, ObsType obs);
 
     inline bool collidesWith(const Collidable *c, Vector *result) const { return c && collidesWith(*c, result); }
@@ -99,6 +99,16 @@ ObsGrid::mask *ObsGrid::_lookupBlock(unsigned int x, unsigned int y) const
     const unsigned int bx = x >> sh;
     const unsigned int by = y >> sh;
     return _grid(bx, by);
+}
+
+unsigned char ObsGrid::getObs(unsigned int x, unsigned int y) const
+{
+    mask *block = _lookupBlock(x, y);
+
+    x &= _blockbits;
+    y &= _blockbits;
+
+    return block[(y << _blockshift) | x];
 }
 
 
