@@ -5,8 +5,9 @@
 local e = entity.new()
 --e:setCircleCollider(150)
 e:texture("test3.png"):position(400, 300)
-e:setAABBCollider()
-e:rotate(-90):rotate(90, 5, -1, true, true)
+--e:setAABBCollider()
+e:setLineCollider(0, 0, 100, 200)
+--e:rotate(-90):rotate(90, 5, -1, true, true)
 
 function e:update(dt)
     --local x, y = self:getPosition()
@@ -17,6 +18,7 @@ local q = quad.new("testx.png", 10):scale(4, 4)
 
 local w = entity.new()
 w:setCircleCollider(30)
+--w:setAABBCollider(-20, -20, 20, 20)
 function w:update(dt)
     self:position(getMouseWorldPos())
     

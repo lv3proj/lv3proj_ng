@@ -650,6 +650,13 @@ luaFn(entity_setCircleCollider)
     luaReturnSelf();
 }
 
+luaFn(entity_setLineCollider)
+{
+    Entity *e = getEntity(L);
+    e->setCollider(new Line(Vector(lua_tonumber(L, 2), lua_tonumber(L, 3)), Vector(lua_tonumber(L, 4), lua_tonumber(L, 5))));
+    luaReturnSelf();
+}
+
 luaFn(entity_collideWith)
 {
     Entity *e = getEntity(L);
@@ -943,7 +950,7 @@ static const luaL_Reg entitylib[] =
     { "new", entity_new },
     { "setAABBCollider", entity_setAABBCollider },
     { "setCircleCollider", entity_setCircleCollider },
-    //{ "setLineCollider", entity_setLineCollider },
+    { "setLineCollider", entity_setLineCollider },
     { "collideWith", entity_collideWith },
     // TODO: more
 

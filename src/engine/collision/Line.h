@@ -14,20 +14,23 @@ public:
         : Collidable(other)
         , relstart(other.relstart)
         , relend(other.relend)
+        , position(other.position)
+        , rotation(other.rotation)
     {
     }
 
     Line(const Vector& start, const Vector& end)
         : Collidable(COLL_LINE)
-        , relstart(relstart)
+        , relstart(start)
         , relend(end)
+        , rotation(0)
     {
     }
 
-    Line(const Vector& origin, const Vector& start, const Vector& end, float rot = 0)
+    Line(const Vector& position, const Vector& start, const Vector& end, float rot = 0)
         : Collidable(COLL_LINE)
-        , relstart(relstart)
-        , relend(relend)
+        , relstart(start)
+        , relend(end)
         , position(position)
         , rotation(rot)
     {

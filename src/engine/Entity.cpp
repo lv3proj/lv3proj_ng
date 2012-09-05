@@ -68,9 +68,9 @@ void Entity::onRender() const
             case COLL_LINE:
             {
                 const Line& l = *(const Line*)_collider;
-                const Vector start = l.startpos();
-                const Vector end = l.endpos();
-                engine->GetRenderer()->drawLine(start.x, start.y, end.x, end.y, 1, 0, 1, 0, 0.5f);
+                const Vector& start = l.start();
+                const Vector& end = l.end();
+                engine->GetRenderer()->drawLine(start.x, start.y, end.x, end.y, 2, 0, 1, 0, 0.5f);
                 break;
             }
         }

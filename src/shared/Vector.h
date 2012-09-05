@@ -353,7 +353,7 @@ public:
     // rotate in degrees
     inline void rotate2D(float angle)
     {
-        rotate2D(degToRad(angle));
+        rotateRad2D(degToRad(angle));
     }
 
     inline void rotateRad2D(float rad)
