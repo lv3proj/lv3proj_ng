@@ -107,6 +107,7 @@ public:
         return &data[0];
     }
 
+    // TODO: deprecate this and replace with width() / height()
     inline unsigned int size1d(void) const { return _size; }
     inline unsigned int size2d(void) const { return _size * _size; }
 

@@ -1,8 +1,8 @@
 
---dofile("testmap.lua")
+dofile("testmap.lua")
 
 for i = 1, 50 do
-    quad.new("test.png", 15):scale(0.2, 0.2):position(math.random(-100, 900), math.random(-100, 700))
+    quad.new("test.png", 15):scale(0.2, 0.2):position(math.random(-100, 900), math.random(-100, 700)):alpha(0.2)
 end
 
 
@@ -22,17 +22,26 @@ local q = quad.new("testx.png", 28):scale(4, 4)
 
 local w = entity.new()
 --w:setCircleCollider(30)
---w:setAABBCollider(-20, -20, 20, 20)
-w:setLineCollider(80, -50, -80, 20)
-w:rotate(360, 5, -1)
+w:setAABBCollider(-20, -20, 20, 20)
+--w:setLineCollider(80, -50, -80, 20)
+--w:rotate(360, 5, -1)
 function w:update(dt)
     self:position(getMouseWorldPos())
     
-    local c, x, y = self:collideWith(e)
+    --[[local c, x, y = self:collideWith(e)
     if c then
         q:position(x, y)
         q:alpha(1)
         camera.shake(30, 0.5)
+    else
+        q:alpha(0)
+    end]]
+    
+    local c, x, y = self:collideGrid()
+    if c then
+        q:position(x, y)
+        q:alpha(1)
+        --camera.shake(10, 0.5)
     else
         q:alpha(0)
     end

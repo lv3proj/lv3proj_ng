@@ -5,6 +5,12 @@
 #include "RenderLayerMgr.h"
 #include "RenderLayer.h"
 
+#include "collision/Collidable.h"
+#include "collision/AABB.h"
+#include "collision/Circle.h"
+#include "collision/Line.h"
+
+
 #define INCREMENTAL_OPTIMIZE_BLOCKS 3
 
 ObsGrid::ObsGrid()
@@ -59,17 +65,26 @@ void ObsGrid::Init(unsigned int gridsize, unsigned int blocksize, unsigned int k
     _blockbits = t - 1; // -> 0x..0FF
     _blocksize = _blockdim * _blockdim;
 
-    mask *full = new mask[_blocksize];
-    mask *empty = new mask[_blocksize];
-    memset(full, OBS_ANY, _blocksize * sizeof(mask));
-    memset(empty, OBS_NONE, _blocksize * sizeof(mask));
-    _full = full;
-    _empty = empty;
+    if(!_full)
+    {
+        mask *full = new mask[_blocksize];
+        memset(full, OBS_ANY, _blocksize * sizeof(mask));
+        _full = full;
+    }
+    if(!_empty)
+    {
+        mask *empty = new mask[_blocksize];
+        memset(empty, OBS_NONE, _blocksize * sizeof(mask));
+        _empty = empty;
+    }
 
-    _grid.resize(gridsize, empty);
+    _grid.resize(gridsize, const_cast<mask*>(_empty));
+
+    _width = _grid.size1d() * _blockdim;
+    _height = _grid.size1d() * _blockdim;
 }
 
-unsigned char ObsGrid::getObs(unsigned int x, unsigned int y)
+unsigned char ObsGrid::getObs(unsigned int x, unsigned int y) const
 {
     mask *block = _lookupBlock(x, y);
 
@@ -209,7 +224,7 @@ void ObsGrid::Setup()
         }
     }
 
-    //OptimizeAll();
+    OptimizeAll();
 }
 
 void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
@@ -289,4 +304,68 @@ void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
     }*/
 }
 
+
+bool ObsGrid::collidesWith(const Collidable& c, Vector *result) const
+{
+    switch(c.getShape())
+    {
+        case COLL_AABB: return collideVsAABB((const AABB&)c, result);
+        case COLL_CIRCLE: return collideVsCircle((const Circle&)c, result);
+        case COLL_LINE: return collideVsLine((const Line&)c, result);
+
+        default:
+            assert(false);
+    }
+    return false;
+}
+
+bool ObsGrid::collideVsAABB(const AABB &c, Vector *v) const
+{
+    int h = _blockdim / 2; // FIXME: this is not so nice. would be better if the upper left corner was actually (0, 0) ...
+    int x1 = int(c.x1()) + h;
+    int x2 = int(c.x2()) + h;
+    int y1 = int(c.y1()) + h;
+    int y2 = int(c.y2()) + h;
+    if(x1 < 0)
+        x1 = 0;
+    if(x2 >= width())
+        x2 = width()-1;
+    if(y1 < 0)
+        y1 = 0;
+    if(y2 >= height())
+        y2 = height()-1;
+
+    // TODO: If this turns out to be a bottleneck,
+    // do the comparisons blockwise, instead of
+    // looking up each block multiple times for a single pixel.
+    const unsigned char bits = c.collisionBits;
+    for(int y = y1; y <= y2; ++y)
+        for(int x = x1; x <= x2; ++x)
+            if((getObs(x, y) & bits))
+            {
+                if(v)
+                    *v = Vector(x, y);
+                return true;
+            }
+
+    return false;
+}
+
+bool ObsGrid::collideVsCircle(const Circle &c, Vector *v) const
+{
+    // FIXME
+    return collideVsAABB(c.getAABB(), v);
+}
+
+bool ObsGrid::collideVsLine(const Line& c, Vector *v) const
+{
+    // FIXME
+    return collideVsAABB(c.getAABB(), v);
+}
+
+bool ObsGrid::getNormal(const Vector& pos, Vector& v, unsigned int resolution /* = 5 */) const
+{
+    // FIXME: implement me!
+    return false;
+}
 

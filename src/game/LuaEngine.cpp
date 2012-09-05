@@ -672,6 +672,21 @@ luaFn(entity_collideWith)
     luaReturnBool(false);
 }
 
+luaFn(entity_collideGrid)
+{
+    Entity *e = getEntity(L);
+    Vector result;
+    if(scriptedEngine->obsgrid.collidesWith(e->getCollider(), &result))
+    {
+        lua_pushboolean(L, 1);
+        lua_pushnumber(L, result.x);
+        lua_pushnumber(L, result.y);
+        return 3;
+    }
+
+    luaReturnBool(false);
+}
+
 luaFn(_sound_gc)
 {
     SoundFile *sound = getSound(L);
@@ -965,6 +980,7 @@ static const luaL_Reg entitylib[] =
     { "setCircleCollider", entity_setCircleCollider },
     { "setLineCollider", entity_setLineCollider },
     { "collideWith", entity_collideWith },
+    { "collideGrid", entity_collideGrid },
     // TODO: more
 
     {NULL, NULL}
