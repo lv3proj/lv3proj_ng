@@ -304,10 +304,12 @@ bool ObsGrid::collidesWith(const Collidable& c, Vector *result) const
 
 bool ObsGrid::collideVsAABB(const AABB &c, Vector *v) const
 {
-    int x1 = int(c.x1());
-    int x2 = int(c.x2());
-    int y1 = int(c.y1());
-    int y2 = int(c.y2());
+    const Vector ul = c.upleft();
+    const Vector dr = c.downright();
+    int x1 = int(ul.x);
+    int x2 = int(dr.x);
+    int y1 = int(ul.y);
+    int y2 = int(dr.y);
     if(x1 < 0)
         x1 = 0;
     if(x2 >= width())
@@ -335,11 +337,11 @@ bool ObsGrid::collideVsAABB(const AABB &c, Vector *v) const
 
 bool ObsGrid::collideVsCircle(const Circle &c, Vector *v) const
 {
-    const AABB aabb = c.getAABB();
-    int x1 = int(aabb.x1());
-    int x2 = int(aabb.x2());
-    int y1 = int(aabb.y1());
-    int y2 = int(aabb.y2());
+    const Vector pos = c.getPosition();
+    int x1 = int(pos.x - c.radius);
+    int x2 = int(pos.x + c.radius);
+    int y1 = int(pos.y - c.radius);
+    int y2 = int(pos.y + c.radius);
     if(x1 < 0)
         x1 = 0;
     if(x2 >= width())
@@ -349,7 +351,6 @@ bool ObsGrid::collideVsCircle(const Circle &c, Vector *v) const
     if(y2 >= height())
         y2 = height()-1;
 
-    Vector pos = c.getPosition();
     int px = (int)pos.x;
     int py = (int)pos.y;
     int radiusSq = (int)(c.radius * c.radius);

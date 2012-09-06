@@ -44,7 +44,10 @@ public:
     inline Vector endpos() const { return getPosition() + end(); }
     inline Vector direction() const { Vector v(relend - relstart); v.rotate2D(getRotation().x); return v; }
     inline Vector start() const { Vector v(relstart); v.rotate2D(getRotation().x); return v; }
-    inline Vector end() const {  Vector v(relend); v.rotate2D(getRotation().x); return v;  }
+    inline Vector end() const { Vector v(relend); v.rotate2D(getRotation().x); return v;  }
+
+    inline float len() const { return (relend - relstart).getLength2D(); }
+    inline float lenSq() const { return (relend - relstart).getLength2DSq(); }
 
     template <typename T> bool tracei(T callback, Vector *v = NULL, int step = 1) const;
 

@@ -46,10 +46,12 @@ void Entity::onRender() const
                 // FIXME: this messes up if we're part of a RO hierarchy
                 // HACK: undo gfx rotation
                 const AABB& aabb = *(const AABB*)_collider;
-                engine->GetRenderer()->drawAABB(aabb.x1() - position.x,
-                                                aabb.y1() - position.y,
-                                                aabb.x2() - position.x,
-                                                aabb.y2() - position.y,
+                Vector ul = aabb.upleft();
+                Vector dr = aabb.downright();
+                engine->GetRenderer()->drawAABB(ul.x - position.x,
+                                                ul.y - position.y,
+                                                dr.x - position.x,
+                                                dr.y - position.y,
                                                 rotation.x + rotation2.x, 0, 1, 0, 0.5f);
                 break;
             }

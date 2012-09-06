@@ -177,7 +177,7 @@ bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
 bool Collision::AABB_vs_Line(const AABB& a, const Line& b, Vector *v)
 {
     // Fast AABB check first
-    if(!AABB_vs_AABB(a, b.getAABB(), NULL))
+    if(!AABB_vs_AABB(a, b.getAABB(), v))
         return false;
 
     /*       (u)
@@ -188,30 +188,82 @@ bool Collision::AABB_vs_Line(const AABB& a, const Line& b, Vector *v)
           +-------+
              (d)
     */
-    const Vector upleft(a.upleft());
-    const Vector downright(a.downright());
 
-    const Vector upright(downright.x, upleft.y);
-    const Vector downleft(upleft.x, downright.y);
+    const Vector bstart = b.startpos();
+    const Vector pos(a.getPosition());
+    const Vector upleftr(a.upleftRel());
+    const Vector downrightr(a.downrightRel());
 
+    const Vector uprightr(downrightr.x, upleftr.y);
+    const Vector downleftr(upleftr.x, downrightr.y);
+
+    Vector vtmp;
+    Vector *vp = v ? &vtmp : NULL;
+    float mindiff = b.lenSq();
+    float diff = mindiff;
+    bool hit = false;
 
     // (u)
-    if(Line_vs_Line(b, Line(upleft, upright), v))
-        return true;
+    if(Line_vs_Line(b, Line(pos, upleftr, uprightr), vp))
+    {
+        if(v)
+        {
+            diff = (vtmp - bstart).getLength2DSq();
+            if(diff < mindiff)
+            {
+                mindiff = diff;
+                *v = vtmp;
+            }
+        }
+        hit = true;
+    }
 
     // (l)
-    if(Line_vs_Line(b, Line(upleft, downleft), v))
-        return true;
+    if(Line_vs_Line(b, Line(pos, upleftr, downleftr), vp))
+    {
+        if(v)
+        {
+            diff = (vtmp - bstart).getLength2DSq();
+            if(diff < mindiff)
+            {
+                mindiff = diff;
+                *v = vtmp;
+            }
+        }
+        hit = true;
+    }
 
     // (r)
-    if(Line_vs_Line(b, Line(upright, downright), v))
-        return true;
+    if(Line_vs_Line(b, Line(pos, uprightr, downrightr), vp))
+    {
+        if(v)
+        {
+            diff = (vtmp - bstart).getLength2DSq();
+            if(diff < mindiff)
+            {
+                mindiff = diff;
+                *v = vtmp;
+            }
+        }
+        hit = true;
+    }
 
     // (d)
-    if(Line_vs_Line(b, Line(downleft, downright), v))
-        return true;
+    if(Line_vs_Line(b, Line(pos, downleftr, downrightr), vp))
+    {
+        if(v)
+        {
+            diff = (vtmp - bstart).getLength2DSq();
+            if(diff < mindiff)
+            {
+                mindiff = diff;
+                *v = vtmp;
+            }
+        }
+        hit = true;
+    }
 
-    return false;
+    return hit;
 }
 
 bool Collision::Circle_vs_Circle(const Circle& a, const Circle& b, Vector *v)
