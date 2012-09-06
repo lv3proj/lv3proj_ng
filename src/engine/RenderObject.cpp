@@ -59,8 +59,8 @@ void RenderObject::onUpdate(float dt)
 
 void RenderObject::updatePhysics(float dt)
 {
-    velocity += gravity * dt;
     position += velocity * dt;
+    velocity += gravity * dt;
 }
 
 

@@ -321,17 +321,14 @@ public:
     // FIXME: check that this is correct
     const Vector inline getReflection2D(const Vector& normal) const
     {
-        if (!normal.isZero())
+        if (!isZero())
         {
             const scalar_t len = getLength2D();
-            if(!_f_equals(len, 0))
-            {
-                const Vector unit = *this / len;
-                Vector ret = *this;
-                ret = 2*(-unit.dot(normal))*normal + unit;
-                ret *= len;
-                return ret;
-            }
+            const Vector unit = *this / len;
+            Vector ret = 2*(-unit.dot(normal))*normal + unit;
+            ret.setLength2D(len);
+            //ret *= len;
+            return ret;
         }
         return Vector(0, 0);
     }
