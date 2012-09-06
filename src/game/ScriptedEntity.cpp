@@ -18,6 +18,13 @@ void ScriptedEntity::update(float dt)
     Entity::update(dt);
 }
 
+void ScriptedEntity::updateFixed(float dt)
+{
+    _script->callMethod(this, "updateFixed", dt);
+
+    Entity::updateFixed(dt);
+}
+
 void ScriptedEntity::onEndOfLife()
 {
     _script->callMethod(this, "onEndOfLife");

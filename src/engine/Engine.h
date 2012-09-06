@@ -49,6 +49,7 @@ public:
     inline static float GetTimeDiffF(void) { return s_fracTime; } // 1.0f == 1 second (scaled by speed)
     inline static float GetTimeDiffReal(void) { return s_diffTimeReal; } // 1000 = 1 second (real)
     inline static uint32 GetTicks(void) { return SDL_GetTicks() - s_ignoredTicks; }
+    inline static void SetFixedDT(float dt) { s_fixedDT = dt; }
     static void ResetTime(void);
     static bool IsKeyPressed(SDLKey k);
 
@@ -166,6 +167,8 @@ protected:
     int8 _pause;
 
     static std::vector<SDL_Joystick*> s_joysticks;
+
+    // Dynamic time step
     static uint32 s_curFrameTime; // game time (scaled by speed)
     static uint32 s_lastFrameTimeReal; // last frame's SDL_GetTicks() -- not scaled by speed!
     static float s_speed; // speed multiplicator, 1.0 = normal speed. should NOT be negative!
@@ -173,6 +176,10 @@ protected:
     static uint32 s_diffTime; // time diff per tick [uint32(s_fracTime)]
     static uint32 s_diffTimeReal; // time diff per tick, real time (not scaled by s_speed)
     static float s_fracTime; // (_diffTime * _speed) / 1000.0f
+
+    // Fixed time step
+    static float s_fixedAccu;
+    static float s_fixedDT; // target dt for fixed timestep
     
     Renderer *render;
 

@@ -14,6 +14,7 @@ public:
     void AddObject(ScriptObject *);
     void Garbage(ScriptObject *);
     void Update(float dt);
+    void UpdateFixed(float dt);
     void ClearGarbage();
     void ClearAll();
 

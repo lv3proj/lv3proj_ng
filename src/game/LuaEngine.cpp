@@ -292,6 +292,14 @@ luaFunc(getWallNormal)
     luaReturnVec2(normal.x, normal.y);
 }
 
+luaFunc(setFixedDT)
+{
+    float dt = lua_tonumber(L, 1);
+    if(dt > 0)
+        engine->SetFixedDT(dt);
+    luaReturnNil();
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -323,6 +331,7 @@ static LuaFunctions s_functab[] =
     luaRegister(worldToWindow),
     luaRegister(getScreenCenter),
     luaRegister(getWallNormal),
+    luaRegister(setFixedDT),
 
     { NULL, NULL }
 };

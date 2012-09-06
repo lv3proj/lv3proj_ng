@@ -30,6 +30,16 @@ void ObjectMgr::Update(float dt)
     }
 }
 
+void ObjectMgr::UpdateFixed(float dt)
+{
+    for(std::set<ScriptObject*>::iterator it = _alive.begin(); it != _alive.end(); ++it)
+    {
+        ScriptObject *obj = *it;
+        if(!(obj->isDead() || obj->isPaused()))
+            obj->updateFixed(dt);
+    }
+}
+
 void ObjectMgr::AddObject(ScriptObject *obj)
 {
     assert(obj->isManaged());

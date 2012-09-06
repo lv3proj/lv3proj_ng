@@ -25,6 +25,10 @@ uint32 EngineBase::s_diffTime;
 uint32 EngineBase::s_diffTimeReal;
 float EngineBase::s_fracTime;
 uint32 EngineBase::s_ignoredTicks;
+
+float EngineBase::s_fixedAccu;
+float EngineBase::s_fixedDT;
+
 std::vector<SDL_Joystick*> EngineBase::s_joysticks;
 
 EngineBase::EngineBase()
@@ -48,6 +52,8 @@ _pause(0)
     s_quit = false;
     s_speed = 1.0;
     s_accuTime = 0;
+    s_fixedDT = 1.0f/60.0f;
+    s_fixedAccu = 0;
 
     //sndCore.Init();
 
@@ -342,8 +348,15 @@ void EngineBase::_Process(void)
     }*/
 
     camera->update(dt);
-
     objmgr->Update(dt);
+
+    s_fixedAccu += dt;
+    while(s_fixedAccu >= s_fixedDT)
+    {
+        s_fixedAccu -= s_fixedDT;
+        camera->updateFixed(s_fixedDT);
+        objmgr->UpdateFixed(s_fixedDT);
+    }
 
     resMgr.Update(dt);
 
