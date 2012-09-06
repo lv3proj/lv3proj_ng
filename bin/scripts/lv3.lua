@@ -83,16 +83,8 @@ local function spawnBall(spx, spy)
     --local ballv = quad.new("debug/vector.png", 29)
     ball:gravity(0, 800)
     BALLS[ball] = ball
-    
-    function ball:update(dt)
-        local m = 5
-        dt = dt / m
-        for i = 1, m do
-            self:update2(dt)
-        end
-    end
 
-    function ball:update2(dt)
+    function ball:updateFixed(dt)
         
         local vx, vy = self:getVelocity()
         self:rotate(self:getRotation() + dt*vx*2)
@@ -104,9 +96,9 @@ local function spawnBall(spx, spy)
         --ballv:position(self:getPosition())
 
         local px, py = self:getPosition()
-        if self:collideGrid() then
-            print("ERROR")
-        end
+        --if self:collideGrid() then
+        --    print("ERROR")
+        --end
         
         self:updatePhysics(dt)
         
@@ -172,16 +164,9 @@ local function stop(b, x, y, dt)
 end
     
 local dummy = entity.new()
-function dummy:update(dt)
-    local m = 5
-    dt = dt / m
-    for i = 1, m do
-        self:update2(dt)
-    end
-end
 dummy.lmb = false
 dummy.rmb = false
-function dummy:update2(dt)
+function dummy:updateFixed(dt)
     local rmb = isMouseButton(3)
     if rmb and not self.rmb then
         spawnBall(getMouseWorldPos())
