@@ -511,6 +511,17 @@ luaFn(ro_getAbsolutePosition)
     luaReturnVec2(ret.x, ret.y);
 }
 
+luaFn(ro_addVel)
+{
+    RenderObject *ro = getRO(L);
+    if(ro)
+    {
+        ro->velocity.x += lua_tonumber(L, 2);
+        ro->velocity.y += lua_tonumber(L, 3);
+    }
+    luaReturnSelf();
+}
+
 
 
 // ----------- Evil define hackery -----------------
@@ -588,6 +599,20 @@ luaFn(ro_updatePhysics)
     if(ro)
         ro->updatePhysics(lua_tonumber(L, 2));
     luaReturnSelf();
+}
+
+luaFn(ro_vectorTo)
+{
+    RenderObject *a = getRO(L);
+    RenderObject *b = getRO(L);
+    if(a && b)
+    {
+        Vector av = a->position + a->offset;
+        Vector bv = b->position + b->offset;
+        Vector d = bv - av;
+        luaReturnVec2(d.x, d.y)
+    }
+    luaReturnVec2(0, 0);
 }
 
 #undef MAKE_RO_VEC_MTH
@@ -1074,6 +1099,8 @@ static const luaL_Reg renderobjectlib[] =
     { "setPauseLevel", ro_setPauseLevel },
     { "getAbsolutePosition", ro_getAbsolutePosition },
     { "updatePhysics", ro_updatePhysics },
+    { "addVel", ro_addVel },
+    { "vectorTo", ro_vectorTo },
 
     // TODO: more
 

@@ -1,19 +1,19 @@
 
 dofile("testmap.lua")
 
-for i = 1, 50 do
+--[[for i = 1, 50 do
     quad.new("test.png", 15):scale(0.2, 0.2):position(math.random(-100, 900), math.random(-100, 700)):alpha(0.2)
-end
+end]]
 
 
-local e = entity.new()
---e:setCircleCollider(150)
-e:texture("test3.png"):position(400, 300)
---e:setAABBCollider()
-e:setLineCollider(0, 0, 100, 200)
-e:rotate(90, 5, -1, true, true)
+local sh = entity.new()
+--sh:setCircleCollider(150)
+sh:texture("test3.png"):position(400, 300)
+--sh:setAABBCollider()
+sh:setLineCollider(-80, 150, 80, 150)
+sh:rotate(-30):rotate(30, 5, -1, true, true)
 
-function e:update(dt)
+function sh:update(dt)
     --local x, y = self:getPosition()
     --self:position(x + math.random(-2, 2), y + math.random(-2, 2))
 end
@@ -30,9 +30,10 @@ w:setCircleCollider(30)
 local vq = quad.new("debug/vector.png", 28):alpha(0)
 
 function w:update(dt)
+    
     self:position(getMouseWorldPos())
     
-    local c, x, y = self:collideWith(e)
+    local c, x, y = self:collideWith(sh)
     if c then
         q:position(x, y)
         q:alpha(1)
@@ -63,29 +64,155 @@ function w:update(dt)
     end
 end
 
-local ball = entity.new():texture("debug/boulder.png"):setCircleCollider(16):gravity(0, 400)
+local function showVector(x, y, dx, dy)
+    return quad.new("debug/vector.png", 28):scale(0.3, 0.3):position(x, y):alpha(0, 1):rotate(vector.angle(dx, dy)):delete(1)
+end
 
-function ball:update(dt)
-    if isMouseButton(3) then
-        self:position(getMouseWorldPos())
-        self:velocity(0, 0)
+local BALLS  = {}
+
+local function spawnBall(spx, spy)
+
+    local ball = entity.new():texture("debug/boulder.png"):setCircleCollider(15)
+    ball:position(spx, spy)
+    
+    if ball:collideGrid() then
+        ball:delete()
         return
     end
     
-    self:updatePhysics(dt)
+    --local ballv = quad.new("debug/vector.png", 29)
+    ball:gravity(0, 800)
+    BALLS[ball] = ball
     
-    local c, x, y = self:collideGrid()
-    if c then
-        local nx, ny = getWallNormal(x, y)
-        local vx, vy = self:getVelocity()
-        vx, vy = vector.reflection(vx, vy, nx, ny)
-        print(vx, vy)
-        self:velocity(vx, vy)
-        self:updatePhysics(dt)
+    function ball:update(dt)
+        local m = 5
+        dt = dt / m
+        for i = 1, m do
+            self:update2(dt)
+        end
     end
+
+    function ball:update2(dt)
         
+        local vx, vy = self:getVelocity()
+        self:rotate(self:getRotation() + dt*vx*2)
+        
+        --local va = vector.angle(vx, vy)
+        --local s = vector.len(vx, vy) / 300
+        --ballv:rotate(va)
+        --ballv:scale(s, s)
+        --ballv:position(self:getPosition())
+
+        local px, py = self:getPosition()
+        if self:collideGrid() then
+            print("ERROR")
+        end
+        
+        self:updatePhysics(dt)
+        
+        local c, x, y = self:collideGrid()
+        if c then
+            self:position(px, py)
+            
+            --quad.new(self:getTexture(), 29):position(self:getPosition()):alpha(0.8):alpha(0, 1):delete(1)
+
+            local nx, ny = getWallNormal(x, y)
+            showVector(x, y, nx, ny)
+            local vx, vy = self:getVelocity()
+            vx, vy = vector.reflection(vx, vy, nx, ny)
+            vx = vx * 0.99
+            vy = vy * 0.75
+            --if vector.len(vx, vy) < 20 then vx, vy = vector.setLen(vx, vy, 20) end
+            --print(dt, vx, vy)
+            --vx, vy = vector.setLen(vx, vy, vector.len(vx, vy) * 0.6)
+            self:velocity(vx, vy)
+            self:updatePhysics(dt)
+        else
+            --self.cx, self.cy = self:getPosition()
+        end
+    end
+    
+    function ball:onEndOfLife()
+        --ballv:delete()
+    end
 end
 
+local function bounce(b, x, y, dt)
+    local px, py = b:getPosition()
+    local dx = px - x
+    local dy = py - y
+    local vx, vy = b:getVelocity()
+    local vl = vector.len(vx, vy)
+    dx, dy = vector.setLen(dx, dy, vl / 2)
+    vx = vx + dx
+    vy = vy + dy
+    --if vector.len(vx, vy) < 150 then
+    --    vx, vy = vector.setLen(vx, vy, 150)
+    --end
+    vx, vy = vector.setLen(vx, vy, vl * (1 - dt))
+    b:velocity(vx, vy)
+end
+
+local function stop(b, x, y, dt)
+    local px, py = b:getPosition()
+    local dx = px - x
+    local dy = py - y
+    --local a = vector.angle(dx, dy)
+    local vx, vy = b:getVelocity()
+    local vl = vector.len(vx, vy) * (1 - dt)
+    --vx, vy = vector.setLen(vx, vy, vector.len(dx, dy)
+    --vx, vy = vector.setLen(dx, dy, vector.len(vx, vy))
+    dx, dy = vector.setLen(dx, dy, vl)
+    --vx, vy = dx, dy
+    vx, vy = dx, dy
+    --vx, vy = -vx, -vy
+    --vx, vy = vector.reflection(vx, vy, dx, dy)
+    showVector(x, y, vx, vy)
+    b:velocity(vx, vy)
+end
+    
+local dummy = entity.new()
+function dummy:update(dt)
+    local m = 5
+    dt = dt / m
+    for i = 1, m do
+        self:update2(dt)
+    end
+end
+dummy.lmb = false
+dummy.rmb = false
+function dummy:update2(dt)
+    local rmb = isMouseButton(3)
+    if rmb and not self.rmb then
+        spawnBall(getMouseWorldPos())
+    end
+    self.rmb = rmb
+    
+    for b, _ in pairs(BALLS) do
+    
+        for b2, _ in pairs(BALLS) do
+            if b ~= b2 then
+                local c, x, y = b:collideWith(b2)
+                if c then
+                    bounce(b, x, y, dt)
+                    bounce(b2, x, y, dt)
+                end
+            end
+        end
+        
+        local c, x, y = sh:collideWith(b)
+        if c then
+            --bounce(b, x, y)
+            stop(b, x, y, dt)
+        end
+        
+        x, y = b:getPosition()
+        if y > 600 then
+            b:delete()
+            BALLS[b] = nil
+        end
+    end
+end
 
 
 --local s = sound.new("klaxonloop.ogg")
