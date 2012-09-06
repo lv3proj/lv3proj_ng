@@ -622,6 +622,16 @@ luaFn(quad_texture)
     luaReturnSelf();
 }
 
+luaFn(quad_getTexture)
+{
+    Quad *q = getQuad(L);
+    if(q && q->getTexture())
+    {
+        luaReturnStr(q->getTexture()->name());
+    }
+    luaReturnNil();
+}
+
 luaFn(quad_getWH)
 {
     Quad *q = getQuad(L);
@@ -656,12 +666,16 @@ luaFn(entity_setAABBCollider)
     if(e)
     {
         if(lua_gettop(L) > 1)
-            e->setCollider(new AABB(lua_tonumber(L, 2), lua_tonumber(L, 3), lua_tonumber(L, 4), lua_tonumber(L, 5)));
+        {
+            e->setCollider(new AABB(e,
+                            Vector(lua_tonumber(L, 2), lua_tonumber(L, 3)),
+                            Vector(lua_tonumber(L, 4), lua_tonumber(L, 5))));
+        }
         else if(const Texture *tex = e->getTexture())
         {
             const float w2 = tex->getHalfWidth();
             const float h2 = tex->getHalfHeight();
-            e->setCollider(new AABB(-w2, -h2, w2, h2));
+            e->setCollider(new AABB(e, Vector(-w2, -h2), Vector(w2, h2)));
         }
         // TODO: else error?
     }
@@ -671,27 +685,32 @@ luaFn(entity_setAABBCollider)
 luaFn(entity_setCircleCollider)
 {
     Entity *e = getEntity(L);
-    e->setCollider(new Circle(Vector(0, 0), lua_tonumber(L, 2)));
+    if(e)
+        e->setCollider(new Circle(e, lua_tonumber(L, 2)));
     luaReturnSelf();
 }
 
 luaFn(entity_setLineCollider)
 {
     Entity *e = getEntity(L);
-    e->setCollider(new Line(Vector(lua_tonumber(L, 2), lua_tonumber(L, 3)), Vector(lua_tonumber(L, 4), lua_tonumber(L, 5))));
+    if(e)
+        e->setCollider(new Line(e, Vector(lua_tonumber(L, 2), lua_tonumber(L, 3)), Vector(lua_tonumber(L, 4), lua_tonumber(L, 5))));
     luaReturnSelf();
 }
 
 luaFn(entity_collideWith)
 {
     Entity *e = getEntity(L);
-    Vector result;
-    if(e->collidesWith(getEntity(L, 2), &result))
+    if(e)
     {
-        lua_pushboolean(L, 1);
-        lua_pushnumber(L, result.x);
-        lua_pushnumber(L, result.y);
-        return 3;
+        Vector result;
+        if(e->collidesWith(getEntity(L, 2), &result))
+        {
+            lua_pushboolean(L, 1);
+            lua_pushnumber(L, result.x);
+            lua_pushnumber(L, result.y);
+            return 3;
+        }
     }
 
     luaReturnBool(false);
@@ -700,13 +719,16 @@ luaFn(entity_collideWith)
 luaFn(entity_collideGrid)
 {
     Entity *e = getEntity(L);
-    Vector result;
-    if(scriptedEngine->obsgrid.collidesWith(e->getCollider(), &result))
+    if(e)
     {
-        lua_pushboolean(L, 1);
-        lua_pushnumber(L, result.x);
-        lua_pushnumber(L, result.y);
-        return 3;
+        Vector result;
+        if(scriptedEngine->obsgrid.collidesWith(e->getCollider(), &result))
+        {
+            lua_pushboolean(L, 1);
+            lua_pushnumber(L, result.x);
+            lua_pushnumber(L, result.y);
+            return 3;
+        }
     }
 
     luaReturnBool(false);
@@ -1088,8 +1110,9 @@ static const luaL_Reg quadlib[] =
 {
     { "new", quad_new },
     { "texture", quad_texture },
-    { "getWH", quad_getWH },
+    { "getWH", quad_getWH }, // TODO: move these to RO
     { "setWH", quad_setWH },
+    { "getTexture", quad_getTexture },
     // TODO: more
 
     {NULL, NULL}

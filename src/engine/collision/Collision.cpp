@@ -6,6 +6,8 @@
 #include "Line.h"
 #include <assert.h>
 
+const Vector Collidable::nullv;
+
 
 bool Collision::Check(const Collidable& a, const Collidable& b, Vector *v)
 {
@@ -48,10 +50,15 @@ bool Collision::Check(const Collidable& a, const Collidable& b, Vector *v)
 
 bool Collision::AABB_vs_AABB(const AABB& a, const AABB& b, Vector *v)
 {
-    bool c =  !(a.downright.y < b.upleft.y
-             || a.upleft.y    > b.downright.y
-             || a.downright.x < b.upleft.x
-             || a.upleft.x    > b.downright.x);
+    const Vector a_upleft = a.upleft();
+    const Vector a_downright = a.downright();
+    const Vector b_upleft = b.upleft();
+    const Vector b_downright = b.downright();
+
+    bool c =  !(a_downright.y < b_upleft.y
+             || a_upleft.y    > b_downright.y
+             || a_downright.x < b_upleft.x
+             || a_upleft.x    > b_downright.x);
 
     if(c && v)
     {
@@ -64,11 +71,15 @@ bool Collision::AABB_vs_AABB(const AABB& a, const AABB& b, Vector *v)
 
 bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
 {
-    const bool leftside = c.position.x >= a.upleft.x;
-    const bool rightside  = c.position.x <= a.downright.x;
+    const Vector cpos = c.getPosition();
+    const Vector upleft = a.upleft();
+    const Vector downright = a.downright();
 
-    const bool topside = c.position.y >= a.upleft.y;
-    const bool bottomside = c.position.y <= a.downright.y;
+    const bool leftside = cpos.x >= upleft.x;
+    const bool rightside  = cpos.x <= downright.x;
+
+    const bool topside = cpos.y >= upleft.y;
+    const bool bottomside = cpos.y <= downright.y;
 
     const bool inx = leftside && rightside;
     const bool iny = topside && bottomside;
@@ -87,12 +98,12 @@ bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
     if(inx && iny)
     {
         if(v)
-            *v = c.position;
+            *v = cpos;
         return true;
     }
 
     // Quick check: If AABBs are not intersecting, the circle is definitely out of reach.
-    AABB caabb = c.getAABB();
+    const AABB caabb = c.getAABB();
     if(!AABB_vs_AABB(a, caabb, NULL))
         return false;
 
@@ -104,13 +115,13 @@ bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
         {
             if(inx)
             {
-                     if(bottomside) *v = Vector(c.position.x, a.upleft.y);
-                else if(topside)    *v = Vector(c.position.x, a.downright.y);
+                     if(bottomside) *v = Vector(cpos.x, upleft.y);
+                else if(topside)    *v = Vector(cpos.x, downright.y);
             }
             else
             {
-                     if(leftside)   *v = Vector(a.downright.x, c.position.y);
-                else if(rightside)  *v = Vector(a.upleft.x,    c.position.y);
+                     if(leftside)   *v = Vector(downright.x, cpos.y);
+                else if(rightside)  *v = Vector(upleft.x,    cpos.y);
             }
         }
         return true;
@@ -120,31 +131,31 @@ bool Collision::AABB_vs_Circle(const AABB& a, const Circle& c, Vector *v)
     // Now we need to check if the circle contains the corresponding corner point of the AABB.
     Vector corner;
     // Above AABB?
-    if(c.position.y <= a.upleft.y)
+    if(cpos.y <= upleft.y)
     {
         // Left of AABB?
-        if(c.position.x <= a.upleft.x)
+        if(cpos.x <= upleft.x)
         {
             // Upper left
-            corner = a.upleft;
+            corner = upleft;
         }
         else
         {
             // Upper right
-            corner = Vector(a.downright.x, a.upleft.y);
+            corner = Vector(downright.x, upleft.y);
         }
     }
-    else if(c.position.y >= a.downright.y)
+    else if(cpos.y >= downright.y)
     {
-        if(c.position.x <= a.upleft.x)
+        if(cpos.x <= upleft.x)
         {
             // Lower left
-            corner = Vector(a.upleft.x, a.downright.y);
+            corner = Vector(upleft.x, downright.y);
         }
         else
         {
             // Lower right.
-            corner = a.downright;
+            corner = downright;
         }
     }
     else
@@ -177,23 +188,27 @@ bool Collision::AABB_vs_Line(const AABB& a, const Line& b, Vector *v)
           +-------+
              (d)
     */
-    Vector upright(a.downright.x, a.upleft.y);
-    Vector downleft(a.upleft.x, a.downright.y);
+    const Vector upleft(a.upleft());
+    const Vector downright(a.downright());
+
+    const Vector upright(downright.x, upleft.y);
+    const Vector downleft(upleft.x, downright.y);
+
 
     // (u)
-    if(Line_vs_Line(b, Line(a.upleft, upright), v))
+    if(Line_vs_Line(b, Line(upleft, upright), v))
         return true;
 
     // (l)
-    if(Line_vs_Line(b, Line(a.upleft, downleft), v))
+    if(Line_vs_Line(b, Line(upleft, downleft), v))
         return true;
 
     // (r)
-    if(Line_vs_Line(b, Line(upright, a.downright), v))
+    if(Line_vs_Line(b, Line(upright, downright), v))
         return true;
 
     // (d)
-    if(Line_vs_Line(b, Line(downleft, a.downright), v))
+    if(Line_vs_Line(b, Line(downleft, downright), v))
         return true;
 
     return false;
@@ -201,14 +216,15 @@ bool Collision::AABB_vs_Line(const AABB& a, const Line& b, Vector *v)
 
 bool Collision::Circle_vs_Circle(const Circle& a, const Circle& b, Vector *v)
 {
-    Vector diff = b.position - a.position;
+    const Vector apos = a.getPosition();
+    Vector diff = b.getPosition() - apos;
     const float r = a.radius + b.radius;
     bool c = diff.isLength2DIn(r);
 
     if(c && v)
     {
         diff.setLength2D(a.radius);
-        *v = a.position + diff;
+        *v = apos + diff;
     }
 
     return c;
@@ -218,7 +234,8 @@ bool Collision::Circle_vs_Line(const Circle& a, const Line& b, Vector *v)
 {
     const Vector dir = b.direction();
     const Vector bstart = b.startpos();
-    Vector diff = a.position - bstart;
+    const Vector apos = a.getPosition();
+    Vector diff = apos - bstart;
     Vector closest;
     if (!dir.isZero())
     {
@@ -229,7 +246,7 @@ bool Collision::Circle_vs_Line(const Circle& a, const Line& b, Vector *v)
     else
         closest = bstart;
 
-    diff = a.position - closest;
+    diff = apos - closest;
     bool c = diff.isLength2DIn(a.radius);
     if (v && c)
         *v = closest;

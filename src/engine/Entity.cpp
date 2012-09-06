@@ -22,10 +22,6 @@ void Entity::update(float dt)
 {
     Quad::update(dt);
 
-    // FIXME: this might get a problem with final rotation if we're at the end
-    // of a bone chain or something
-    if(_collider)
-        _collider->updatePosition(position + offset, rotation + rotation2);
 }
 
 void Entity::setCollider(Collidable *c)
@@ -33,7 +29,6 @@ void Entity::setCollider(Collidable *c)
     if(_collider)
         delete _collider;
 
-    c->updatePosition(position + offset, rotation + rotation2);
     _collider = c;
 }
 
@@ -62,7 +57,8 @@ void Entity::onRender() const
             case COLL_CIRCLE:
             {
                 const Circle& ci = *(const Circle*)_collider;
-                engine->GetRenderer()->drawCircle(ci.position.x, ci.position.y, ci.radius, 0, 1, 0, 0.5f);
+                Vector cpos = ci.getPosition();
+                engine->GetRenderer()->drawCircle(cpos.x, cpos.y, ci.radius, 0, 1, 0, 0.5f);
                 break;
             }
 
@@ -87,3 +83,26 @@ void Entity::onUpdate(float dt)
 {
     // Intentionally NOT calling RenderObject::onUpdate().
 }
+
+void Entity::updatePhysics(float dt)
+{
+    Vector lastPos = position;
+
+    Quad::updatePhysics(dt);
+
+    /*Vector cp;
+    if(engine->obsgrid.collidesWith(_collider, &cp))
+    {
+        position = lastPos;
+        Vector wn;
+        if(engine->obsgrid.getNormal(cp, wn))
+        {
+            Vector t = speed.getReflection2D(wn);
+            speed = t;
+        }
+        else
+            logerror("WTF");
+    }*/
+
+}
+

@@ -12,10 +12,13 @@ public:
 
     virtual void update(float dt);
     virtual void onRender() const;
+    virtual void updatePhysics(float dt);
 
     inline bool collidesWith(const Entity *other, Vector *result);
     inline Collidable *getCollider() const { return _collider; }
     void setCollider(Collidable *c);
+
+    float bounciness;
 
     static bool s_renderCollisionShapes;
 

@@ -17,27 +17,29 @@ public:
     Circle(const Circle& c)
         : Collidable(c)
         , radius(c.radius)
-        , position(c.position)
+    {
+    }
+
+    Circle(const RenderObject *ro, float r)
+        : Collidable(COLL_CIRCLE, ro)
+        , radius(r)
     {
     }
 
     Circle(const Vector& pos, float r)
-        : Collidable(COLL_CIRCLE)
-        , position(pos)
+        : Collidable(COLL_CIRCLE, pos)
         , radius(r)
     {
     }
 
     virtual AABB getAABB() const;
-    virtual void updatePosition(const Vector& pos, const Vector& rot);
 
     inline bool isPointInside(const Vector& point) const
     {
-        return (position - point).isLength2DIn(radius);
+        return (getPosition() - point).isLength2DIn(radius);
     }
 
 
-    Vector position;
     float radius;
 };
 

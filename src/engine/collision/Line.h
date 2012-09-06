@@ -14,8 +14,6 @@ public:
         : Collidable(other)
         , relstart(other.relstart)
         , relend(other.relend)
-        , position(other.position)
-        , rotation(other.rotation)
     {
     }
 
@@ -23,30 +21,30 @@ public:
         : Collidable(COLL_LINE)
         , relstart(start)
         , relend(end)
-        , rotation(0)
     {
     }
 
-    Line(const Vector& position, const Vector& start, const Vector& end, float rot = 0)
-        : Collidable(COLL_LINE)
+    Line(const RenderObject *ro, const Vector& start, const Vector& end)
+        : Collidable(COLL_LINE, ro)
         , relstart(start)
         , relend(end)
-        , position(position)
-        , rotation(rot)
     {
     }
 
-    virtual AABB getAABB() const { return AABB(startpos(), endpos()); }
-    virtual void updatePosition(const Vector& pos, const Vector& rot);
+    Line(const Vector& position, const Vector& start, const Vector& end)
+        : Collidable(COLL_LINE, position)
+        , relstart(start)
+        , relend(end)
+    {
+    }
 
-    Vector position; // origin, point that is rotated around
-    float rotation;
+    virtual AABB getAABB() const { return AABB(ro, start(), end()); }
 
-    inline Vector startpos() const { return position + relstart; }
-    inline Vector endpos() const { return position + relend; }
-    inline Vector direction() const { return relend - relstart; }
-    inline const Vector& start() const { return relstart; }
-    inline const Vector& end() const { return relend; }
+    inline Vector startpos() const { return getPosition() + start(); }
+    inline Vector endpos() const { return getPosition() + end(); }
+    inline Vector direction() const { Vector v(relend - relstart); v.rotate2D(getRotation().x); return v; }
+    inline Vector start() const { Vector v(relstart); v.rotate2D(getRotation().x); return v; }
+    inline Vector end() const {  Vector v(relend); v.rotate2D(getRotation().x); return v;  }
 
     template <typename T> bool tracei(T callback, Vector *v = NULL, int step = 1) const;
 

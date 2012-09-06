@@ -1,6 +1,7 @@
 #ifndef OBSGRID_H
 #define OBSGRID_H
 
+#include "common.h"
 #include <vector>
 #include <array2d.h>
 
@@ -50,7 +51,7 @@ public:
     inline unsigned char getObs(unsigned int x, unsigned int y) const;
     void setObs(unsigned int x, unsigned int y, ObsType obs);
 
-    inline bool collidesWith(const Collidable *c, Vector *result) const { return c && collidesWith(*c, result); }
+    inline bool collidesWith(const Collidable *c, Vector *result = NULL) const { return c && collidesWith(*c, result); }
     bool collidesWith(const Collidable& c, Vector *result) const;
     bool collideVsAABB(const AABB& c, Vector *result) const;
     bool collideVsCircle(const Circle& c, Vector *result) const;

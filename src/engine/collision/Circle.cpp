@@ -3,11 +3,5 @@
 
 AABB Circle::getAABB() const
 {
-    return AABB(position.x - radius, position.y - radius,
-                position.x + radius, position.y + radius);
-}
-
-void Circle::updatePosition(const Vector& pos, const Vector& /*rot*/)
-{
-    position = pos;
+    return AABB(ro, Vector(-radius, radius), Vector(-radius, radius));
 }

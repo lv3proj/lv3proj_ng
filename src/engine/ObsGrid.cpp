@@ -349,8 +349,9 @@ bool ObsGrid::collideVsCircle(const Circle &c, Vector *v) const
     if(y2 >= height())
         y2 = height()-1;
 
-    int px = (int)c.position.x;
-    int py = (int)c.position.y;
+    Vector pos = c.getPosition();
+    int px = (int)pos.x;
+    int py = (int)pos.y;
     int radiusSq = (int)(c.radius * c.radius);
 
     const unsigned char bits = c.collisionBits;

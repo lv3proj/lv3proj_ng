@@ -64,7 +64,7 @@ public:
 
     virtual void onRender() const {}
 
-    void updatePhysics(float dt);
+    virtual void updatePhysics(float dt);
 
     inline BlendType getBlendType() const { return _blend; }
     inline void setBlendType(BlendType b) {_blend = b; }

@@ -1,39 +1,39 @@
 #include "AABB.h"
 
-void AABB::updatePosition(const Vector& pos, const Vector& /*rot*/)
-{
-    setCenter(pos);
-}
-
 // original code from SDL
 AABB AABB::getOverlap(const AABB& o) const
 {
+    Vector ul = upleft();
+    Vector dr = downright();
+    Vector ul2 = o.upleft();
+    Vector dr2 = o.downright();
+
     float Amin, Amax, Bmin, Bmax;
     AABB result;
 
     // X Axis
-    Amin = upleft.x;
-    Amax = downright.x;
-    Bmin = o.upleft.x;
-    Bmax = o.downright.x;
+    Amin = ul.x;
+    Amax = dr.x;
+    Bmin = ul2.x;
+    Bmax = dr2.x;
     if (Bmin > Amin)
         Amin = Bmin;
-    result.upleft.x = Amin;
+    result.upleftrel.x = Amin;
     if (Bmax < Amax)
         Amax = Bmax;
-    result.downright.x = Amax;
+    result.downrightrel.x = Amax;
 
     // Y Axis
-    Amin = upleft.y;
-    Amax = downright.y;
-    Bmin = o.upleft.y;
-    Bmax = o.downright.y;
+    Amin = ul.y;
+    Amax = dr.y;
+    Bmin = ul2.y;
+    Bmax = dr2.y;
     if (Bmin > Amin)
         Amin = Bmin;
-    result.upleft.y = Amin;
+    result.upleftrel.y = Amin;
     if (Bmax < Amax)
         Amax = Bmax;
-    result.downright.y = Amax;
+    result.downrightrel.y = Amax;
 
     return result;
 }
@@ -41,32 +41,37 @@ AABB AABB::getOverlap(const AABB& o) const
 // original code from SDL
 AABB AABB::getUnion(const AABB& o) const
 {
+    Vector ul = upleft();
+    Vector dr = downright();
+    Vector ul2 = o.upleft();
+    Vector dr2 = o.downright();
+
     float Amin, Amax, Bmin, Bmax;
     AABB uni;
 
     // X axis
-    Amin = upleft.x;
-    Amax = downright.x;
-    Bmin = o.upleft.x;
-    Bmax = o.downright.x;
+    Amin = ul.x;
+    Amax = dr.x;
+    Bmin = ul2.x;
+    Bmax = dr2.x;
     if (Bmin < Amin)
         Amin = Bmin;
-    uni.upleft.x = Amin;
+    uni.upleftrel.x = Amin;
     if (Bmax > Amax)
         Amax = Bmax;
-    uni.downright.x = Amax;
+    uni.downrightrel.x = Amax;
 
     // Y axis
-    Amin = upleft.y;
-    Amax = downright.y;
-    Bmin = o.upleft.y;
-    Bmax = o.downright.y;
+    Amin = ul.y;
+    Amax = dr.y;
+    Bmin = ul2.y;
+    Bmax = dr2.y;
     if (Bmin < Amin)
         Amin = Bmin;
-    uni.upleft.y = Amin;
+    uni.upleftrel.y = Amin;
     if (Bmax > Amax)
         Amax = Bmax;
-    uni.downright.y = Amax;
+    uni.downrightrel.y = Amax;
 
     return uni;
 }
