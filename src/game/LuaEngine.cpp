@@ -15,9 +15,9 @@
 #include "ScriptedEntity.h"
 #include "Texture.h"
 #include "TileGrid.h"
-#include "Collision/AABB.h"
-#include "Collision/Circle.h"
-#include "Collision/Line.h"
+#include "collision/AABB.h"
+#include "collision/Circle.h"
+#include "collision/Line.h"
 
 struct LuaFunctions
 {
@@ -300,6 +300,13 @@ luaFunc(setFixedDT)
     luaReturnNil();
 }
 
+luaFunc(setSpeed)
+{
+    float curspeed = engine->GetSpeed();
+    engine->SetSpeed(lua_tonumber(L, 1), lua_tonumber(L, 2), lua_tointeger(L, 3), lua_toboolean(L, 4), lua_toboolean(L, 5));
+    luaReturnNum(curspeed);
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -332,6 +339,7 @@ static LuaFunctions s_functab[] =
     luaRegister(getScreenCenter),
     luaRegister(getWallNormal),
     luaRegister(setFixedDT),
+    luaRegister(setSpeed),
 
     { NULL, NULL }
 };
@@ -561,7 +569,8 @@ MAKE_RO_VEC_MTH(alpha2,     getAlpha2,      alpha2,     1) \
 MAKE_RO_VEC_MTH(rotate,     getRotation,    rotation,   1) \
 MAKE_RO_VEC_MTH(rotate2,    getRotation2,   rotation2,  1) \
 MAKE_RO_VEC_MTH(velocity,   getVelocity,    velocity,   2) \
-MAKE_RO_VEC_MTH(gravity,    getGravity,     gravity,    2)
+MAKE_RO_VEC_MTH(gravity,    getGravity,     gravity,    2) \
+MAKE_RO_VEC_MTH(friction,   getFriction,    friction,    2)
 
 RO_SET_STUFF // Create the functions
 
@@ -613,13 +622,13 @@ luaFn(ro_updatePhysics)
 luaFn(ro_vectorTo)
 {
     RenderObject *a = getRO(L);
-    RenderObject *b = getRO(L);
+    RenderObject *b = getRO(L, 2);
     if(a && b)
     {
         Vector av = a->position + a->offset;
         Vector bv = b->position + b->offset;
         Vector d = bv - av;
-        luaReturnVec2(d.x, d.y)
+        luaReturnVec2(d.x, d.y);
     }
     luaReturnVec2(0, 0);
 }
@@ -1035,13 +1044,19 @@ luaFn(vec_isLenIn)
 luaFn(vec_angle)
 {
     Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
-    luaReturnNum(a.rotation2D());
+    float r = a.rotation2D();
+    if(r < 0)
+        r += 360;
+    luaReturnNum(r);
 }
 
 luaFn(vec_angleRad)
 {
     Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
-    luaReturnNum(a.rotationRad2D());
+    float r = a.rotationRad2D();
+    if(r < 0)
+        r += (2 * PI_F);
+    luaReturnNum(r);
 }
 
 luaFn(vec_angleBetween)
@@ -1081,6 +1096,43 @@ luaFn(vec_rotateRad)
     luaReturnVec2(a.x, a.y);
 }
 
+luaFn(vec_setAngle)
+{
+    Vector v(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    float newa = lua_tonumber(L, 3);
+    float a = v.rotation2D();
+    newa -= a;
+    v.rotate2D(newa);
+    luaReturnVec2(v.x, v.y);
+}
+
+luaFn(vec_setAngleRad)
+{
+    Vector v(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    float newa = lua_tonumber(L, 3);
+    float a = v.rotationRad2D();
+    newa -= a;
+    v.rotateRad2D(newa);
+    luaReturnVec2(v.x, v.y);
+}
+
+luaFn(vec_perpendicularRight)
+{
+    luaReturnVec2(-lua_tonumber(L, 2), lua_tonumber(L, 1));
+}
+
+luaFn(vec_perpendicularLeft)
+{
+    luaReturnVec2(lua_tonumber(L, 2), -lua_tonumber(L, 1));
+}
+
+luaFn(vec_projectOnto)
+{
+    Vector a(lua_tonumber(L, 1), lua_tonumber(L, 2));
+    Vector b(lua_tonumber(L, 3), lua_tonumber(L, 4));
+    Vector p = a.project2DOnto(b);
+    luaReturnVec2(p.x, p.y);
+}
 
 
 static const luaL_Reg statslib[] =
@@ -1198,6 +1250,11 @@ static const luaL_Reg vectorlib[] =
     { "reflection", vec_reflection },
     { "rotate", vec_rotate },
     { "rotateRad", vec_rotateRad },
+    { "setAngle", vec_setAngle },
+    { "setAngleRad", vec_setAngleRad },
+    { "perpendicularLeft", vec_perpendicularLeft },
+    { "perpendicularRight", vec_perpendicularRight },
+    { "projectOnto", vec_projectOnto },
 
     {NULL, NULL}
 };

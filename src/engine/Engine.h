@@ -41,8 +41,11 @@ public:
     inline static void SetQuit(bool q = true) { s_quit = q; }
     inline static SDL_Joystick *GetJoystick(uint32 i) { return i < s_joysticks.size() ? s_joysticks[i] : NULL; }
     inline static uint32 GetJoystickCount(void) { return s_joysticks.size(); }
-    inline static void SetSpeed(float s) { s_speed = s; }
-    inline static float GetSpeed(void) { return s_speed; }
+    inline static void SetSpeed(float s, float t = 0, int loop = 0, bool pingpong = false, bool ease = false)
+    {
+        s_speed.interpolateTo(s, t, loop, pingpong, ease);
+    }
+    inline static float GetSpeed(void) { return s_speed.x; }
     inline static uint32 GetCurFrameTime(void) { return s_curFrameTime; }
     inline static double GetCurFrameTimeF(void) { return (s_curFrameTime + (double)s_accuTime) / 1000.0; } // float is not precise enough, as this can get very high
     inline static uint32 GetTimeDiff(void) { return s_diffTime; } // 1000 == 1 second (scaled by speed)
@@ -171,7 +174,7 @@ protected:
     // Dynamic time step
     static uint32 s_curFrameTime; // game time (scaled by speed)
     static uint32 s_lastFrameTimeReal; // last frame's SDL_GetTicks() -- not scaled by speed!
-    static float s_speed; // speed multiplicator, 1.0 = normal speed. should NOT be negative!
+    static InterpolatedVector s_speed; // speed multiplicator, 1.0 = normal speed. should NOT be negative!
     static float s_accuTime; // accumulated time, for cases when s_speed is very small and the resulting frame time less then 1 ms
     static uint32 s_diffTime; // time diff per tick [uint32(s_fracTime)]
     static uint32 s_diffTimeReal; // time diff per tick, real time (not scaled by s_speed)

@@ -69,8 +69,6 @@ collision/Collision.cpp
 collision/Collision.h
 collision/Line.cpp
 collision/Line.h
-collision/PixelMap.h
-collision/PixelMap.h
 GL/gl.h
 GL/glext.h
 )

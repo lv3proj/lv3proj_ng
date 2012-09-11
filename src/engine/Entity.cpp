@@ -1,7 +1,7 @@
 #include "Entity.h"
-#include "Collision/AABB.h"
-#include "Collision/Circle.h"
-#include "Collision/Line.h"
+#include "collision/AABB.h"
+#include "collision/Circle.h"
+#include "collision/Line.h"
 #include "Engine.h"
 #include "Renderer.h"
 

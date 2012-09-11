@@ -48,6 +48,7 @@ void RenderObject::update(float dt)
     rotation2.update(dt);
     velocity.update(dt);
     gravity.update(dt);
+    friction.update(dt);
 
     onUpdate(dt);
 }
@@ -61,6 +62,45 @@ void RenderObject::updatePhysics(float dt)
 {
     position += velocity * dt;
     velocity += gravity * dt;
+
+    if(!velocity.isZero())
+    {
+        float t = velocity.x;
+        if(t < 0)
+        {
+            t += friction.x * dt;
+            if(t < 0)
+                velocity.x = t;
+            else
+                velocity.x = 0;
+        }
+        else
+        {
+            t -= friction.x * dt;
+            if(t > 0)
+                velocity.x = t;
+            else
+                velocity.x = 0;
+        }
+
+        t = velocity.y;
+        if(t < 0)
+        {
+            t += friction.y * dt;
+            if(t < 0)
+                velocity.y = t;
+            else
+                velocity.y = 0;
+        }
+        else
+        {
+            t -= friction.y * dt;
+            if(t > 0)
+                velocity.y = t;
+            else
+                velocity.y = 0;
+        }
+    }
 }
 
 

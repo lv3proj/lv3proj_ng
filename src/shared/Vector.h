@@ -374,6 +374,19 @@ public:
 
         return radToDeg(atan2(y, x)) + 90;
     }
+
+    inline Vector project2DOnto(const Vector& b) const
+    {
+        //float tmp = dot(b) / b.getLength2DSq();
+        //return Vector(tmp * b.x, tmp * b.y);
+        Vector proj;
+        const Vector& a = *this;
+        float dp = (a.x*b.x + a.y*b.y);
+        proj.x = ( dp / (b.x*b.x + b.y*b.y) ) * b.x;
+        proj.y = ( dp / (b.x*b.x + b.y*b.y) ) * b.y;
+        return proj;
+    }
+
 };
 
 

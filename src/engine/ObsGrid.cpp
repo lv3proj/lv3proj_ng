@@ -45,6 +45,7 @@ void ObsGrid::Clear()
     delete [] const_cast<mask*>(_empty);
     _full = NULL;
     _empty = NULL;
+    _memInUse = 0;
 }
 
 void ObsGrid::Init(unsigned int gridsize, unsigned int blocksize, unsigned int keepspare)

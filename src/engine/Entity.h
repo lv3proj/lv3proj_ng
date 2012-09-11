@@ -2,7 +2,7 @@
 #define ENTITY_H
 
 #include "Quad.h"
-#include "Collision/Collidable.h"
+#include "collision/Collidable.h"
 
 class Entity : public Quad
 {

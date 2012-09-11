@@ -19,7 +19,7 @@ EngineBase *engine = NULL;
 uint32 EngineBase::s_curFrameTime;
 uint32 EngineBase::s_lastFrameTimeReal;
 bool EngineBase::s_quit;
-float EngineBase::s_speed;
+InterpolatedVector EngineBase::s_speed;
 float EngineBase::s_accuTime;
 uint32 EngineBase::s_diffTime;
 uint32 EngineBase::s_diffTimeReal;
@@ -211,7 +211,7 @@ void EngineBase::Run(float runtime /* = -1 */)
         diff = ms - s_lastFrameTimeReal;
         if(diff > 127) // 127 ms max. allowed diff time
             diff = 127;
-        diff_scaled = diff * s_speed;
+        diff_scaled = diff * GetSpeed();
         s_fracTime = diff_scaled / 1000.0f;
 
         s_accuTime += diff_scaled;
@@ -347,6 +347,7 @@ void EngineBase::_Process(void)
         resMgr.pool.Cleanup();
     }*/
 
+    s_speed.update(dt);
     camera->update(dt);
     objmgr->Update(dt);
 

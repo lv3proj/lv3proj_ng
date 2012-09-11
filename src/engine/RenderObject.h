@@ -56,6 +56,7 @@ public:
 
     InterpolatedVector velocity;
     InterpolatedVector gravity;
+    InterpolatedVector friction;
 
     // scroll factor, 1 = stay at same position relative to camera (like GUI elements that never move)
     // 0.5 = scroll half as fast as the camera
