@@ -63,3 +63,86 @@ function entity:checkWall(dx, dy)
     self:position(px, py)
     return c, x, y
 end
+
+function entity:moveOutOfEntity(e, maxsteps, vlen)
+    maxsteps = maxsteps or 1
+    vlen = vlen or 1
+    
+    local coll = false
+        
+    while maxsteps > 0 do
+        local c, x, y = self:collideWith(e)
+        if not c then
+            break
+        end
+        coll = true
+        
+        local px, py = self:getPosition()
+        
+        local dx, dy = px - x, py - y
+        dx, dy = vector.setLen(dx, dy, vlen)
+        
+        local sx, sy = self:getPosition()
+        self:position(sx + dx, sy + dy)
+        
+        maxsteps = maxsteps - 1
+    end
+    return coll
+end
+
+function entity:moveApart(e, maxsteps, vlen)
+    maxsteps = maxsteps or 1
+    vlen = vlen or 1
+    
+    local coll = false
+        
+    while maxsteps > 0 do
+        local c, x, y = self:collideWith(e)
+        if not c then
+            break
+        end
+        coll = true
+        
+        local sx, sy = self:getPosition()
+        
+        local dx, dy = px - x, py - y
+        dx, dy = vector.setLen(dx, dy, vlen)
+        
+        self:position(sx + dx, sy + dy)
+        if self:collideGrid() then
+            self:position(sx, sy)
+        end
+        
+        sx, sy = e:getPosition()
+        e:position(sx - dx, sy - dy)
+        if e:collideGrid() then
+            e:position(sx, sy)
+        end
+        
+        maxsteps = maxsteps - 1
+    end
+    
+    return coll
+end
+
+function entity:moveOutOfWall(maxsteps, vlen, area, skip) -- all optional
+    maxsteps = maxsteps or 1
+    vlen = vlen or 1
+    
+    local coll = false
+    while maxsteps > 0 do
+        local c, x, y = self:collideGrid()
+        if not c then
+            break
+        end
+        coll = true
+        local nx, ny = getWallNormal(x, y, area, skip)
+        if nx == 0 and ny == 0 then return end
+        nx, ny = vector.setLen(nx, ny, vlen)
+        local px, py = self:getPosition()
+        self:position(px + ny, py + ny)
+        maxsteps = maxsteps - 1
+    end
+    return coll
+end
+

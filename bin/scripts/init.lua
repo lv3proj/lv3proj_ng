@@ -2,6 +2,7 @@
 print("----- Lua init... -----")
 
 collectgarbage("generational")
+clearGarbage(true)
 
 
 dofile("defines.lua")
@@ -38,9 +39,10 @@ rawset(_G, "onInit", function()
     
     --local q = quad.new("en.anim", 3):position(400, 300):scale(5, 5)
     
-    local fr  = quad.new("fractal02.png", 2):position(400, 300):scale(3, 3):parallax(0.8, 0.8)
-    local fr2 = quad.new("fractal01.png", 1):position(400, 300):scale(4, 4):parallax(0.5, 0.5)
-    local fr2 = quad.new("fractal02.png", 6):position(400, 300):parallax(1.35, 1.35):rotate(90):alpha(0.3):alpha(0.4, 1, -1, true, true)
+    local fr  = quad.new("fractal.png", 2):position(400, 300):scale(3, 3):parallax(0.8, 0.8):alpha(0.1):alpha(0.25, 2, -1, true, true):color(1, 0.4, 0)
+    local fr2 = quad.new("fractal.png", 1):position(400, 300):scale(4, 4):parallax(0.5, 0.5):alpha(0.2):alpha(0.4, 2.3, -1, true, true):color(0, 1, 0)
+    local fr2 = quad.new("fractal.png", 6):position(600, 300):parallax(1.35, 1.35):rotate(40):alpha(0.3):alpha(0.4, 1, -1, true, true):scale(1.1, 1.2, 6, -1, true, true):color(0, 0, 1):color(1, 0, 0, 4, -1, true, true)
+                :rotate(30, 10, -1, true, true)
         --:scale(4, 6):scale(6, 4, 3, -1, true, true)
     
     
