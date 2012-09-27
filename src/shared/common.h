@@ -3,8 +3,24 @@
 
 #include <stddef.h>
 #include <stdlib.h>
+
+#define compile_assert(pred) {switch(0) { case 0: case (pred): ;}}
+
+#ifndef NDEBUG
+#  define DBG if(1)
+#else
+#  define DBG if(0)
+#endif
+
+#ifdef NDEBUG
+#  define ASSERT(x)
+#else
+#  define ASSERT(x) { if(!(x)) { fprintf(stderr, "ASSERTION FAILED: \"%s\", File: %s:%u\n", #x, __FILE__, __LINE__); TriggerBreakpoint(); } }
+#endif
+
 #include <stdio.h>
 #include <string.h>
+#include <float.h>
 #include <math.h>
 #include <string>
 #include <sstream>
@@ -13,8 +29,8 @@
 #include <vector>
 
 #include "SysDefs.h"
-#include "log.h"
-#include "tools.h"
+#include "PlatformSpecific.h"
+
 
 struct memblock
 {
@@ -24,13 +40,10 @@ struct memblock
     uint32 size;
 };
 
-#define compile_assert(pred) {switch(0) { case 0: case (pred): ;}}
 
-#ifndef NDEBUG
-#  define DBG if(1)
-#else
-#  define DBG if(0)
-#endif
+#include "log.h"
+#include "tools.h"
+#include "MemorySystem.h"
 
 
 #endif
