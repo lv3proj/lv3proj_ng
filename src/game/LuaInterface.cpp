@@ -8,6 +8,34 @@
 #include "LuaEngine.h"
 #include "LuaConstants.h"
 
+// TEMP: to gather allocation statistics
+static void *the_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
+{
+    (void)ud;  (void)osize;  /* not used */
+    if (nsize == 0)
+    {
+        free(ptr);
+        return NULL;
+    }
+    if(ud)
+        ++(*((LuaInterface::LuaAllocStats*)ud))[nsize];
+    return realloc(ptr, nsize);
+}
+
+static int the_panic (lua_State *L) {
+    luai_writestringerror("PANIC: unprotected error in call to Lua API (%s)\n",
+        lua_tostring(L, -1));
+    return 0;  /* return to Lua to abort */
+}
+
+static void PrintAllocStats(const LuaInterface::LuaAllocStats& a)
+{
+    for(LuaInterface::LuaAllocStats::const_iterator it = a.begin(); it != a.end(); ++it)
+    {
+        logdev("AllocStats: %u bytes\t\t%u times", it->first, it->second);
+    }
+}
+
 
 LuaInterface::LuaInterface()
  : _lua(NULL)
@@ -22,8 +50,10 @@ LuaInterface::~LuaInterface()
 void LuaInterface::Shutdown()
 {
     logdebug("LuaInterface::Shutdown()");
+    PrintAllocStats(_stats);
     lua_close(_lua);
     _lua = NULL;
+    _stats.clear();
 }
 
 void LuaInterface::GC()
@@ -55,7 +85,11 @@ bool LuaInterface::Init()
 {
     if(!_lua)
     {
-        _lua = luaL_newstate();
+        _lua = lua_newstate(the_alloc, &_stats);
+        if(!_lua)
+            return false;
+
+        lua_atpanic(_lua, the_panic);
 
         // Lua internal functions
         luaL_openlibs(_lua);

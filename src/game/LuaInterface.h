@@ -2,6 +2,7 @@
 #define LUA_INTERFACE_H
 
 #include "common.h"
+#include <map>
 
 // TODO: derive from ScriptInterface base class,
 // that provides virtual interfaces?
@@ -31,6 +32,8 @@ public:
     bool callMethod(ScriptObject *, const char *f);
     bool callMethod(ScriptObject *, const char *f, float);
 
+    // for debugging -- remove later
+    typedef std::map<unsigned int, unsigned int> LuaAllocStats;
 
 protected:
 
@@ -39,6 +42,7 @@ protected:
     bool doCall(int nparams, int nrets = 0);
 
     lua_State *_lua;
+    LuaAllocStats _stats;
 };
 
 // registers the object on top of the stack having index 'ptr'
