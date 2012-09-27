@@ -2,6 +2,21 @@
 #include "Engine.h"
 #include "Renderer.h"
 #include "Texture.h"
+#include "Arenas.h"
+
+static Arenas::QuadMem s_quadArena(Arenas::chunkAlloc, 2000, sizeof(Quad) );
+
+
+Quad *Quad::create(const char *tex /* = NULL */, int w /* = 0 */, int h /* = 0 */)
+{
+    return XNEW(Quad, s_quadArena)(tex, w, h);
+}
+
+void Quad::destroy()
+{
+    return XDELETE_NN(this, s_quadArena);
+}
+
 
 
 Quad::Quad(const char *tex /* = NULL */, int w /* = 0 */, int h /* = 0 */)

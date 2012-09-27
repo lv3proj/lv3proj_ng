@@ -652,7 +652,7 @@ luaFn(quad_new)
         luaReturnNil();
     }
 
-    Quad *q = new Quad(getCStr(L, 1), lua_tointeger(L, 3), lua_tointeger(L, 4));
+    Quad *q = Quad::create(getCStr(L, 1), lua_tointeger(L, 3), lua_tointeger(L, 4));
     lr->Add(q);
     return registerObject(L, q, OT_QUAD, NULL);
 }
@@ -695,7 +695,7 @@ luaFn(quad_setWH)
 
 luaFn(entity_new)
 {
-    Entity *e = new ScriptedEntity(scriptedEngine->script);
+    Entity *e = ScriptedEntity::create(scriptedEngine->script);
     RenderLayer *lr = getLayerByID(L, 1);
     if(!lr || lr->GetID() == 0)
         lr = engine->layers->GetLayer(10); // FIXME: which layer is good?

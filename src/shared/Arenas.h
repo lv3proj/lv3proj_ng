@@ -20,17 +20,24 @@ namespace Arenas
         GlobalArena();
     };
 
-    class VectorInterpolation : public MemoryArena<DynamicPoolAllocator<GlobalArena>, SingleThreadPolicy, SimpleBoundsChecking2, NoMemoryTracking, DeadFillTagging2>
+    class VectorInterpolation : public MemoryArena<DynamicPoolAllocator<GlobalArena> >
     {
     public:
         VectorInterpolation(GlobalArena&, size_t elements, size_t elemSize);
     };
 
-    /*class VectorInterpolation : public MemoryArena<FixedPoolAllocator>
+    class QuadMem : public MemoryArena<DynamicPoolAllocator<GlobalArena> >
     {
     public:
-        VectorInterpolation(GlobalArena&, size_t elements, size_t elemSize);
-    };*/
+        QuadMem(GlobalArena&, size_t elements, size_t elemSize);
+    };
+
+    class EntityMem : public MemoryArena<DynamicPoolAllocator<GlobalArena> >
+    {
+    public:
+        EntityMem(GlobalArena&, size_t elements, size_t elemSize);
+    };
+
 
     extern GlobalArena fallback;
     extern GlobalArena chunkAlloc;

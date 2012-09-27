@@ -56,11 +56,12 @@ void ObjectMgr::ClearGarbage()
 {
     if(_garbage.size())
     {
-        logdev("ObjectMgr: Deleting %u objects", (unsigned int)_garbage.size());
+        //logdev("ObjectMgr: Deleting %u objects", (unsigned int)_garbage.size());
         for(size_t i = 0; i < _garbage.size(); ++i)
         {
             _alive.erase(_garbage[i]);
-            delete _garbage[i];
+            //delete _garbage[i];
+            _garbage[i]->destroy();
         }
         _garbage.clear();
     }

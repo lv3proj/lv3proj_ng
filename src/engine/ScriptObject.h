@@ -23,6 +23,9 @@ protected:
 
 public:
 
+    // FIXME: solve this in a better way.
+    virtual void destroy() { delete this; }
+
     virtual void update(float dt) {}
     virtual void updateFixed(float dt) {}
 
