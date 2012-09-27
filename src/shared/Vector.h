@@ -22,10 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define VECTOR_H
 
 
-#include <math.h>
-#include <stdlib.h>
-#include <float.h>
-#include <vector>
+#include "common.h"
 #include "mathtools.h"
 
 typedef float scalar_t;
@@ -64,6 +61,14 @@ public:
         x = vec.x;
         y = vec.y;
         z = vec.z;
+        return *this;
+    }
+
+    const Vector &operator=(const scalar_t &s)
+    {
+        x = s;
+        y = 0;
+        z = 0;
         return *this;
     }
 
@@ -377,19 +382,19 @@ public:
 
     inline Vector project2DOnto(const Vector& b) const
     {
-        //float tmp = dot(b) / b.getLength2DSq();
-        //return Vector(tmp * b.x, tmp * b.y);
-        Vector proj;
+        float tmp = dot(b) / b.getLength2DSq();
+        return Vector(tmp * b.x, tmp * b.y);
+        /*Vector proj;
         const Vector& a = *this;
         float dp = (a.x*b.x + a.y*b.y);
         proj.x = ( dp / (b.x*b.x + b.y*b.y) ) * b.x;
         proj.y = ( dp / (b.x*b.x + b.y*b.y) ) * b.y;
-        return proj;
+        return proj;*/
     }
 
 };
 
-
+/*
 class VectorPathNode
 {
 public:
@@ -422,43 +427,43 @@ public:
 protected:
     std::vector <VectorPathNode> pathNodes;
 };
+*/
 
-
-class InterpolatedVector;
 struct InterpolatedVectorData
 {
-    InterpolatedVectorData()
+    /*InterpolatedVectorData()
     {
-        interpolating = false;
         pingPong = false;
         loop = 0;
-        pathTimer = 0;
-        pathTime = 0;
-        pathSpeed = 1;
-        pathTimeMultiplier = 1;
+        //pathTimer = 0;
+        //pathTime = 0;
+        //pathSpeed = 1;
+        //pathTimeMultiplier = 1;
         timePassed = 0;
         timePeriod = 0;
         ease = false;
-        followingPath = false;
-    }
+        //followingPath = false;
+    }*/
 
     Vector from;
     Vector target;
 
-    VectorPath path;
+    //VectorPath path;
 
     int loop;
 
-    float pathTimer, pathTime;
-    float pathSpeed;
-    float pathTimeMultiplier;
+    //float pathTimer, pathTime;
+    //float pathSpeed;
+    //float pathTimeMultiplier;
     float timePassed, timePeriod;
 
-    bool interpolating;
     bool pingPong;
     bool ease;
-    bool followingPath;
+    //bool followingPath;
 };
+
+// Not quite true, but they are always explicitly set anyway.
+XMEM_DEFINE_POD_TYPE(InterpolatedVectorData);
 
 enum LerpType
 {
@@ -468,51 +473,35 @@ enum LerpType
     LERP_EASEOUT,
 };
 
-
 // This struct is used to keep all of the interpolation-specific data out
 // of the global InterpolatedVector class, so that we don't waste memory on
 // non-interpolated vectors.
 class InterpolatedVector : public Vector
 {
 public:
-    InterpolatedVector(scalar_t a = 0, scalar_t b = 0, scalar_t c = 0) : Vector(a,b,c), data(0) {}
-    InterpolatedVector(const Vector &vec) : Vector(vec), data(0) {}
-    ~InterpolatedVector() {delete data;}
+    InterpolatedVector(scalar_t a = 0, scalar_t b = 0, scalar_t c = 0) : Vector(a,b,c), _data(0) {}
+    InterpolatedVector(const Vector &vec) : Vector(vec), _data(0) {}
+    ~InterpolatedVector();
 
     InterpolatedVector(const InterpolatedVector &vec)
+        : Vector(vec)
+        , _data(vec._data ? allocData(*vec._data) : 0)
     {
-        x = vec.x;
-        y = vec.y;
-        z = vec.z;
-        if (vec.data)
-            data = new InterpolatedVectorData(*vec.data);
-        else
-            data = 0;
-    }
-    InterpolatedVector &operator=(const InterpolatedVector &vec)
-    {
-        x = vec.x;
-        y = vec.y;
-        z = vec.z;
-        delete data;
-        if (vec.data)
-            data = new InterpolatedVectorData(*vec.data);
-        else
-            data = 0;
-        return *this;
     }
 
-    float interpolateTo (Vector vec, float timePeriod, int loopType = 0, bool pingPong = false, bool ease = false);
+    InterpolatedVector &operator=(const InterpolatedVector &vec);
+
+    float interpolateTo (const Vector& vec, float timePeriod, int loopType = 0, bool pingPong = false, bool ease = false);
 
     void inline update(float dt)
     {
-        if (!data)
+        if (!_data)
             return;
 
-        if (isFollowingPath())
+        /*if (isFollowingPath())
         {
             _updatePath(dt);
-        }
+        }*/
         if (isInterpolating())
         {
             _doInterpolate(dt);
@@ -521,33 +510,34 @@ public:
 
     inline bool isInterpolating() const
     {
-        return data && data->interpolating;
+        // Assume data are instantly deleted after interpolation is over
+        return !!_data;
     }
 
-    void startPath(float time);
+    /*void startPath(float time);
     void stopPath();
-    void resumePath();
+    void resumePath();*/
 
     void stop();
 
-    inline void stopAll()
+    /*inline void stopAll()
     {
         stop();
         stopPath();
-    }
+    }*/
 
-    float getPercentDone();
+    float getPercentDone() const;
 
-    inline bool isFollowingPath() const
+    /*inline bool isFollowingPath() const
     {
         return data && data->followingPath;
-    }
+    }*/
 
 protected:
 
     // We never allocate this if the vector isn't used for
     // interpolation, which saves a _lot_ of memory.
-    InterpolatedVectorData *data;
+    InterpolatedVectorData *_data;
 
 
     void _doInterpolate(float dt);
@@ -555,10 +545,13 @@ protected:
 
     inline InterpolatedVectorData *ensureData()
     {
-        if (!data)
-            data = new InterpolatedVectorData;
-        return data;
+        if (!_data)
+            _data = allocData();
+        return _data;
     }
+
+    InterpolatedVectorData *allocData();
+    InterpolatedVectorData *allocData(const InterpolatedVectorData& d);
 };
 
 

@@ -19,8 +19,13 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "Vector.h"
+#include "common.h"
 #include <assert.h>
 #include <stddef.h>
+#include "Arenas.h"
+
+// Memory management
+static Arenas::VectorInterpolation s_ipvArena(Arenas::chunkAlloc, 1000, sizeof(InterpolatedVectorData) );
 
 /*************************************************************************/
 
@@ -61,20 +66,6 @@ static Vector lerp(const Vector &v1, const Vector &v2, float dt, LerpType lerpTy
 /*************************************************************************/
 
 /*
-float SmoothCurve( float x )
-{
-    return (1 - cosf( x * PI_F )) * 0.5f;
-}
-
-float SimpleSpline( float value )
-{
-    float valueSquared = value * value;
-
-    // Nice little ease-in, ease-out spline-like curve
-    return (3 * valueSquared - 2 * valueSquared * value);
-}
-*/
-
 void VectorPath::addPathNode(Vector v, float p)
 {
     VectorPathNode node;
@@ -153,14 +144,36 @@ Vector VectorPath::getValue(float p) // between 0 and 1
     v += from->value;
     return v;
 }
+*/
 
 /*************************************************************************/
 
-float InterpolatedVector::interpolateTo(Vector vec, float timePeriod, int loop, bool pingPong, bool ease)
+#define STOP_INTERPOLATION(x) do { if(x) { XDELETE_NN(x, s_ipvArena); _data = NULL; } } while(0)
+
+InterpolatedVector& InterpolatedVector::operator=(const InterpolatedVector& vec)
+{
+    x = vec.x;
+    y = vec.y;
+    z = vec.z;
+    if (vec._data)
+    {
+        if(_data)
+            *_data = *vec._data;
+        else
+            _data = allocData(*vec._data);
+    }
+    else
+    {
+        STOP_INTERPOLATION(_data);
+    }
+    return *this;
+}
+
+float InterpolatedVector::interpolateTo(const Vector& vec, float timePeriod, int loop, bool pingPong, bool ease)
 {
     if (timePeriod == 0)
     {
-        this->stop();
+        STOP_INTERPOLATION(_data);
         this->x = vec.x;
         this->y = vec.y;
         this->z = vec.z;
@@ -177,24 +190,21 @@ float InterpolatedVector::interpolateTo(Vector vec, float timePeriod, int loop, 
         timePeriod = (vec-Vector(x,y,z)).getLength3D() / timePeriod;
     }
     data->timePeriod = timePeriod;
-    data->from = Vector (this->x, this->y, this->z);
     data->target = vec;
+    data->from = Vector (this->x, this->y, this->z);
 
     data->loop = loop;
     data->pingPong = pingPong;
 
-    data->interpolating = true;
-
-    return data->timePeriod;
+    return timePeriod;
 }
 
 void InterpolatedVector::stop()
 {
-    if (data)
-        data->interpolating = false;
+    STOP_INTERPOLATION(_data);
 }
 
-void InterpolatedVector::startPath(float time)
+/*void InterpolatedVector::startPath(float time)
 {
     InterpolatedVectorData *data = ensureData();
 
@@ -223,7 +233,7 @@ void InterpolatedVector::resumePath()
 
 void InterpolatedVector::_updatePath(float dt)
 {
-    InterpolatedVectorData *data = ensureData();
+    InterpolatedVectorData *data = this->data;
     if (data->pathTimer > data->pathTime)
     {
         Vector value = data->path.getPathNode(data->path.getNumPathNodes()-1)->value;
@@ -265,16 +275,16 @@ void InterpolatedVector::_updatePath(float dt)
         this->y = value.y;
         this->z = value.z;
     }
-}
+}*/
 
-float InterpolatedVector::getPercentDone()
+float InterpolatedVector::getPercentDone() const
 {
-    return data ? data->timePassed/data->timePeriod : 0;
+    return _data ? _data->timePassed/_data->timePeriod : 0;
 }
 
 void InterpolatedVector::_doInterpolate(float dt)
 {
-    InterpolatedVectorData *data = ensureData();
+    InterpolatedVectorData *data = this->_data;
 
     data->timePassed += dt;
     if (data->timePassed >= data->timePeriod)
@@ -282,12 +292,11 @@ void InterpolatedVector::_doInterpolate(float dt)
         this->x = data->target.x;
         this->y = data->target.y;
         this->z = data->target.z;
-        data->interpolating = false;
 
         if (data->loop != 0)
         {
             if (data->loop > 0)
-                data->loop -= 1;
+                --data->loop;
 
             if (data->pingPong)
             {
@@ -301,6 +310,10 @@ void InterpolatedVector::_doInterpolate(float dt)
                 interpolateTo (data->target, data->timePeriod, data->loop, data->pingPong, data->ease);
             }
         }
+        else
+        {
+            STOP_INTERPOLATION(data);
+        }
 
     }
     else
@@ -311,4 +324,19 @@ void InterpolatedVector::_doInterpolate(float dt)
         this->y = v.y;
         this->z = v.z;
     }
+}
+
+InterpolatedVector::~InterpolatedVector()
+{
+    XDELETE(_data, s_ipvArena);
+}
+
+InterpolatedVectorData *InterpolatedVector::allocData()
+{
+    return XNEW(InterpolatedVectorData, s_ipvArena);
+}
+
+InterpolatedVectorData *InterpolatedVector::allocData(const InterpolatedVectorData& d)
+{
+    return XNEW(InterpolatedVectorData, s_ipvArena)(d);
 }
