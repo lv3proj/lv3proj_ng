@@ -322,7 +322,7 @@ SoundFile *SoundCore::GetSound(const char *fn)
         soundf = *it;
         if(soundf->CanBeDeleted())
         {
-            logdev("SoundCore: Recycling "PTRFMT" (%s)", fn);
+            logdev("SoundCore: Recycling "PTRFMT" (%s)", soundf, fn);
             soundf->SetDeleteWhenStopped(false); // Revive it
             return soundf;
         }
