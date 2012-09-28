@@ -13,7 +13,15 @@ class Texture;
 class Anim;
 class Tile;
 
-typedef std::map<std::string, Resource*> ResourceStore;
+struct charptr_less
+{
+    inline bool operator() (const char *a, const char *b) const
+    {
+        return strcmp(a, b) < 0;
+    }
+};
+
+typedef std::map<const char *, Resource*, charptr_less> ResourceStore;
 
 class ResourceMgr
 {
