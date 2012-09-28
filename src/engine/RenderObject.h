@@ -33,7 +33,7 @@ protected:
 
 public:
 
-    typedef std::set<RenderObject*> Children;
+    typedef std::set<RenderObject*> Children; // TODO: make this vector
 
 
     ~RenderObject();
@@ -70,7 +70,8 @@ public:
     inline BlendType getBlendType() const { return _blend; }
     inline void setBlendType(BlendType b) {_blend = b; }
 
-    inline unsigned int getLayer() const { return _layer; }
+    inline RenderLayer *getLayerPtr() const { return _layerPtr; }
+
     inline RenderObject *getParent() const { return _parent; }
 
     void toLayer(unsigned int target);
@@ -96,6 +97,9 @@ public:
 
     static float s_cullX1, s_cullX2, s_cullY1, s_cullY2;
 
+    RenderLayer::Block *_layerBlock;
+    unsigned int _indexInBlock;
+
 protected:
 
     virtual void onEndOfLife();
@@ -110,7 +114,6 @@ protected:
     float halfHeight;
 
     BlendType _blend;
-    unsigned int _layer;
     RenderObject *_parent;
     RenderLayer *_layerPtr;
     bool _noCull;

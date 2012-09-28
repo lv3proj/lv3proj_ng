@@ -15,7 +15,6 @@ RenderObject::RenderObject()
     , height(0)
     , halfWidth(0)
     , halfHeight(0)
-    , _layer(LR_INVALID)
     , _blend(BLEND_DEFAULT)
     , scale(1, 1, 1)
     , color(1, 1, 1)
@@ -26,6 +25,8 @@ RenderObject::RenderObject()
     , _parent(NULL)
     , _layerPtr(NULL)
     , _noCull(false)
+    , _layerBlock(NULL)
+    //, _indexInBlock(-1)
 {
 }
 
@@ -122,28 +123,31 @@ void RenderObject::onEndOfLife()
 
     LifeObject::onEndOfLife();
 
-    engine->layers->GetLayer(getLayer())->Remove(this);
+    if(_layerPtr)
+        _layerPtr->Remove(this);
+    else
+        logdev("WARNING: Object %p not on any layer", this);
 }
 
 void RenderObject::toLayer(unsigned int target)
 {
-    if(_layer == target)
-        return;
-    engine->layers->GetLayer(getLayer())->Remove(this);
-    _layer = LR_INVALID; // to avoid warnings
-    _layerPtr = engine->layers->GetLayer(target);
-    _layerPtr->Add(this);
-    _layer = target;
+    if(_layerPtr)
+    {
+        if(_layerPtr->GetID() == target)
+            return;
+        _layerPtr->Remove(this);
+    }
+    engine->layers->GetLayer(target)->Add(this);
 }
 
 void RenderObject::moveToBack()
 {
-    engine->layers->GetLayer(getLayer())->MoveToBack(this);
+    _layerPtr->MoveToBack(this);
 }
 
 void RenderObject::moveToFront()
 {
-    engine->layers->GetLayer(getLayer())->MoveToFront(this);
+    _layerPtr->MoveToFront(this);
 }
 
 void RenderObject::addChild(RenderObject *child)

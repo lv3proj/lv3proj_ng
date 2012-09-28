@@ -13,6 +13,26 @@ class RenderLayer
     friend class RenderLayerMgr;
 
 public:
+
+    static const unsigned int BLOCK_SIZE = 128;
+
+    struct Block
+    {
+        Block *next;
+        Block *prev;
+        unsigned int objCount;
+        unsigned int wIdx; // Next index to write to (possibly out of range) [intentionally unsigned, uses wrap in hasSpace()]
+        int direction; // either +1 or -1 (append or prepend)
+        RenderObject *ptrs[BLOCK_SIZE];
+
+        inline bool hasSpace() const { return wIdx < BLOCK_SIZE; }
+
+        void insert(RenderObject *ro);
+        void remove(RenderObject *ro);
+    };
+
+public:
+
     RenderLayer(unsigned int id);
     ~RenderLayer();
 
@@ -32,8 +52,21 @@ public:
     Vector parallax;
 
 protected:
+
+    Block *_AppendBlock();
+    Block *_PrependBlock();
+    void _UnlinkBlock(Block *);
+    void _AppendRO(RenderObject *);
+    void _PrependRO(RenderObject *);
+    void _UnlinkRO(RenderObject *);
+
     unsigned int _id; // position in vector in RenderLayerMgr
-    std::list<RenderObject*> _objs;
+    //std::list<RenderObject*> _objs;
+
+    unsigned int _objectCount;
+    Block *_firstBlock;
+    Block *_lastBlock;
+
 
 };
 

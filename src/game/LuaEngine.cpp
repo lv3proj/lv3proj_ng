@@ -593,7 +593,7 @@ luaFn(ro_parallax)
 luaFn(ro_getLayer)
 {
     RenderObject *ro = getRO(L);
-    luaReturnInt(ro ? ro->getLayer() : 0);
+    luaReturnInt((ro && ro->getLayerPtr()) ? ro->getLayerPtr()->GetID() : 0);
 }
 
 luaFn(ro_setPauseLevel)
