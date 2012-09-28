@@ -38,7 +38,7 @@ public:
         }
 
         // Pool full? Make new pool.
-        void *nextblock = _piggyback.Allocate(_memSize, _alignment, XSourceInfo(__FILE__, __LINE__));
+        void *nextblock = _piggyback.Allocate(_memSize, _alignment, XMEM_SOURCE_INFO);
         if(!nextblock)
             return NULL;
 
@@ -71,7 +71,7 @@ private:
     {
         if(!_memstart)
         {
-            _memstart = (char*)_piggyback.Allocate(_memSize, _alignment, XSourceInfo(__FILE__, __LINE__) );
+            _memstart = (char*)_piggyback.Allocate(_memSize, _alignment, XMEM_SOURCE_INFO);
             if(!_memstart)
                 return false;
         }

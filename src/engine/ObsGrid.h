@@ -38,7 +38,7 @@ public:
 
     // gridsize: dimension of grid (how many blocks per axis)
     // blocksize:dimension of each block, ie. 16x16
-    void Init(unsigned int gridsize, unsigned int blocksize, unsigned int keepspare = 30);
+    void Init(unsigned int gridsize, unsigned int blocksize);
     void Setup();
     void UpdateTile(unsigned int x, unsigned int y);
     // TODO: update function not involving tiles?
@@ -46,7 +46,8 @@ public:
     void Clear();
     void OptimizeAll();
     void OptimizeIncremental();
-    unsigned int GetMemoryUsage() const { return _memInUse; }
+    size_t GetMemoryUsage() const;
+    size_t GetBlocksInUse() const;
 
     inline unsigned char getObs(unsigned int x, unsigned int y) const;
     void setObs(unsigned int x, unsigned int y, ObsType obs);
@@ -82,15 +83,10 @@ private:
     const mask *_full;
     const mask *_empty;
 
-    std::vector<mask*> _spare; // unused
-    unsigned int _sparepos; // always points to last insert position; i.e. _spare is empty if this is 0
-    unsigned int _keepspare;
-
     unsigned int _incrementalX;
     unsigned int _incrementalY;
 
-
-    unsigned int _memInUse;
+    void *_allocator;
 };
 
 

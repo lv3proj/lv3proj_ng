@@ -5,10 +5,12 @@
 
 struct XSourceInfo
 {
-    XSourceInfo() : file("<unk>"), line(0) {}
-    XSourceInfo(const char *f, size_t l) : file(f), line(l) {}
+    XSourceInfo() : file("<unk>"), func("<unk>"), line(0) {}
+    XSourceInfo(const char *fil, size_t l, const char *fun)
+        : file(fil), func(fun), line(l) {}
 
     const char *file;
+    const char *func;
     size_t line;
 };
 

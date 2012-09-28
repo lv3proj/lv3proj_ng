@@ -1,30 +1,54 @@
 
 local dbgstring =
-              "Lua mem:       %u KB\n"
-           .. "ObsGrid mem:   %u KB\n"
-           .. "Resource mem:  %u KB, amount: %u\n"
-           .. "Rendered Objs: %u, Verts: %u\n"
-           .. "Video mem free:%u KB\n"
-           .. "Cam:  (%.3f, %.3f)\n"
-           .. "Zoom: (%.3f, %.3f)\n"
-           .. "Recursion: %d\n"
-           .. "ScreenCenter: (%.3f, %.3f)\n"
-    
+      "Rendered Objs:  %u, Verts: %u\n"
+   .. "Video mem free: %u KB\n"
+   .. "Cam:           (%.3f, %.3f)\n"
+   .. "Zoom:          (%.3f, %.3f)\n"
+   .. "Recursion:      %d\n"
+   .. "ScreenCenter:  (%.3f, %.3f)\n"
+   .. "--- Memory --------------------\n"
+   .. "Lua:            %u KB\n"
+
+   .. "Resource:       %u KB, amount: %u\n"
+   .. "Chunk:          %u KB (%u)\n"
+   .. "> ObsGrid:      %u KB (%u)\n"
+   .. "> Vector:       %u KB (%u)\n"
+   .. "> Quad:         %u KB (%u)\n"
+   .. "> Entity:       %u KB (%u)\n"
+   .. "Fallback:       %u KB (%u)\n"
+   .. "FallbackDelta: %5d, %5d B\n"
+   .. "              (%5d, %5d)\n"
+
+
 local function updateDebugText(obj)
     local zx, zy = camera.getScale()
     local cx, cy = camera.getPosition()
     local rec = getRecursionDepth()
     local scx, scy = getScreenCenter()
+    local chunkKB, chunkC = stats.getChunkMem()
+    local ogKB, ogC = stats.getObsGridMem()
+    local vKB, vC = stats.getVectorMem()
+    local qKB, qC = stats.getQuadMem()
+    local eKB, eC = stats.getEntityMem()
+    local fbKB, fbC = stats.getFallbackMem()
+    local fbBa, fbCa, fbBf, fbCf = stats.getFallbackMemDelta()
     local s = string.format(dbgstring,
-        collectgarbage("count"),
-        stats.getObsGridMem(),
-        stats.getResourceMem(), stats.getResourceCount(),
         stats.getRenderedObjects(), stats.getRenderedVertices(),
         stats.getFreeVideoMemory(),
         cx, cy,
         zx, zy,
         rec,
-        scx, scy
+        scx, scy,
+        
+        collectgarbage("count"),
+        stats.getResourceMem(), stats.getResourceCount(),
+        chunkKB, chunkC,
+        ogKB, ogC,
+        vKB, vC,
+        qKB, qC,
+        eKB, eC,
+        fbKB, fbC,
+        fbBa, -fbBf, fbCa, -fbCf
     )
     obj:setText(s)
 end

@@ -4,22 +4,24 @@
 #include "Engine.h"
 #include "RenderLayerMgr.h"
 #include "RenderLayer.h"
+#include "Arenas.h"
 
 #include "collision/Collidable.h"
 #include "collision/AABB.h"
 #include "collision/Circle.h"
 #include "collision/Line.h"
 
+#define GRID_ALLOCP ((Arenas::ObsGridMem*)(this->_allocator))
+#define GRID_ALLOC (*GRID_ALLOCP)
 
 #define INCREMENTAL_OPTIMIZE_BLOCKS 3
 
 ObsGrid::ObsGrid()
- : _memInUse(0)
- , _sparepos(0)
- , _full(NULL)
+ : _full(NULL)
  , _empty(NULL)
  , _incrementalX(0)
  , _incrementalY(0)
+ , _allocator(NULL)
 {
 }
 
@@ -30,30 +32,33 @@ ObsGrid::~ObsGrid()
 
 void ObsGrid::Clear()
 {
-    for(size_t i = 0; i < _spare.size(); ++i)
-        delete [] _spare[i];
-    _spare.clear();
+    if(!_allocator)
+        return;
+
     for(unsigned int y = 0; y < _grid.size1d(); ++y)
         for(unsigned int x = 0; x < _grid.size1d(); ++x)
         {
             mask *block = _grid(x, y);
             if(block != _empty && block != _full)
-                delete [] block;
+                _dropBlock(block);
         }
     _grid.free();
-    delete [] const_cast<mask*>(_full);
-    delete [] const_cast<mask*>(_empty);
+    GRID_ALLOCP->Free(const_cast<mask*>(_full));
+    GRID_ALLOCP->Free(const_cast<mask*>(_empty));
     _full = NULL;
     _empty = NULL;
-    _memInUse = 0;
+    _incrementalX = 0;
+    _incrementalY = 0;
+
+    ASSERT(GetBlocksInUse() == 0);
+
+    delete GRID_ALLOCP;
+    _allocator = NULL;
 }
 
-void ObsGrid::Init(unsigned int gridsize, unsigned int blocksize, unsigned int keepspare)
+void ObsGrid::Init(unsigned int gridsize, unsigned int blocksize)
 {
     Clear();
-
-    _keepspare = keepspare;
-    _spare.resize(keepspare, (mask*)NULL);
 
     unsigned int t = 1;
     _blockshift = 0;
@@ -66,15 +71,19 @@ void ObsGrid::Init(unsigned int gridsize, unsigned int blocksize, unsigned int k
     _blockbits = t - 1; // -> 0x..0FF
     _blocksize = _blockdim * _blockdim;
 
+    ASSERT(!_allocator);
+    _allocator = new Arenas::ObsGridMem(Arenas::chunkAlloc, 256, _blocksize);
+
+
     if(!_full)
     {
-        mask *full = new mask[_blocksize];
+        mask *full = _newBlock();
         memset(full, OBS_ANY, _blocksize * sizeof(mask));
         _full = full;
     }
     if(!_empty)
     {
-        mask *empty = new mask[_blocksize];
+        mask *empty = _newBlock();
         memset(empty, OBS_NONE, _blocksize * sizeof(mask));
         _empty = empty;
     }
@@ -91,28 +100,13 @@ void ObsGrid::_dropBlock(mask *block)
     if(block == _empty || block == _full)
         return;
 
-    if(_sparepos >= _keepspare)
-    {
-        delete [] block;
-        _memInUse -= _blocksize;
-        return;
-    }
-
-    _spare[_sparepos++] = block;
+    GRID_ALLOCP->Free(block);
 }
 
 ObsGrid::mask *ObsGrid::_newBlock()
 {
-    if(!_sparepos)
-    {
-        _memInUse += _blocksize;
-        return new mask[_blocksize];
-    }
-
-    --_sparepos;
-    mask *ret = _spare[_sparepos];
-    _spare[_sparepos] = NULL;
-    return ret;
+    ASSERT(_allocator);
+    return (mask*)GRID_ALLOCP->Allocate(_blocksize, 0, XMEM_SOURCE_INFO);
 }
 
 void ObsGrid::setObs(unsigned int x, unsigned int y, ObsType obs)
@@ -138,15 +132,16 @@ void ObsGrid::setObs(unsigned int x, unsigned int y, ObsType obs)
 
 void ObsGrid::OptimizeAll()
 {
+    unsigned int membefore = GetMemoryUsage();
     unsigned int optimized = 0;
-    unsigned int membefore = _memInUse;
     const unsigned int dim = _grid.size1d();
     for(unsigned int y = 0; y < dim; ++y)
         for(unsigned int x = 0; x < dim; ++x)
             optimized += _optimizeBlock(x, y);
     _incrementalX = 0;
     _incrementalY = 0;
-    logdev("ObsGrid::OptimizeAll(): %u blocks crunched (mem before: %u, after: %u)", optimized, membefore, _memInUse);
+    unsigned int memafter = GetMemoryUsage();
+    logdev("ObsGrid::OptimizeAll(): %u blocks crunched (mem before: %u, after: %u)", optimized, membefore, memafter);
 }
 
 void ObsGrid::OptimizeIncremental()
@@ -465,5 +460,15 @@ foundEnough:
 
     v = normal;
     return true;
+}
+
+size_t ObsGrid::GetMemoryUsage() const
+{
+    return GRID_ALLOCP ? GRID_ALLOCP->GetTracker().GetActiveBytes() : 0;
+}
+
+size_t ObsGrid::GetBlocksInUse() const
+{
+    return GRID_ALLOCP ? GRID_ALLOCP->GetTracker().GetActiveAllocations() : 0;
 }
 

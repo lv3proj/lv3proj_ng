@@ -29,8 +29,9 @@ public:
 
     virtual ~Resource();
    
-    inline const char *name() { return _name.c_str(); }
-    inline ResourceType type() { return _type; }
+    inline const char *name() const { return _name.c_str(); }
+    inline size_t nameLen() const { return _name.length(); }
+    inline ResourceType type() const { return _type; }
     inline void incref() { ++_refcount; }
     inline unsigned int refcount() const { return _refcount; }
     void decref();

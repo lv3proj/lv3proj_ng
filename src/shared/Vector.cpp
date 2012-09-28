@@ -25,7 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Arenas.h"
 
 // Memory management
-static Arenas::VectorInterpolation s_ipvArena(Arenas::chunkAlloc, 1000, sizeof(InterpolatedVectorData) );
+namespace Arenas {
+    VectorInterpolation vectorInterpArena(chunkAlloc, 1000, sizeof(InterpolatedVectorData) );
+};
 
 /*************************************************************************/
 
@@ -148,7 +150,7 @@ Vector VectorPath::getValue(float p) // between 0 and 1
 
 /*************************************************************************/
 
-#define STOP_INTERPOLATION(x) do { if(x) { XDELETE_NN(x, s_ipvArena); _data = NULL; } } while(0)
+#define STOP_INTERPOLATION(x) do { if(x) { XDELETE_NN(x, Arenas::vectorInterpArena); _data = NULL; } } while(0)
 
 InterpolatedVector& InterpolatedVector::operator=(const InterpolatedVector& vec)
 {
@@ -328,15 +330,15 @@ void InterpolatedVector::_doInterpolate(float dt)
 
 InterpolatedVector::~InterpolatedVector()
 {
-    XDELETE(_data, s_ipvArena);
+    XDELETE(_data, Arenas::vectorInterpArena);
 }
 
 InterpolatedVectorData *InterpolatedVector::allocData()
 {
-    return XNEW(InterpolatedVectorData, s_ipvArena);
+    return XNEW(InterpolatedVectorData, Arenas::vectorInterpArena);
 }
 
 InterpolatedVectorData *InterpolatedVector::allocData(const InterpolatedVectorData& d)
 {
-    return XNEW(InterpolatedVectorData, s_ipvArena)(d);
+    return XNEW(InterpolatedVectorData, Arenas::vectorInterpArena)(d);
 }

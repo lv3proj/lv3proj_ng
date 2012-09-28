@@ -7,8 +7,6 @@
 class Entity : public Quad
 {
 public:
-    Entity();
-    virtual ~Entity();
 
     virtual void update(float dt);
     virtual void onRender() const;
@@ -23,6 +21,9 @@ public:
     static bool s_renderCollisionShapes;
 
 protected:
+
+    Entity();
+    virtual ~Entity();
 
     virtual void onUpdate(float dt);
 

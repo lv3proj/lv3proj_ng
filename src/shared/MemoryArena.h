@@ -12,19 +12,11 @@
 
 template
 <
-#ifdef _DEBUG
-    typename AllocationPolicy = BasicHeapAllocator,
-    typename ThreadPolicy = SingleThreadPolicy,
-    typename BoundsCheckingPolicy = SimpleBoundsChecking,
-    typename MemoryTrackingPolicy = NoMemoryTracking,
-    typename MemoryTaggingPolicy = DeadFillTagging
-#else
-    typename AllocationPolicy = BasicHeapAllocator,
-    typename ThreadPolicy = SingleThreadPolicy,
-    typename BoundsCheckingPolicy = NoBoundsChecking,
-    typename MemoryTrackingPolicy = NoMemoryTracking,
-    typename MemoryTaggingPolicy = NoMemoryTagging
-#endif
+    typename AllocationPolicy,
+    typename ThreadPolicy,
+    typename BoundsCheckingPolicy,
+    typename MemoryTrackingPolicy,
+    typename MemoryTaggingPolicy
 >
 class MemoryArena
 {
@@ -92,7 +84,7 @@ public:
         m_boundsChecker.CheckFront(originalMemory);
         m_boundsChecker.CheckBack(originalMemory + (allocationSize - BoundsCheckingPolicy::SIZE_BACK));
 
-        m_memoryTracker.OnDeallocation(originalMemory);
+        m_memoryTracker.OnDeallocation(originalMemory, allocationSize);
 
         // This overwrites fence bytes too
         m_memoryTagger.TagDeallocation(originalMemory, allocationSize);
@@ -101,6 +93,8 @@ public:
 
         m_threadGuard.Leave();
     }
+
+    inline const MemoryTrackingPolicy& GetTracker() const { return m_memoryTracker; }
 
 private:
     AllocationPolicy m_allocator;

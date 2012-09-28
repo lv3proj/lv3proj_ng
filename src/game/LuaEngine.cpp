@@ -18,6 +18,7 @@
 #include "collision/AABB.h"
 #include "collision/Circle.h"
 #include "collision/Line.h"
+#include "Arenas.h"
 
 struct LuaFunctions
 {
@@ -975,11 +976,6 @@ luaFn(stats_getResourceCount)
     luaReturnInt(resMgr.GetUsedCount());
 }
 
-luaFn(stats_getObsGridMem)
-{
-    luaReturnInt(engine->obsgrid.GetMemoryUsage() / 1024);
-}
-
 luaFn(stats_getRenderedObjects)
 {
     luaReturnInt(engine->GetRenderer()->getRenderedObjects());
@@ -994,6 +990,59 @@ luaFn(stats_getRenderedVertices)
 {
     luaReturnInt(engine->GetRenderer()->getRenderedVerts());
 }
+
+luaFn(stats_getFallbackMem)
+{
+    lua_pushinteger(L, Arenas::fallback.GetTracker().GetActiveBytes() / 1024);
+    lua_pushinteger(L, Arenas::fallback.GetTracker().GetActiveAllocations());
+    return 2;
+}
+
+luaFn(stats_getFallbackMemDelta)
+{
+    lua_pushinteger(L, Arenas::fallback.GetTracker().GetBytesDelta());
+    lua_pushinteger(L, Arenas::fallback.GetTracker().GetAllocationsDelta());
+    lua_pushinteger(L, Arenas::fallback.GetTracker().GetBytesFreedDelta());
+    lua_pushinteger(L, Arenas::fallback.GetTracker().GetAllocationsFreedDelta());
+    Arenas::fallback.GetTracker().ResetDelta(); // TODO: may not always want to do that here
+    return 4;
+}
+
+luaFn(stats_getChunkMem)
+{
+    lua_pushinteger(L, Arenas::chunkAlloc.GetTracker().GetActiveBytes() / 1024);
+    lua_pushinteger(L, Arenas::chunkAlloc.GetTracker().GetActiveAllocations());
+    return 2;
+}
+
+luaFn(stats_getVectorMem)
+{
+    lua_pushinteger(L, Arenas::vectorInterpArena.GetTracker().GetActiveBytes() / 1024);
+    lua_pushinteger(L, Arenas::vectorInterpArena.GetTracker().GetActiveAllocations());
+    return 2;
+}
+
+luaFn(stats_getQuadMem)
+{
+    lua_pushinteger(L, Arenas::quadArena.GetTracker().GetActiveBytes() / 1024);
+    lua_pushinteger(L, Arenas::quadArena.GetTracker().GetActiveAllocations());
+    return 2;
+}
+
+luaFn(stats_getEntityMem)
+{
+    lua_pushinteger(L, Arenas::entityArena.GetTracker().GetActiveBytes() / 1024);
+    lua_pushinteger(L, Arenas::entityArena.GetTracker().GetActiveAllocations());
+    return 2;
+}
+
+luaFn(stats_getObsGridMem)
+{
+    lua_pushinteger(L, engine->obsgrid.GetMemoryUsage() / 1024);
+    lua_pushinteger(L, engine->obsgrid.GetBlocksInUse());
+    return 2;
+}
+
 
 luaFn(vec_fromDeg)
 {
@@ -1143,6 +1192,13 @@ static const luaL_Reg statslib[] =
     { "getRenderedObjects", stats_getRenderedObjects },
     { "getRenderedVertices", stats_getRenderedVertices },
     { "getFreeVideoMemory", stats_getFreeVideoMemory },
+    { "getFallbackMem", stats_getFallbackMem },
+    { "getFallbackMemDelta", stats_getFallbackMemDelta },
+    { "getChunkMem", stats_getChunkMem },
+    { "getVectorMem", stats_getVectorMem },
+    { "getQuadMem", stats_getQuadMem },
+    { "getEntityMem", stats_getEntityMem },
+    { "getObsGridMem", stats_getObsGridMem },
     {NULL, NULL}
 };
 

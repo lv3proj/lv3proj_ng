@@ -6,23 +6,35 @@
 
 #include "MemoryArena.h"
 
+#if defined(_MSC_VER)
+#  define XMEM_CURRENT_FUNCTION __FUNCSIG__
+#elif defined(__GNUC__)
+#  define XMEM_CURRENT_FUNCTION __PRETTY_FUNCTION__
+#else
+#  define XMEM_CURRENT_FUNCTION "<unknown>"
+#endif
 
-#define XNEW(ty, a)    new (_X_New(sizeof(ty), a, __FILE__, __LINE__)) ty
+#define XMEM_SOURCE_INFO (XSourceInfo(__FILE__, __LINE__, XMEM_CURRENT_FUNCTION))
+
+#define XNEW(ty, a)    new (_X_New(sizeof(ty), a, XMEM_SOURCE_INFO)) ty
 //#define XNEW(ty)       new ty
 
 #define XDELETE(ty, a) _X_Delete(ty, a)
 #define XDELETE_NN(ty, a) _X_DeleteUnchecked(ty, a)
 //#define XDELETE(ty)    delete ty
 
-#define XNEW_ARRAY(type, arena)    _X_NewArray<TypeAndCount<type>::Type>(arena, TypeAndCount<type>::Count, __FILE__, __LINE__, IntToType<XIS_POD(TypeAndCount<type>::Type)>())
+#define XNEW_ARRAY_C(type, arena)    _X_NewArray<TypeAndCount<type>::Type>(arena, TypeAndCount<type>::Count, XMEM_SOURCE_INFO, IntToType<XIS_POD(TypeAndCount<type>::Type)>())
+#define XNEW_ARRAY(type, count, arena) _X_NewArray<type>(arena, count, XMEM_SOURCE_INFO, IntToType<XIS_POD(type)>());
+#define XNEW_ARRAY_POD(type, count, arena) _X_NewArray<type>(arena, count, XMEM_SOURCE_INFO, PODType());
 
 #define XDELETE_ARRAY(type, arena)    _X_DeleteArray(type, arena)
+#define XDELETE_ARRAY_NN(type, arena)    _X_DeleteArrayUnchecked(type, arena)
 
 template <class ARENA>
-inline void *_X_New(size_t size, ARENA& arena, const char *file, size_t line)
+inline void *_X_New(size_t size, ARENA& arena, const XSourceInfo& src)
 {
     // default alignment by pointer size
-    return  arena.Allocate(size, sizeof(void*), XSourceInfo(__FILE__, __LINE__));
+    return  arena.Allocate(size, sizeof(void*), src);
 }
 
 
@@ -51,7 +63,7 @@ inline void _X_DeleteUnchecked(T* object, ARENA& arena)
 
 
 template <typename T, class ARENA>
-inline T* _X_NewArray(ARENA& arena, size_t N, const char* file, size_t line, NonPODType)
+inline T* _X_NewArray(ARENA& arena, size_t N, const XSourceInfo& src, NonPODType)
 {
     union
     {
@@ -60,7 +72,7 @@ inline T* _X_NewArray(ARENA& arena, size_t N, const char* file, size_t line, Non
         T* as_T;
     };
 
-    as_void = arena.Allocate(sizeof(T)*N + sizeof(size_t), XSourceInfo(file, line));
+    as_void = arena.Allocate(sizeof(T)*N + sizeof(size_t), src);
 
     // store number of instances in first size_t bytes
     *as_size_t++ = N;
@@ -110,6 +122,13 @@ inline void _X_DeleteArray(T* ptr, ARENA& arena, NonPODType)
 
 template <typename T, class ARENA>
 inline void _X_DeleteArray(T* ptr, ARENA& arena)
+{
+    if(ptr)
+        _X_DeleteArray(ptr, arena, IntToType<XIS_POD(T)>());
+}
+
+template <typename T, class ARENA>
+inline void _X_DeleteArrayUnchecked(T* ptr, ARENA& arena)
 {
     _X_DeleteArray(ptr, arena, IntToType<XIS_POD(T)>());
 }

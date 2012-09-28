@@ -4,9 +4,12 @@
 #include "ResourceMgr.h"
 #include <assert.h>
 #include <sstream>
+#include "Arenas.h"
 
 #include "LuaEngine.h"
 #include "LuaConstants.h"
+
+Arenas::ScriptArena s_scriptArena;
 
 // TEMP: to gather allocation statistics
 static void *the_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
@@ -14,12 +17,25 @@ static void *the_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
     (void)ud;  (void)osize;  /* not used */
     if (nsize == 0)
     {
-        free(ptr);
+        //free(ptr);
+        if(ptr)
+            s_scriptArena.Free(ptr);
         return NULL;
     }
     if(ud)
         ++(*((LuaInterface::LuaAllocStats*)ud))[nsize];
-    return realloc(ptr, nsize);
+    //return realloc(ptr, nsize);
+
+    if(!ptr)
+    {
+        // New allocation, done here
+        return s_scriptArena.Allocate(nsize, sizeof(void*), XMEM_SOURCE_INFO);
+    }
+
+    // ptr is not NULL, so it's realloc()
+    void *newp = s_scriptArena.Allocate(nsize, sizeof(void*), XMEM_SOURCE_INFO);
+    memcpy(newp, ptr, std::min(nsize, osize));
+    return newp;
 }
 
 static int the_panic (lua_State *L) {
