@@ -25,14 +25,20 @@ function entity:updateFixed()
 end
 
 function entity:onEndOfLife()
-    print("Entity died")
+    --print("Entity died")
     ENTITIES[self] = nil
 end
 
 function entity.foreach(f)
     -- FIXME: make sure the table isn't modified during traversal, ie. when a callback creates a new entity.
+    local valid = isObjectValid
     for e, _ in pairs(ENTITIES) do
-        f(e)
+        if valid(e) then
+            f(e)
+        else
+            print("Lua WARNING: Found invalid entity in foreach(), did you miss forwarding a call to entity.onEndOfLife() ?")
+            ENTITIES[e] = nil
+        end
     end
 end
 

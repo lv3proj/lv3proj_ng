@@ -308,6 +308,12 @@ luaFunc(setSpeed)
     luaReturnNum(curspeed);
 }
 
+luaFunc(isObjectValid)
+{
+    ScriptObjectUserStruct *su = (ScriptObjectUserStruct*)lua_touserdata(L, 1);
+    luaReturnBool(su && su->obj);
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -341,6 +347,7 @@ static LuaFunctions s_functab[] =
     luaRegister(getWallNormal),
     luaRegister(setFixedDT),
     luaRegister(setSpeed),
+    luaRegister(isObjectValid),
 
     { NULL, NULL }
 };

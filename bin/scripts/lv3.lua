@@ -282,6 +282,7 @@ local function spawnBall(spx, spy)
     
     function ball:onEndOfLife()
         --ballv:delete()
+        entity.onEndOfLife(self)
         BALLS[self] = nil
     end
 end
