@@ -42,7 +42,7 @@ protected:
     bool _dead;
     bool _managed; // If true, object will go to objmgr.
     char _pauseLevel;
-
+    unsigned int _objIndex; // for ObjectMgr
 };
 
 

@@ -19,8 +19,9 @@ public:
     void ClearAll();
 
 private:
-    std::set<ScriptObject*> _alive;
-    std::vector<ScriptObject*> _garbage;
+    typedef std::vector<ScriptObject*> ScriptObjectStore;
+    ScriptObjectStore _alive;
+    ScriptObjectStore _garbage;
 };
 
 #endif

@@ -5,6 +5,8 @@
 
 ObjectMgr::ObjectMgr()
 {
+    _alive.reserve(1000);
+    _garbage.reserve(10);
 }
 
 ObjectMgr::~ObjectMgr()
@@ -14,17 +16,18 @@ ObjectMgr::~ObjectMgr()
 
 void ObjectMgr::ClearAll()
 {
-    for(std::set<ScriptObject*>::iterator it = _alive.begin(); it != _alive.end(); ++it)
-        _garbage.push_back(*it);
-    _alive.clear();
     ClearGarbage();
+    for(size_t i = 0; i < _alive.size(); ++i)
+        if(_alive[i])
+            _alive[i]->destroy();
+    _alive.clear();
 }
 
 void ObjectMgr::Update(float dt)
 {
-    for(std::set<ScriptObject*>::iterator it = _alive.begin(); it != _alive.end(); ++it)
+    for(size_t i = 0; i < _alive.size(); ++i)
     {
-        ScriptObject *obj = *it;
+        ScriptObject *obj = _alive[i];
         if(!(obj->isDead() || obj->isPaused()))
             obj->update(dt);
     }
@@ -32,9 +35,9 @@ void ObjectMgr::Update(float dt)
 
 void ObjectMgr::UpdateFixed(float dt)
 {
-    for(std::set<ScriptObject*>::iterator it = _alive.begin(); it != _alive.end(); ++it)
+    for(size_t i = 0; i < _alive.size(); ++i)
     {
-        ScriptObject *obj = *it;
+        ScriptObject *obj = _alive[i];
         if(!(obj->isDead() || obj->isPaused()))
             obj->updateFixed(dt);
     }
@@ -42,26 +45,34 @@ void ObjectMgr::UpdateFixed(float dt)
 
 void ObjectMgr::AddObject(ScriptObject *obj)
 {
-    assert(obj->isManaged());
-    _alive.insert(obj);
+    ASSERT(obj->isManaged());
+    obj->_objIndex = (unsigned int)_alive.size();
+    _alive.push_back(obj);
 }
 
 void ObjectMgr::Garbage(ScriptObject *obj)
 {
-    assert(obj->isManaged());
+    ASSERT(obj->isManaged());
     _garbage.push_back(obj);
 }
 
 void ObjectMgr::ClearGarbage()
 {
+    ASSERT(_garbage.size() <= _alive.size());
     if(_garbage.size())
     {
         //logdev("ObjectMgr: Deleting %u objects", (unsigned int)_garbage.size());
         for(size_t i = 0; i < _garbage.size(); ++i)
         {
-            _alive.erase(_garbage[i]);
-            //delete _garbage[i];
-            _garbage[i]->destroy();
+            ScriptObject *obj = _garbage[i];
+            unsigned int idx = obj->_objIndex;
+            ASSERT(_alive[idx] == obj);
+            obj->destroy();
+
+            obj = _alive.back(); // there is always at least 1 item left
+            obj->_objIndex = idx;
+            _alive[idx] = obj;
+            _alive.pop_back();
         }
         _garbage.clear();
     }

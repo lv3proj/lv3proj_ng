@@ -39,4 +39,22 @@ template <class T> void StrSplit(const std::string &src, const std::string &sep,
         container.push_back(s);
 }
 
+template <class IT> IT CompactRange(IT rd, IT end)
+{
+    IT w = rd;
+    while(rd < end && *rd)
+        ++rd;
+    for( ; rd < end; ++rd)
+    {
+        if(*rd)
+        {
+            *w = *rd;
+            *rd = 0;
+            ++w;
+            ++rd;
+        }
+    }
+    return w;
+}
+
 #endif

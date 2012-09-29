@@ -2,10 +2,11 @@
 #include "Engine.h"
 
 ScriptObject::ScriptObject()
-: scriptBindings(NULL)
-, _dead(false)
-, _managed(false)
- , _pauseLevel(0)
+    : scriptBindings(NULL)
+    , _dead(false)
+    , _managed(false)
+    , _pauseLevel(0)
+    , _objIndex(-1)
 {
 }
 
