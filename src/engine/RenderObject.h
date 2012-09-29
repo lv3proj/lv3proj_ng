@@ -33,7 +33,7 @@ protected:
 
 public:
 
-    typedef std::set<RenderObject*> Children; // TODO: make this vector
+    typedef std::vector<RenderObject*> Children;
 
 
     ~RenderObject();
@@ -95,8 +95,9 @@ public:
     bool isVisible() const;
     Vector getAbsolutePosition() const; // for UI elements
 
-    static float s_cullX1, s_cullX2, s_cullY1, s_cullY2;
+    static float s_cullX1, s_cullX2, s_cullY1, s_cullY2; // TODO: move this to culling logic
 
+    // for RenderLayer
     RenderLayer::Block *_layerBlock;
     unsigned int _indexInBlock;
 

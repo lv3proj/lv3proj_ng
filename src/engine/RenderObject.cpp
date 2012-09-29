@@ -3,6 +3,7 @@
 #include "RenderLayer.h"
 #include "RenderLayerMgr.h"
 #include "Camera.h"
+#include <algorithm>
 
 float RenderObject::s_cullX1 = 0;
 float RenderObject::s_cullX2 = 0;
@@ -26,7 +27,6 @@ RenderObject::RenderObject()
     , _layerPtr(NULL)
     , _noCull(false)
     , _layerBlock(NULL)
-    //, _indexInBlock(-1)
 {
 }
 
@@ -152,6 +152,9 @@ void RenderObject::moveToFront()
 
 void RenderObject::addChild(RenderObject *child)
 {
+    if(child->_parent == this)
+        return;
+
     if(child == this || child == _parent)
     {
         logerror("addChild gone wrong!");
@@ -164,14 +167,16 @@ void RenderObject::addChild(RenderObject *child)
     }
 
     child->_parent = this;
-    _children.insert(child);
+    _children.push_back(child);
 }
 
 void RenderObject::removeChild(RenderObject *child)
 {
     if(child->_parent == this)
     {
-        _children.erase(child);
+        Children::iterator it = std::find(_children.begin(), _children.end(), child);
+        ASSERT(it != _children.end());
+        _children.erase(it);
         child->_parent = NULL;
     }
 }
