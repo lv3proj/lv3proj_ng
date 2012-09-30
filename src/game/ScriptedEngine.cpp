@@ -118,6 +118,10 @@ void ScriptedEngine::OnKeyDown(SDLKey key, SDLMod mod)
     {
         SetReset(true);
     }
+    else if(key == SDLK_F10)
+    {
+        GetRenderer()->renderBorders = !GetRenderer()->renderBorders;
+    }
 }
 
 void ScriptedEngine::OnKeyUp(SDLKey key, SDLMod mod)

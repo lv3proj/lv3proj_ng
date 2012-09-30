@@ -23,6 +23,9 @@ Renderer::Renderer()
 {
     memset(&settings, 0, sizeof(settings));
     globalResolutionScale = Vector(1, 1, 1);
+
+    // debug stuff
+    renderBorders = false;
 }
 
 Renderer::~Renderer()
@@ -453,6 +456,23 @@ void Renderer::renderQuad(const Quad *q)
     glTexCoordPointer(2, GL_FLOAT, 0, &texCoords);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     _renderedVerts += 4;
+
+    if(renderBorders)
+    {
+        const GLfloat vertexData2[] =
+        {
+            -w2, -h2, // upper left
+            +w2, -h2, // upper right
+            +w2, +h2, // lower left
+            -w2, +h2, // lower right
+        };
+        glVertexPointer(2, GL_FLOAT, 0, &vertexData2);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        Texture::clearLastApplied();
+        glLineWidth(2);
+        glDrawArrays(GL_LINE_LOOP, 0, 4);
+        _renderedVerts += 4;
+    }
 }
 
 static const GLfloat simpleTexCoords[] =

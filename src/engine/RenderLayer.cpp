@@ -241,20 +241,23 @@ void RenderLayer::Render()
     ASSERT(_objectCount || !(_firstBlock || _lastBlock));
 
     Renderer *r = engine->GetRenderer();
-    bool noCull = false;
     
     if(isFixedPos())
     {
         r->setupScreenScale();
-        noCull = true;
+        r->renderObject(tiles);
+        _RenderNoCull(r);
     }
     else
+    {
         r->setupRenderPositionAndScale();
+        r->renderObject(tiles);
+        _RenderCull(r);
+    }
+}
 
-    //tiles->onRender();
-    r->renderObject(tiles);
-
-    
+void RenderLayer::_RenderCull(Renderer *r)
+{
     for(Block *blk = _firstBlock; blk; blk = blk->next)
     {
         RenderObject **roptr = blk->ptrs;
@@ -262,9 +265,26 @@ void RenderLayer::Render()
         {
             if(RenderObject *ro = *roptr++)
             {
-                if(!ro->getParent() && (noCull || ro->isOnScreen()))
+                if(!ro->getParent() && ro->isOnScreen())
                     r->renderObject(ro);
             }
         }
     }
 }
+
+void RenderLayer::_RenderNoCull(Renderer *r)
+{
+    for(Block *blk = _firstBlock; blk; blk = blk->next)
+    {
+        RenderObject **roptr = blk->ptrs;
+        for(unsigned int i = 0; i < BLOCK_SIZE; ++i)
+        {
+            if(RenderObject *ro = *roptr++)
+            {
+                if(!ro->getParent())
+                    r->renderObject(ro);
+            }
+        }
+    }
+}
+

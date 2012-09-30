@@ -76,6 +76,7 @@ public:
 
     inline const RenderSettings& getSettings() const { return settings; }
 
+
 protected:
 
     void _Enable2D(uint32 x, uint32 y);
@@ -109,6 +110,12 @@ private:
     void _popColor();
     void _applyColor();
     inline _RenderColor& _topColor() { return _colorstack.back(); }
+
+
+    // debug stuff
+public:
+
+    bool renderBorders;
 };
 
 

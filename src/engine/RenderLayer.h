@@ -7,6 +7,7 @@
 
 class RenderObject;
 class TileGrid;
+class Renderer;
 
 class RenderLayer
 {
@@ -59,6 +60,9 @@ protected:
     void _AppendRO(RenderObject *);
     void _PrependRO(RenderObject *);
     void _UnlinkRO(RenderObject *);
+
+    void _RenderCull(Renderer *r);
+    void _RenderNoCull(Renderer *r);
 
     unsigned int _id; // position in vector in RenderLayerMgr
     //std::list<RenderObject*> _objs;
