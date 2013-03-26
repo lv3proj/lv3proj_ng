@@ -53,14 +53,14 @@
     #define I64LIT(x) (x ## i64)
     #define UI64LIT(x) (x ## ui64)
     #define snprintf _snprintf
-    // TODO: fix for win64, if required
+    #define FORCE_INLINE __forceinline
     typedef __int64            int64;
-    typedef long               int32;
-    typedef short              int16;
+    typedef __int32            int32;
+    typedef __int16            int16;
     typedef char               int8;
     typedef unsigned __int64   uint64;
-    typedef unsigned long      uint32;
-    typedef unsigned short     uint16;
+    typedef unsigned __int32   uint32;
+    typedef unsigned __int16   uint16;
     typedef unsigned char      uint8;
 #else
     #include <stdint.h>
@@ -70,6 +70,7 @@
     #define I64FMTD "%llu"
     #define I64LIT(x) (x ## LL)
     #define UI64LIT(x) (x ## ULL)
+
     typedef int64_t int64;
     typedef int32_t int32;
     typedef int16_t int16;
@@ -78,6 +79,11 @@
     typedef uint32_t uint32;
     typedef uint16_t uint16;
     typedef unsigned char uint8;
+    #ifdef __GNUC__
+        #define FORCE_INLINE __attribute__((always_inline))
+    #else
+        #define FORCE_INLINE inline
+    #endif
 #endif
 
 #ifndef _LP64

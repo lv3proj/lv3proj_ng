@@ -228,6 +228,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\shared\bithacks.h"
+					>
+				</File>
+				<File
 					RelativePath=".\shared\common.h"
 					>
 				</File>

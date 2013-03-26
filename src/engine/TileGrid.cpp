@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "Renderer.h"
 #include "ResourceMgr.h"
+#include "bithacks.h"
 
 #include "Texture.h"
 
@@ -27,7 +28,7 @@ void TileGrid::SetSize(unsigned int dim)
 {
     // enlarging is easy as no tiles will disappear
     unsigned int oldsize = _tiles.size1d();
-    unsigned int newsize = clp2(dim); // always n^2
+    unsigned int newsize = bithacks::clp2(dim); // always n^2
     if(newsize >= oldsize)
     {
         _tiles.resize(dim, NULL);
