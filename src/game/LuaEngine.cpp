@@ -570,6 +570,7 @@ luaFn(ro_##getter) \
 MAKE_RO_VEC_MTH(position,   getPosition,    position,   2) \
 MAKE_RO_VEC_MTH(offset,     getOffset,      offset,     2) \
 MAKE_RO_VEC_MTH(scale,      getScale,       scale,      2) \
+MAKE_RO_VEC_MTH(scale2,     getScale2,      scale2,      2) \
 MAKE_RO_VEC_MTH(color,      getColor,       color,      3) \
 MAKE_RO_VEC_MTH(color2,     getColor2,      color2,     3) \
 MAKE_RO_VEC_MTH(alpha,      getAlpha,       alpha,      1) \
