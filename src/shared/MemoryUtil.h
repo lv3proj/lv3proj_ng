@@ -80,7 +80,7 @@ inline bool pointerIsAligned(void *ptr, size_t align)
 
 class NullAllocator;
 
-template <typename ARENA = MemoryArena<NullAllocator, SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging> > class MemoryData
+template <typename ARENA /*= MemoryArena<NullAllocator, SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>*/ > class MemoryData
 {
 public:
     MemoryData(void *ptr = NULL, size_t size = 0, size_t elemSize = 0, size_t alignment = 0, size_t offset = 0, ARENA& piggyback = ARENA())

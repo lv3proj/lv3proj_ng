@@ -1,5 +1,7 @@
 #include "ScriptObject.h"
 #include "Engine.h"
+#include "ObjectMgr.h"
+
 
 ScriptObject::ScriptObject()
     : scriptBindings(NULL)
@@ -23,7 +25,6 @@ bool ScriptObject::isPaused() const
 LifeObject::LifeObject()
 : _life(1)
  , _decay(0)
-
 {
     _managed = true;
 }

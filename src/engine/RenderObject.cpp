@@ -18,6 +18,7 @@ RenderObject::RenderObject()
     , halfHeight(0)
     , _blend(BLEND_DEFAULT)
     , scale(1, 1, 1)
+    , scale2(1, 1, 1)
     , color(1, 1, 1)
     , color2(1, 1, 1)
     , alpha(1)
@@ -41,6 +42,7 @@ void RenderObject::update(float dt)
     position.update(dt);
     offset.update(dt);
     scale.update(dt);
+    scale2.update(dt);
     color.update(dt);
     color2.update(dt);
     alpha.update(dt);
@@ -52,6 +54,23 @@ void RenderObject::update(float dt)
     friction.update(dt);
 
     onUpdate(dt);
+
+    for(Children::iterator it = _children.begin(); it != _children.end(); ++it)
+    {
+        RenderObject *ro = *it;
+        if(ro->_objIndex == -1 && !(ro->isDead() || ro->isPaused()))
+            ro->update(dt);
+    }
+}
+
+void RenderObject::updateFixed(float dt)
+{
+    for(Children::iterator it = _children.begin(); it != _children.end(); ++it)
+    {
+        RenderObject *ro = *it;
+        if(ro->_objIndex == -1 && !(ro->isDead() || ro->isPaused()))
+            ro->updateFixed(dt);
+    }
 }
 
 void RenderObject::onUpdate(float dt)
@@ -107,6 +126,9 @@ void RenderObject::updatePhysics(float dt)
 
 void RenderObject::onEndOfLife()
 {
+    //if(_dead)
+    //	return;
+
     for(Children::iterator it = _children.begin(); it != _children.end(); ++it)
     {
         RenderObject *child = *it;
@@ -125,8 +147,12 @@ void RenderObject::onEndOfLife()
 
     if(_layerPtr)
         _layerPtr->Remove(this);
-    else
-        logdev("WARNING: Object %p not on any layer", this);
+    //else
+    //    logdev("WARNING: Object %p not on any layer", this);
+
+    // If not registered in objmgr, delete right now
+    //if(_objIndex == -1)
+    //	this->destroy();
 }
 
 void RenderObject::toLayer(unsigned int target)

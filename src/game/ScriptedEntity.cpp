@@ -13,6 +13,7 @@ ScriptedEntity *ScriptedEntity::create(LuaInterface *script)
 
 void ScriptedEntity::destroy()
 {
+    ASSERT_DYNAMIC_TYPE(*this, ScriptedEntity);
     XDELETE_NN(this, Arenas::entityArena);
 }
 

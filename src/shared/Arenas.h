@@ -20,50 +20,50 @@ namespace Arenas
 #endif
 
 
-    class GlobalArena : public MemoryArena<BasicHeapAllocator,
-        SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    #define GlobalArenaBase MemoryArena<BasicHeapAllocator, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    class GlobalArena : public GlobalArenaBase
     {
     public:
         GlobalArena();
     };
 
-    class FallbackArena : public MemoryArena<BasicHeapAllocator,
-        ThreadPolicy, BoundsCheckingPolicy, SimpleMemoryTracking, MemoryTaggingPolicy>
+    #define FallbackArenaBase MemoryArena<BasicHeapAllocator, ThreadPolicy, BoundsCheckingPolicy, SimpleMemoryTracking, MemoryTaggingPolicy>
+    class FallbackArena : public FallbackArenaBase
     {
     public:
         FallbackArena();
     };
 
-    class ScriptArena : public MemoryArena<BasicHeapAllocator,
-        SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>
+    #define ScriptArenaBase MemoryArena<BasicHeapAllocator, SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>
+    class ScriptArena : public ScriptArenaBase
     {
     public:
         ScriptArena();
     };
 
-    class VectorInterpolation : public MemoryArena<DynamicPoolAllocator<GlobalArena>,
-        SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    #define VectorInterpolationBase MemoryArena<DynamicPoolAllocator<GlobalArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    class VectorInterpolation : public VectorInterpolationBase
     {
     public:
         VectorInterpolation(GlobalArena&, size_t elements, size_t elemSize);
     };
 
-    class QuadMem : public MemoryArena<DynamicPoolAllocator<GlobalArena>,
-        SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    #define QuadMemBase MemoryArena<DynamicPoolAllocator<GlobalArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    class QuadMem : public QuadMemBase
     {
     public:
         QuadMem(GlobalArena&, size_t elements, size_t elemSize);
     };
 
-    class EntityMem : public MemoryArena<DynamicPoolAllocator<GlobalArena>,
-        SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    #define EntityMemBase MemoryArena<DynamicPoolAllocator<GlobalArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    class EntityMem : public EntityMemBase
     {
     public:
         EntityMem(GlobalArena&, size_t elements, size_t elemSize);
     };
 
-    class ObsGridMem : public MemoryArena<DynamicPoolAllocator<GlobalArena>,
-        SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    #define ObsGridMemBase MemoryArena<DynamicPoolAllocator<GlobalArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    class ObsGridMem : public ObsGridMemBase
     {
     public:
         ObsGridMem(GlobalArena&, size_t elements, size_t elemSize);

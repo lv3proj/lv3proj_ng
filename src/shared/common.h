@@ -18,6 +18,8 @@
 #  define ASSERT(x) { if(!(x)) { fprintf(stderr, "ASSERTION FAILED: \"%s\", File: %s:%u\n", #x, __FILE__, __LINE__); TriggerBreakpoint(); } }
 #endif
 
+#define ASSERT_DYNAMIC_TYPE(what, type) ASSERT(typeid(what) == typeid(type))
+
 #include <stdio.h>
 #include <string.h>
 #include <float.h>

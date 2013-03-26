@@ -327,14 +327,14 @@ void Renderer::renderObject(const RenderObject *ro)
         return;
 
     const Vector renderPos = ro->getParallaxRenderPosition(engine->camera->screenCenter); //ro->position + ro->offset;
-    const Vector renderRot = ro->rotation + ro->rotation2;
+    //const Vector renderRot = ro->rotation + ro->rotation2;
     const Vector& renderCol = ro->color;
     const Vector& renderCol2 = ro->color2;
 
     glPushMatrix();
     glTranslatef(renderPos.x, renderPos.y, renderPos.z);
 
-    glRotatef(renderRot.x, 0, 0, 1); 
+    glRotatef(ro->rotation.x, 0, 0, 1);
     /*if (isfh())
     {
     glDisable(GL_CULL_FACE);
@@ -351,7 +351,11 @@ void Renderer::renderObject(const RenderObject *ro)
     _multColor(renderCol2.x, renderCol2.y, renderCol2.z, ro->alpha2.x);
     _applyColor();
 
+    glPushMatrix();
+    glRotatef(ro->rotation2.x, 0, 0, 1);
+    glScalef(ro->scale2.x, ro->scale2.y, 1);
     ro->onRender();
+    glPopMatrix();
 
     _popColor();
 
@@ -401,8 +405,7 @@ void Renderer::_applyBlendType(BlendType blend)
         break;
     case BLEND_MULT:
         glEnable(GL_BLEND);
-        //glBlendFunc(GL_ZERO, GL_SRC_COLOR);
-        glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA); // FIXME: this isn't quite right, but better than the above
+        glBlendFunc(GL_ZERO, GL_SRC_COLOR);
         break;
     }
 
@@ -632,7 +635,9 @@ void Renderer::drawLine(float x1, float y1, float x2, float y2, float width, flo
     glLineWidth(width);
     _applyBlendType(BLEND_DEFAULT);
 
-    glColor4f(r, g, b, a);
+    _pushColor();
+    _multColor(r, g, b, a);
+    _applyColor();
     const GLfloat verts[] =
     {
         x1, y1,
@@ -640,6 +645,7 @@ void Renderer::drawLine(float x1, float y1, float x2, float y2, float width, flo
     };
     glVertexPointer(2, GL_FLOAT, 0, &verts);
     glDrawArrays(GL_LINES, 0, 2);
+    _popColor();
 }
 
 void Renderer::drawAABB(float x1, float y1, float x2, float y2, float rotation, float r, float g, float b, float a)
@@ -650,7 +656,9 @@ void Renderer::drawAABB(float x1, float y1, float x2, float y2, float rotation, 
 
     _applyBlendType(BLEND_DEFAULT);
 
-    glColor4f(r, g, b, a);
+    _pushColor();
+    _multColor(r, g, b, a);
+    _applyColor();
     const GLfloat verts[] =
     {
         x1, y1,
@@ -663,6 +671,7 @@ void Renderer::drawAABB(float x1, float y1, float x2, float y2, float rotation, 
     glVertexPointer(2, GL_FLOAT, 0, &verts);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glPopMatrix();
+    _popColor();
 }
 
 
@@ -672,7 +681,9 @@ void Renderer::drawCircle(float x, float y, float radius, float r, float g, floa
     glBindTexture(GL_TEXTURE_2D, 0);
     Texture::clearLastApplied();
 
-    glColor4f(r, g, b, a);
+    _pushColor();
+    _multColor(r, g, b, a);
+    _applyColor();
     _applyBlendType(BLEND_DEFAULT);
 
     GLfloat verts[2 * (360 / 5)];
@@ -687,6 +698,7 @@ void Renderer::drawCircle(float x, float y, float radius, float r, float g, floa
     glVertexPointer(2, GL_FLOAT, 0, verts);
     glDrawArrays(GL_POLYGON, 0, (360 / 5));
     _renderedVerts += (360 / 5);
+    _popColor();
 }
 
 void Renderer::_multColor(float r, float g, float b, float a)

@@ -39,11 +39,13 @@ public:
     ~RenderObject();
 
     virtual void update(float dt);
+    virtual void updateFixed(float dt);
 
     InterpolatedVector position;
     InterpolatedVector offset;
 
     InterpolatedVector scale;
+    InterpolatedVector scale2;
 
     InterpolatedVector color;
     InterpolatedVector color2;

@@ -51,6 +51,7 @@ public:
 
     std::string name;
     Vector parallax;
+    bool visible;
 
 protected:
 

@@ -18,6 +18,11 @@ Entity::~Entity()
     delete _collider;
 }
 
+void Entity::destroy()
+{
+    delete this;
+}
+
 void Entity::update(float dt)
 {
     Quad::update(dt);

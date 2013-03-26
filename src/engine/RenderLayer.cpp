@@ -44,6 +44,7 @@ RenderLayer::RenderLayer(unsigned int id)
  , _firstBlock(NULL)
  , _lastBlock(NULL)
  , _objectCount(0)
+ , visible(true)
 {
     tiles = new TileGrid();
     tiles->_layerPtr = this;
@@ -239,6 +240,9 @@ void RenderLayer::Render()
 {
     // If no objects exist, no blocks exist
     ASSERT(_objectCount || !(_firstBlock || _lastBlock));
+
+    if(!visible)
+        return;
 
     Renderer *r = engine->GetRenderer();
     

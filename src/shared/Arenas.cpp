@@ -16,22 +16,22 @@ ScriptArena::ScriptArena()
 }
 
 VectorInterpolation::VectorInterpolation(GlobalArena& underlying, size_t elements, size_t elemSize)
-: MemoryArena(MemoryData<GlobalArena>(elements * elemSize, elemSize, 4, 0, underlying))
+: VectorInterpolationBase(MemoryData<GlobalArena>(elements * elemSize, elemSize, 4, 0, underlying))
 {
 }
 
 QuadMem::QuadMem(GlobalArena& underlying, size_t elements, size_t elemSize)
-: MemoryArena(MemoryData<GlobalArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
+: QuadMemBase(MemoryData<GlobalArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
 {
 }
 
 EntityMem::EntityMem(GlobalArena& underlying, size_t elements, size_t elemSize)
-: MemoryArena(MemoryData<GlobalArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
+: EntityMemBase(MemoryData<GlobalArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
 {
 }
 
 ObsGridMem::ObsGridMem(GlobalArena& underlying, size_t elements, size_t elemSize)
-: MemoryArena(MemoryData<GlobalArena>(elements * elemSize, elemSize, 0, 0, underlying))
+: ObsGridMemBase(MemoryData<GlobalArena>(elements * elemSize, elemSize, 0, 0, underlying))
 {
 }
 

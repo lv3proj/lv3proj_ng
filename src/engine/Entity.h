@@ -12,6 +12,8 @@ public:
     virtual void onRender() const;
     virtual void updatePhysics(float dt);
 
+    virtual void destroy();
+
     inline bool collidesWith(const Entity *other, Vector *result);
     inline Collidable *getCollider() const { return _collider; }
     void setCollider(Collidable *c);

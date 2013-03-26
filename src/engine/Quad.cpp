@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "Arenas.h"
+#include "ObjectMgr.h"
 
 namespace Arenas {
     Arenas::QuadMem quadArena(Arenas::chunkAlloc, 1000, sizeof(Quad) );
@@ -10,14 +11,16 @@ namespace Arenas {
 
 Quad *Quad::create(const char *tex /* = NULL */, int w /* = 0 */, int h /* = 0 */)
 {
-    return XNEW(Quad, Arenas::quadArena)(tex, w, h);
+    Quad *q = XNEW(Quad, Arenas::quadArena)(tex, w, h);
+    engine->objmgr->AddObject(q);
+    return q;
 }
 
 void Quad::destroy()
 {
+    ASSERT_DYNAMIC_TYPE(*this, Quad);
     return XDELETE_NN(this, Arenas::quadArena);
 }
-
 
 
 Quad::Quad(const char *tex /* = NULL */, int w /* = 0 */, int h /* = 0 */)

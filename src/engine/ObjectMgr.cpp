@@ -28,7 +28,7 @@ void ObjectMgr::Update(float dt)
     for(size_t i = 0; i < _alive.size(); ++i)
     {
         ScriptObject *obj = _alive[i];
-        if(!(obj->isDead() || obj->isPaused()))
+        if(!(obj->isDead() || obj->isPaused() || obj->_objIndex == -1))
             obj->update(dt);
     }
 }
@@ -38,7 +38,7 @@ void ObjectMgr::UpdateFixed(float dt)
     for(size_t i = 0; i < _alive.size(); ++i)
     {
         ScriptObject *obj = _alive[i];
-        if(!(obj->isDead() || obj->isPaused()))
+        if(!(obj->isDead() || obj->isPaused() || obj->_objIndex == -1))
             obj->updateFixed(dt);
     }
 }
@@ -46,14 +46,20 @@ void ObjectMgr::UpdateFixed(float dt)
 void ObjectMgr::AddObject(ScriptObject *obj)
 {
     ASSERT(obj->isManaged());
-    obj->_objIndex = (unsigned int)_alive.size();
-    _alive.push_back(obj);
+    if(obj->_objIndex == -1)
+    {
+        obj->_objIndex = (unsigned int)_alive.size();
+        _alive.push_back(obj);
+    }
 }
 
 void ObjectMgr::Garbage(ScriptObject *obj)
 {
     ASSERT(obj->isManaged());
-    _garbage.push_back(obj);
+    if(obj->_objIndex != -1)
+        _garbage.push_back(obj);
+    else
+        logerror("ObjectMgr::Garbage(): Attempt to garbage unregistered object");
 }
 
 void ObjectMgr::ClearGarbage()
@@ -65,7 +71,7 @@ void ObjectMgr::ClearGarbage()
         for(size_t i = 0; i < _garbage.size(); ++i)
         {
             ScriptObject *obj = _garbage[i];
-            unsigned int idx = obj->_objIndex;
+            int idx = obj->_objIndex;
             ASSERT(_alive[idx] == obj);
             obj->destroy();
 
