@@ -612,13 +612,13 @@ luaFn(ro_setPauseLevel)
     luaReturnSelf();
 }
 
-/*luaFn(ro_getParent)
+luaFn(ro_getParent)
 {
     RenderObject *ro = getRO(L);
     if(ro && ro->getParent())
-        luaReturnObject(ro->getParent());
+        luaReturnObject(ro->getParent()); // FIXME: if this does not have a script pointer, it will return nil. Could create one instead?
     luaReturnNil();
-}*/
+}
 
 luaFn(ro_updatePhysics)
 {
@@ -1226,6 +1226,7 @@ static const luaL_Reg renderobjectlib[] =
     { "updatePhysics", ro_updatePhysics },
     { "addVel", ro_addVel },
     { "vectorTo", ro_vectorTo },
+    { "getParent", ro_getParent },
 
     // TODO: more
 
