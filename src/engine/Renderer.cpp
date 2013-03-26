@@ -401,7 +401,8 @@ void Renderer::_applyBlendType(BlendType blend)
         break;
     case BLEND_MULT:
         glEnable(GL_BLEND);
-        glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+        //glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+        glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA); // FIXME: this isn't quite right, but better than the above
         break;
     }
 
