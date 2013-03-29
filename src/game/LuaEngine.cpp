@@ -1195,7 +1195,6 @@ luaFn(vec_projectOnto)
 static const luaL_Reg statslib[] =
 {
     { "getResourceMem", stats_getResourceMem },
-    { "getObsGridMem", stats_getObsGridMem },
     { "getResourceCount", stats_getResourceCount },
     { "getRenderedObjects", stats_getRenderedObjects },
     { "getRenderedVertices", stats_getRenderedVertices },

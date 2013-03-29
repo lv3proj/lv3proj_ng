@@ -212,8 +212,8 @@ void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
         return;
 
     mask *block = _grid(x, y);
-    if(block == _full)
-        return;
+    //if(block == _full)
+    //   return;
 
     //unsigned int fre = OBS_NONE; // 0
     unsigned int lrcount = engine->layers->GetLayerCount();
@@ -229,11 +229,17 @@ void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
 
         Tile *tile = tg.GetTile(x, y);
         if(!tile)
+        {
+            _dropBlock(block);
+            _grid(x, y) = const_cast<mask*>(_empty);
             continue;
+        }
 
         switch(tile->getTileObsType())
         {
             case TO_FULLFREE:
+                _dropBlock(block);
+                _grid(x, y) = const_cast<mask*>(_empty);
                 continue;
 
             case TO_FULLSOLID:
