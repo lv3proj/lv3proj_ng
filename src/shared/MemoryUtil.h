@@ -42,13 +42,11 @@ struct IsPOD
 XMEM_DEFINE_POD_TYPE(char);
 XMEM_DEFINE_POD_TYPE(unsigned char);
 // 2 bytes
-XMEM_DEFINE_POD_TYPE(short);
-XMEM_DEFINE_POD_TYPE(unsigned short);
-// 4 bytes
-XMEM_DEFINE_POD_TYPE(int);
-XMEM_DEFINE_POD_TYPE(unsigned int);
-XMEM_DEFINE_POD_TYPE(long);
-XMEM_DEFINE_POD_TYPE(unsigned long);
+XMEM_DEFINE_POD_TYPE(int16);
+XMEM_DEFINE_POD_TYPE(uint16);
+// 4 bytes (and 8
+XMEM_DEFINE_POD_TYPE(int32);
+XMEM_DEFINE_POD_TYPE(uint32);
 // 8 bytes
 XMEM_DEFINE_POD_TYPE(int64);
 XMEM_DEFINE_POD_TYPE(uint64);

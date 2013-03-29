@@ -59,7 +59,7 @@ FORCE_INLINE uint32 ctz(uint32 x)
 FORCE_INLINE unsigned int clz(uint32 x)
 {
 #ifdef __GNUC__
-	return __builtin_ctz((value));
+	return __builtin_ctz((x));
 #elif defined(_MSC_VER) && defined(_M_IX86)
 	unsigned long r = 0;
 	_BitScanForward(&r, x);
