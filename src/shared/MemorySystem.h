@@ -17,11 +17,12 @@
 #define XMEM_SOURCE_INFO (XSourceInfo(__FILE__, __LINE__, XMEM_CURRENT_FUNCTION))
 
 #define XNEW(ty, a)    new (_X_New(sizeof(ty), a, XMEM_SOURCE_INFO)) ty
-//#define XNEW(ty)       new ty
+//#define XNEW(ty, a)       new ty
 
 #define XDELETE(ty, a) _X_Delete(ty, a)
 #define XDELETE_NN(ty, a) _X_DeleteUnchecked(ty, a)
-//#define XDELETE(ty)    delete ty
+//#define XDELETE_NN(ty, a) delete ty
+//#define XDELETE(ty, a)    delete ty
 
 #define XNEW_ARRAY_C(type, arena)    _X_NewArray<TypeAndCount<type>::Type>(arena, TypeAndCount<type>::Count, XMEM_SOURCE_INFO, IntToType<XIS_POD(TypeAndCount<type>::Type)>())
 #define XNEW_ARRAY(type, count, arena) _X_NewArray<type>(arena, count, XMEM_SOURCE_INFO, IntToType<XIS_POD(type)>());
