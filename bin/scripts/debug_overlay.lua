@@ -57,7 +57,7 @@ local debugtext = entity.new(31)
 debugtext:setPauseLevel(99)
 debugtext.text = quadtext.new(FONTS.default, 0)
 debugtext:addChild(debugtext.text)
-debugtext:alpha(1)
+debugtext:alpha(0)
 
 local dbgTextT = 0
 local keyDown = false

@@ -56,7 +56,7 @@ public:
     static void ResetTime(void);
     static bool IsKeyPressed(SDLKey k);
 
-    virtual void InitScreen(uint32 sizex, uint32 sizey, uint8 bpp = 0, uint32 extraflags = 0);
+    virtual void InitScreen(uint32 sizex, uint32 sizey, uint8 bpp = 0, uint32 extraflags = 0, bool full = false);
     virtual bool Setup(void);
     virtual void Shutdown(void);
     virtual const char *GetName(void) { return "EngineBase"; } // must be overloaded

@@ -127,12 +127,12 @@ void EngineBase::SetTitle(const char *title)
     _wintitle = title;
 }
 
-void EngineBase::InitScreen(uint32 sizex, uint32 sizey, uint8 bpp /* = 0 */, uint32 extraflags /* = 0 */)
+void EngineBase::InitScreen(uint32 sizex, uint32 sizey, uint8 bpp /* = 0 */, uint32 extraflags /* = 0 */, bool full /* = false */)
 {
     render->SetInternalResolution(800, 600);
     render->SetScreenResolution(sizex, sizey);
     render->SetBPP(bpp ? bpp : 32);
-    render->SetFullscreen(false);
+    render->SetFullscreen(full);
     render->SetVsync(false);
     render->ApplySettings();
 
