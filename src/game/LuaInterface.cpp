@@ -233,6 +233,16 @@ bool LuaInterface::call(const char *func, int a, int b)
     return doCall(2);
 }
 
+bool LuaInterface::call(const char *func, int a, int b, int c, int d)
+{
+    lookupFunc(func);
+    lua_pushinteger(_lua, a);
+    lua_pushinteger(_lua, b);
+    lua_pushinteger(_lua, c);
+    lua_pushinteger(_lua, d);
+    return doCall(4);
+}
+
 void LuaInterface::lookupMethod(ScriptObject *obj, const char *func)
 {
     lookupUserdata(_lua, obj);

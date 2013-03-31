@@ -129,3 +129,8 @@ void ScriptedEngine::OnKeyUp(SDLKey key, SDLMod mod)
     script->call("onKeyUp", key, mod);
 }
 
+void ScriptedEngine::OnJoystickEvent(uint32 type, uint32 device, uint32 id, int32 val)
+{
+    script->call("onJoystickEvent", device, type, id, val);
+}
+

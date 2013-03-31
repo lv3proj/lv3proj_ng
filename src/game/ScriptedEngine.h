@@ -27,6 +27,9 @@ protected:
     virtual void OnRender();
     virtual void OnKeyDown(SDLKey key, SDLMod mod);
     virtual void OnKeyUp(SDLKey key, SDLMod mod);
+    virtual void OnJoystickEvent(uint32 type, uint32 device, uint32 id, int32 val);
+
+
 
     void _CreateInternalObjects();
 

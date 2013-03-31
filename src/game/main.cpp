@@ -6,12 +6,14 @@
 
 int main(int argc, char **argv)
 {
-    SDL_Init(SDL_INIT_NOPARACHUTE);
+    SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_JOYSTICK);
 
     //Bootstrap::RelocateWorkingDir();
     Bootstrap::HookSignals();
+#ifdef _DEBUG
     log_prepare("game_log.txt", "w");
     log_setloglevel(4);
+#endif
     Bootstrap::PrintSystemSpecs();
 
     // this should be checked, especially in larger projects
@@ -29,7 +31,13 @@ int main(int argc, char **argv)
         logerror("Failed to setup engine. Exiting.");
         return 1;
     }
+
+#ifdef _DEBUG
     that.InitScreen(800, 600);
+#else
+    const SDL_VideoInfo *info = SDL_GetVideoInfo();
+    that.InitScreen(info->current_w, info->current_h, 0, 0, true);
+#endif
     that.Run();
     that.Shutdown();
 

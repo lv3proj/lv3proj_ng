@@ -314,6 +314,17 @@ luaFunc(isObjectValid)
     luaReturnBool(su && su->obj);
 }
 
+luaFunc(getObs)
+{
+    luaReturnInt(engine->obsgrid.getObs(lua_tointeger(L, 1), lua_tointeger(L, 2)));
+}
+
+luaFunc(resetEngine)
+{
+    engine->SetReset(true);
+    luaReturnNil();
+}
+
 static LuaFunctions s_functab[] =
 {
     { "dofile", l_dofile_wrap },
@@ -348,6 +359,8 @@ static LuaFunctions s_functab[] =
     luaRegister(setFixedDT),
     luaRegister(setSpeed),
     luaRegister(isObjectValid),
+    luaRegister(getObs),
+    luaRegister(resetEngine),
 
     { NULL, NULL }
 };

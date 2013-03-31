@@ -17,6 +17,12 @@ LuaConstants constants[] =
     luaConstant(BLEND_SUB),
     luaConstant(BLEND_MULT),
 
+    luaConstant(SDL_JOYAXISMOTION),
+    luaConstant(SDL_JOYBALLMOTION),
+    luaConstant(SDL_JOYHATMOTION),
+    luaConstant(SDL_JOYBUTTONDOWN),
+    luaConstant(SDL_JOYBUTTONUP),
+
     {NULL, 0}
 };
 
