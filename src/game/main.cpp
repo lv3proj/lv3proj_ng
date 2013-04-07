@@ -10,10 +10,8 @@ int main(int argc, char **argv)
 
     //Bootstrap::RelocateWorkingDir();
     Bootstrap::HookSignals();
-#ifdef _DEBUG
     log_prepare("game_log.txt", "w");
     log_setloglevel(4);
-#endif
     Bootstrap::PrintSystemSpecs();
 
     // this should be checked, especially in larger projects
@@ -32,12 +30,12 @@ int main(int argc, char **argv)
         return 1;
     }
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
     that.InitScreen(800, 600);
-#else
+/*#else
     const SDL_VideoInfo *info = SDL_GetVideoInfo();
     that.InitScreen(info->current_w, info->current_h, 0, 0, true);
-#endif
+#endif*/
     that.Run();
     that.Shutdown();
 

@@ -66,7 +66,8 @@ rawset(_G, "onUpdate", function(dt)
 
     if firstUpdate then
         firstUpdate = false
-        dofile("demo.lua")
+        --dofile("demo.lua")
+        dofile("lv3.lua")
         clearGarbage()
     end
     
