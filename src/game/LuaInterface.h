@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include <map>
+#include "MemoryAllocatorSmallBlock.h"
 
 // TODO: derive from ScriptInterface base class,
 // that provides virtual interfaces?
@@ -36,6 +37,8 @@ public:
     // for debugging -- remove later
     typedef std::map<unsigned int, unsigned int> LuaAllocStats;
 
+    static void *the_alloc(void *ud, void *ptr, size_t osize, size_t nsize);
+
 protected:
 
     void lookupFunc(const char *f);
@@ -43,6 +46,7 @@ protected:
     bool doCall(int nparams, int nrets = 0);
 
     lua_State *_lua;
+    SmallBlockAllocator _sballoc;
     LuaAllocStats _stats;
 };
 

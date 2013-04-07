@@ -11,10 +11,6 @@ FallbackArena::FallbackArena()
 {
 }
 
-ScriptArena::ScriptArena()
-{
-}
-
 VectorInterpolation::VectorInterpolation(GlobalArena& underlying, size_t elements, size_t elemSize)
 : VectorInterpolationBase(MemoryData<GlobalArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
 {

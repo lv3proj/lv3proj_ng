@@ -2,6 +2,7 @@
 set(shared_SRC
 Arenas.cpp
 Arenas.h
+algorithmx.h
 array2d.h
 bithacks.h
 common.h
@@ -13,6 +14,8 @@ MemoryAllocatorDynamicPool.h
 MemoryAllocatorFixedPool.h
 MemoryAllocatorMalloc.h
 MemoryAllocatorNull.h
+MemoryAllocatorSmallBlock.cpp
+MemoryAllocatorSmallBlock.h
 MemoryAllocators.h
 MemoryArena.h
 MemoryBoundsCheckPolicy.h

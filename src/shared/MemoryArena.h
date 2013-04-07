@@ -73,8 +73,8 @@ public:
 
     void Free(void* ptr)
     {
-        //if(!ptr)
-        //    return;
+        ASSERT(ptr);
+
         m_threadGuard.Enter();
 
         char* originalMemory = static_cast<char*>(ptr) - BoundsCheckingPolicy::SIZE_FRONT;

@@ -9,33 +9,17 @@
 #include "LuaEngine.h"
 #include "LuaConstants.h"
 
-Arenas::ScriptArena s_scriptArena;
 
-// TEMP: to gather allocation statistics
-static void *the_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
+// optimized allocator for Lua
+void *LuaInterface::the_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
-    (void)ud;  (void)osize;  /* not used */
-    if (nsize == 0)
-    {
-        //free(ptr);
-        if(ptr)
-            s_scriptArena.Free(ptr);
-        return NULL;
-    }
-    if(ud)
-        ++(*((LuaInterface::LuaAllocStats*)ud))[nsize];
-    //return realloc(ptr, nsize);
+    LuaInterface *this_ = (LuaInterface*)ud;
+    DBG ++this_->_stats[nsize];
 
-    if(!ptr)
-    {
-        // New allocation, done here
-        return s_scriptArena.Allocate(nsize, sizeof(void*), XMEM_SOURCE_INFO);
-    }
-
-    // ptr is not NULL, so it's realloc()
-    void *newp = s_scriptArena.Allocate(nsize, sizeof(void*), XMEM_SOURCE_INFO);
-    memcpy(newp, ptr, std::min(nsize, osize));
-    return newp;
+    _ASSERTE( _CrtCheckMemory( ) ); // TEMP DEBUG
+    void *p = this_->_sballoc.Alloc(ptr, nsize, osize);
+    _ASSERTE( _CrtCheckMemory( ) ); // TEMP DEBUG
+    return p;
 }
 
 static int the_panic (lua_State *L) {
@@ -47,14 +31,12 @@ static int the_panic (lua_State *L) {
 static void PrintAllocStats(const LuaInterface::LuaAllocStats& a)
 {
     for(LuaInterface::LuaAllocStats::const_iterator it = a.begin(); it != a.end(); ++it)
-    {
         logdev("AllocStats: %u bytes\t\t%u times", it->first, it->second);
-    }
 }
 
 
 LuaInterface::LuaInterface()
- : _lua(NULL)
+ : _lua(NULL), _sballoc(8, 128)
 {
 }
 
@@ -66,7 +48,7 @@ LuaInterface::~LuaInterface()
 void LuaInterface::Shutdown()
 {
     logdebug("LuaInterface::Shutdown()");
-    PrintAllocStats(_stats);
+    DBG PrintAllocStats(_stats);
     lua_close(_lua);
     _lua = NULL;
     _stats.clear();
@@ -101,7 +83,7 @@ bool LuaInterface::Init()
 {
     if(!_lua)
     {
-        _lua = lua_newstate(the_alloc, &_stats);
+        _lua = lua_newstate(the_alloc, this);
         if(!_lua)
             return false;
 

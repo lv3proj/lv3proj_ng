@@ -34,13 +34,6 @@ namespace Arenas
         FallbackArena();
     };
 
-    #define ScriptArenaBase MemoryArena<BasicHeapAllocator, SingleThreadPolicy, NoBoundsChecking, NoMemoryTracking, NoMemoryTagging>
-    class ScriptArena : public ScriptArenaBase
-    {
-    public:
-        ScriptArena();
-    };
-
     #define VectorInterpolationBase MemoryArena<DynamicPoolAllocator<GlobalArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
     class VectorInterpolation : public VectorInterpolationBase
     {
