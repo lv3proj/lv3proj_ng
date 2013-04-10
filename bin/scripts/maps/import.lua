@@ -27,12 +27,32 @@ end
 f:close()
 assert(#data >= w * h, "Not enough data")
 
-setTileGridSize(3, math.max(w, h))
-setTileGridSize(4, math.max(w, h))
-setTileGridCollision(4, true)
-initObsGrid(math.max(w, h), tilesize)
+local LAYER_DESTRUCTIBLE = 16 -- solid foreground, destructible
+local LAYER_WALL = 14         -- solid foreground
+local LAYER_NOWALL = 10       -- foreground, not solid
+local LAYER_BG = 5            -- background, not solid
+local LAYER_SLOPES = 1        -- solid background
+local LAYERS = { LAYER_DESTRUCTIBLE, LAYER_WALL, LAYER_NOWALL, LAYER_BG, LAYER_SLOPES }
+for _, i in pairs(LAYERS) do
+    setTileGridSize(i, math.max(w, h)) 
+end
 
 local bits = setmetatable({}, {__index = {}})
+
+----------------
+local BITS_SLOPE = bit32.bor(0x8000, 0x4000)
+local BITS_SOLID = 0x400
+local BITS_DESTRUCTIBLE = 0x8000
+local BITTAB_SLOPE =
+{
+    [bit32.bor(BITS_SLOPE, 0x000        )] = 0,
+    [bit32.bor(BITS_SLOPE, 0x800        )] = 1,
+    [bit32.bor(BITS_SLOPE, 0x400, 0x800 )] = 2,
+    [bit32.bor(BITS_SLOPE, 0x400        )] = 3,
+    [bit32.bor(BITS_SLOPE, 0x400, 0x1000)] = 4,
+    [bit32.bor(BITS_SLOPE, 0x1000       )] = 5,
+}
+----------------
 
 local didx = 0
 for y = 0, h-1 do
@@ -40,24 +60,33 @@ for y = 0, h-1 do
     for x = 0, w-1 do
         didx = didx + 1
         local num = data[didx]
-        
         bits[y][x] = bit32.rshift(num, 10)
+        local bit = bit32.band(num, bit32.bnot(0x3ff))
+        num = bit32.band(num, 0x3ff)
         
-        local layer = 3
-        if num > 0x3ff then
-            num = bit32.band(num, 0x3ff)
-            layer = 4
-        end
-        
+        local layer = LAYER_BG
         local col = math.floor(num / tilesPerRow)
         local row = num % tilesPerRow
-        
         local tile = string.format("vikings_tilesets/%s.png:%d:%d:%d:%d", map, row*tilesize, col*tilesize, tilesize, tilesize)
         
+        if bit == BITS_SOLID then -- solid
+            layer = LAYER_WALL
+        elseif bit == BITS_DESTRUCTIBLE then
+            layer = LAYER_DESTRUCTIBLE
+        elseif BITTAB_SLOPE[bit] then
+            local slope = string.format("vikings_tilesets/slopes.png:%d:0:%d:%d", BITTAB_SLOPE[bit]*tilesize, tilesize, tilesize)
+            setTile(LAYER_SLOPES, x, y, slope)
+        end
+        
         setTile(layer, x, y, tile)
-
     end
 end
+
+setTileGridCollision(LAYER_DESTRUCTIBLE, true)
+setTileGridCollision(LAYER_WALL, true)
+setTileGridCollision(LAYER_SLOPES, true)
+initObsGrid(math.max(w, h), tilesize)
+
 
 local bittrans =
 {
