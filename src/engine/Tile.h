@@ -9,10 +9,9 @@ class Texture;
 
 enum TileObsType
 {
-    TO_FULLFREE = 0,
+    TO_FULLFREE = 0,        // all pixels are free
+    TO_MIXED,               // some pixels are obstructed
     TO_FULLSOLID,           // all pixels are obstructed
-    //TO_FULLSOLID_OPAQUE,    // all pixels are fully obstructed and fully opaque (i.e. underlying tiles do not need to be rendered.)
-    TO_MIXED,
 };
 
 // A Tile is a texture with collision/obstruction information.

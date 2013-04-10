@@ -60,6 +60,9 @@ void ObsGrid::Init(unsigned int gridsize, unsigned int blocksize)
 {
     Clear();
 
+    if(!(gridsize && blocksize))
+        return;
+
     unsigned int t = 1;
     _blockshift = 0;
     while(t < blocksize)
@@ -212,10 +215,10 @@ void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
         return;
 
     mask *block = _grid(x, y);
-    //if(block == _full)
-    //   return;
 
-    //unsigned int fre = OBS_NONE; // 0
+    _dropBlock(block);
+    _grid(x, y) = block = const_cast<mask*>(_empty);
+
     unsigned int lrcount = engine->layers->GetLayerCount();
     for(unsigned int lr = 1; lr < lrcount; ++lr)
     {
@@ -227,25 +230,17 @@ void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
 
         TileGrid& tg = *(layer->tiles);
 
-        Tile *tile = tg.GetTile(x, y);
+        Tile *tile = tg.GetTileSafe(x, y);
         if(!tile)
-        {
-            _dropBlock(block);
-            _grid(x, y) = const_cast<mask*>(_empty);
             continue;
-        }
 
+        // FIXME: bits are not ORed together properly in case a TO_FULLSOLID appears.
         switch(tile->getTileObsType())
         {
-            case TO_FULLFREE:
-                _dropBlock(block);
-                _grid(x, y) = const_cast<mask*>(_empty);
-                continue;
-
             case TO_FULLSOLID:
                 _dropBlock(block);
                 _grid(x, y) = const_cast<mask*>(_full);
-                return;
+                return; // fully occupied, any other block above it will not affect the outcome anymore
 
             case TO_MIXED:
             {
@@ -265,7 +260,7 @@ void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
                     for(unsigned int tx = 0; tx < tdim; ++tx)
                     {
                         mask t = tile->getObs(tx, ty) | *ptr;
-                        *ptr++ = t;
+                        *ptr++ |= t;
                         solid &= t;
                         //fre |= t;
                     }
@@ -280,13 +275,6 @@ void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
             }
         }
     }
-
-    // THIS IS NOT SAFE
-    /*if(fre == OBS_NONE)
-    {
-        _dropBlock(block);
-        _grid(x, y) = const_cast<mask*>(_empty);
-    }*/
 }
 
 
