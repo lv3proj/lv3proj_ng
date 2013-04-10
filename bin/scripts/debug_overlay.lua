@@ -54,6 +54,7 @@ local function updateDebugText(obj)
 end
 
 local debugtext = entity.new(31)
+debugtext:makeInternal()
 debugtext:setPauseLevel(99)
 debugtext.text = quadtext.new(FONTS.default, 0)
 debugtext:addChild(debugtext.text)
@@ -73,7 +74,7 @@ function debugtext:update(dt)
         end
     end
     
-    local k = isKey(KEY_F1)
+    local k = isKey(KEY_BACKQUOTE)
     if k and not keyDown then
         if self:getAlpha() > 0.5 then
             self:alpha(0, 0.1)

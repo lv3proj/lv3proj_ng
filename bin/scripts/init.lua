@@ -9,6 +9,7 @@ dofile("defines.lua")
 dofile("debug.lua")
 dofile("string.lua")
 dofile("table.lua")
+dofile("event.lua")
 dofile("tq.lua")
 dofile("mouse.lua")
 dofile("ro.lua")
@@ -17,6 +18,7 @@ dofile("entity.lua")
 dofile("sound.lua")
 dofile("class.lua")
 dofile("font.lua")
+dofile("map.lua")
 dofile("pixfont.lua")
 dofile("quadtext.lua")
 dofile("camera.lua")
@@ -24,11 +26,16 @@ dofile("ui.lua")
 dofile("textinput.lua")
 dofile("player.lua")
 dofile("editor_tileset.lua")
+dofile("debugkeys.lua")
 
 -- forbid os functions, these are dangerous.
 --os = nil -- TODO: add replacement functions in engine
 package = nil
 require = nil
+
+
+TQ = tq_create()
+
 
 
 rawset(_G, "onInit", function()
@@ -64,6 +71,8 @@ local firstUpdate = true
 
 rawset(_G, "onUpdate", function(dt)
 
+    TQ:update(dt)
+
     if firstUpdate then
         firstUpdate = false
         --dofile("demo.lua")
@@ -92,18 +101,22 @@ rawset(_G, "onRender", function()
 end)
 
 rawset(_G, "onKeyDown", function(key, mod)
-    if key == KEY_i then
-        TEXTINP:alpha(1)
-        TEXTINP:getInput()
-        TEXTINP:alpha(0)
-    end
+    --print(key, mod)
+    triggerEvent("onKeyDown", key, mod)
 end)
 
 rawset(_G, "onKeyUp", function(key, mod)
-
+    triggerEvent("onKeyUp", key, mod)
 end)
 
 rawset(_G, "onJoystickEvent", function(device, type, id, val)
 
+end)
+
+rawset(_G, "getUserInputText", function()
+    TEXTINP:alpha(1)
+    local r = TEXTINP:getInput()
+    TEXTINP:alpha(0)
+    return r
 end)
 

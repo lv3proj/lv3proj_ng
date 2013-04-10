@@ -1,6 +1,4 @@
 
-local UI_DEBUG = true
-
 
 local UIELEMS = {}
 

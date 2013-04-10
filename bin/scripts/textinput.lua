@@ -5,11 +5,19 @@ function textinput.new(layer)
     local e = uibase.new(layer)
     setclass(e, textinput)
     e:setPauseLevel(PAUSELEVEL_INPUT)
+    e:makeInternal()
     
     e.text = quadtext.new(FONTS.default, 0)
     e:addChild(e.text)
     return e
 end
+
+local shifttab =
+{
+    ["-"] = "_",
+    ["."] = ":",
+    [","] = ";",
+}
 
 function textinput:getInput()
     local oldpause = getPause()
@@ -30,7 +38,7 @@ function textinput:getInput()
             else
                 local c = string.char(key)
                 if bit32.btest(mod, KMOD_SHIFT) then
-                    c = c:upper()
+                    c = shifttab[c] or c:upper()
                 end
                 str = str .. c
             end

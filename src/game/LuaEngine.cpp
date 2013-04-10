@@ -184,6 +184,19 @@ luaFunc(getTile)
     luaReturnNil();
 }
 
+luaFunc(clearTiles)
+{
+    RenderLayer *layer = getLayerByID(L, 1);
+    if(!layer)
+    {
+        logerror("clearTiles(): Invalid layer");
+        luaReturnNil();
+    }
+
+    layer->tiles->Clear();
+    luaReturnNil();
+}
+
 luaFunc(setTileGridSize)
 {
     RenderLayer *layer = getLayerByID(L, 1);
@@ -342,6 +355,7 @@ static LuaFunctions s_functab[] =
     luaRegister(clearGarbage),
     luaRegister(setTile),
     luaRegister(getTile),
+    luaRegister(clearTiles),
     luaRegister(setTileGridSize),
     luaRegister(setTileGridCollision),
     luaRegister(initObsGrid),

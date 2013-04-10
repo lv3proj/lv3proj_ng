@@ -1,6 +1,17 @@
 
 ENTITIES = rawget(_G, "ENTITIES") or {}
 
+rawset(_G, "clearEntities", function()
+    local c = 0
+    for _, e in pairs(ENTITIES) do
+        if not e:isInternal() then
+            e:delete()
+            c = c + 1
+        end
+    end
+    print(string.format("clearEntities: %d entities removed", c))
+end)
+
 local enew = entity.new
 
 function entity.new(...)
@@ -25,7 +36,7 @@ function entity:updateFixed()
 end
 
 function entity:onEndOfLife()
-    --print("Entity died")
+    --print("Entity died:", self)
     ENTITIES[self] = nil
 end
 
@@ -151,4 +162,3 @@ function entity:moveOutOfWall(maxsteps, vlen, area, skip) -- all optional
     end
     return coll
 end
-

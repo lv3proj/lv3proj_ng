@@ -50,5 +50,8 @@ function quadtext:setText(s)
         self:_writeRow(row, line, (i - 1) * self.font:getCharSize() )
         i = i + 1
     end
+    for i = #a+1, #self.lines do
+        self:_writeRow(self.lines[i], "", (i - 1) * self.font:getCharSize() )
+    end
 end
 

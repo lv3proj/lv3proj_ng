@@ -9,12 +9,31 @@ local editorPosX = 0
 local editorPosY = 0
 
 local editor = entity.new(30)
+editor:makeInternal()
+rawset(_G, "EDITOR_ENTITY", editor)
 editor:setPauseLevel(PAUSELEVEL_EDITOR)
 editor.on = false
 editor.wasTab = false
 editor.needinit = true
 editor.ui = {}
 
+addEventListener("onKeyDown", function(...) editor:onKeyDown(...) end)
+
+rawset(_G, "isInEditor", function()
+    return editor.on
+end)
+
+
+local function loadMapUser()
+    -- getUserInputText() enters a wait(), which is problematic and would cause infinte recursion,
+    -- so we delay the call to the toplevel update().
+    TQ:push(0, function()
+        local inp = getUserInputText() 
+        if inp and inp ~= "" then
+            return loadMap(table.unpack(inp:explode(" ", true)))
+        end
+    end)
+end
 
 function editor:setOn(on)
     self.on = on
@@ -41,7 +60,14 @@ function editor:init()
     end
     
     local bLoad = button.new(250, 20, "Load")
+    bLoad.onAction = function()
+        loadMapUser()
+    end
+    
     local bSave = button.new(250, 20, "Save")
+    bSave.onAction = function()
+        saveMap()
+    end
     
     dd:add(bLoad)
     dd:add(bSave)
@@ -138,3 +164,19 @@ end
 function editor:updateSelection()
 
 end
+
+
+function editor:onKeyDown(key, mod)
+    if not self.on then
+        return
+    end
+    if key == KEY_F1 then
+        if bit32.btest(mod, KMOD_SHIFT) then
+            loadMapUser()
+        else
+            reloadMap()
+        end
+    end
+end
+
+
