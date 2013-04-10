@@ -263,6 +263,11 @@ luaFunc(isLayerVisible)
     luaReturnBool(layer->visible);
 }
 
+luaFunc(getMaxLayerID)
+{
+    luaReturnInt(engine->layers->GetLayerCount() - 1);
+}
+
 luaFunc(setPause)
 {
     engine->SetPause(lua_tointeger(L, 1));
@@ -385,6 +390,7 @@ static LuaFunctions s_functab[] =
     luaRegister(setLayerParallax),
     luaRegister(setLayerVisible),
     luaRegister(isLayerVisible),
+    luaRegister(getMaxLayerID),
     luaRegister(isPause),
     luaRegister(setPause),
     luaRegister(getPause),

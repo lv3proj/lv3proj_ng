@@ -68,7 +68,7 @@ function debugtext:update(dt)
         dbgTextT = dbgTextT - dt
         if dbgTextT <= 0 then
             local ox, oy = getVirtualOffs()
-            self:position(10 - ox, 10 - oy) -- FIXME
+            self:position(10 - ox, 35 - oy) -- FIXME
             updateDebugText(self.text)
             dbgTextT = 0.2
         end

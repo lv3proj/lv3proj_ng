@@ -3,7 +3,7 @@ local currentMap
 local currentMapParams
 
 rawset(_G, "clearMap", function()
-    for i = 0, 31 do
+    for i = 0, getMaxLayerID() do
         setTileGridCollision(i, false)
         clearTiles(i)
         setLayerVisible(i, true)
@@ -40,5 +40,13 @@ end)
 
 rawset(_G, "reloadMap", function(file)
     return loadMap(currentMap, table.unpack(currentMapParams))
+end)
+
+rawset(_G, "getMapName", function(withParams)
+    local s = currentMap
+    if withParams then
+        s = s .. " " .. table.concat(currentMapParams, " ")
+    end
+    return s
 end)
 
