@@ -27,12 +27,13 @@ end
 f:close()
 assert(#data >= w * h, "Not enough data")
 
+local LAYER_DEBUG = 28        -- markers
 local LAYER_DESTRUCTIBLE = 16 -- solid foreground, destructible
 local LAYER_WALL = 14         -- solid foreground
 local LAYER_NOWALL = 10       -- foreground, not solid
 local LAYER_BG = 5            -- background, not solid
 local LAYER_SLOPES = 1        -- solid background
-local LAYERS = { LAYER_DESTRUCTIBLE, LAYER_WALL, LAYER_NOWALL, LAYER_BG, LAYER_SLOPES }
+local LAYERS = { LAYER_DESTRUCTIBLE, LAYER_WALL, LAYER_NOWALL, LAYER_BG, LAYER_SLOPES, LAYER_DEBUG }
 for _, i in pairs(LAYERS) do
     setTileGridSize(i, math.max(w, h)) 
 end
@@ -70,6 +71,10 @@ for y = 0, h-1 do
         local col = math.floor(num / tilesPerRow)
         local row = num % tilesPerRow
         local tile = string.format("lv1_tilesets/%s.png:%d:%d:%d:%d", map, row*tilesize, col*tilesize, tilesize, tilesize)
+        
+        if bit ~= 0 and bit ~= BITS_SOLID and not BITTAB_SLOPE[bit] then
+            setTile(LAYER_DEBUG, x, y, "debug/marker16.png")
+        end
         
         if bit == BITS_SOLID then -- solid
             layer = LAYER_WALL
