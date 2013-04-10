@@ -9,7 +9,7 @@ if not map then
     return
 end
 
-local path = "vikings_tilemaps/" .. map .. ".txt"
+local path = "data/lv1_tilemaps/" .. map .. ".txt"
 local f = io.open(path)
 if not f then
     msgbox("Unable to open tilemap file [" .. path .. "]")
@@ -67,14 +67,14 @@ for y = 0, h-1 do
         local layer = LAYER_BG
         local col = math.floor(num / tilesPerRow)
         local row = num % tilesPerRow
-        local tile = string.format("vikings_tilesets/%s.png:%d:%d:%d:%d", map, row*tilesize, col*tilesize, tilesize, tilesize)
+        local tile = string.format("lv1_tilesets/%s.png:%d:%d:%d:%d", map, row*tilesize, col*tilesize, tilesize, tilesize)
         
         if bit == BITS_SOLID then -- solid
             layer = LAYER_WALL
         elseif bit == BITS_DESTRUCTIBLE then
             layer = LAYER_DESTRUCTIBLE
         elseif BITTAB_SLOPE[bit] then
-            local slope = string.format("vikings_tilesets/slopes.png:%d:0:%d:%d", BITTAB_SLOPE[bit]*tilesize, tilesize, tilesize)
+            local slope = string.format("lv1_tilesets/slopes.png:%d:0:%d:%d", BITTAB_SLOPE[bit]*tilesize, tilesize, tilesize)
             setTile(LAYER_SLOPES, x, y, slope)
         end
         
