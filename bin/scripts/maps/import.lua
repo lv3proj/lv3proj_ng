@@ -42,6 +42,8 @@ local bits = setmetatable({}, {__index = {}})
 ----------------
 local BITS_SLOPE = bit32.bor(0x8000, 0x4000)
 local BITS_SOLID = 0x400
+local BITS_DESTRUCTIBLE_TRIGGER = 0x800
+local BITS_DESTRUCTIBLE_TRIGGER2 = bit32.bor(0x400, 0x1000)
 local BITS_DESTRUCTIBLE = 0x8000
 local BITTAB_SLOPE =
 {
@@ -71,7 +73,7 @@ for y = 0, h-1 do
         
         if bit == BITS_SOLID then -- solid
             layer = LAYER_WALL
-        elseif bit == BITS_DESTRUCTIBLE then
+        elseif bit == BITS_DESTRUCTIBLE or bit == BITS_DESTRUCTIBLE_TRIGGER or bit == BITS_DESTRUCTIBLE_TRIGGER2 then
             layer = LAYER_DESTRUCTIBLE
         elseif BITTAB_SLOPE[bit] then
             local slope = string.format("lv1_tilesets/slopes.png:%d:0:%d:%d", BITTAB_SLOPE[bit]*tilesize, tilesize, tilesize)
