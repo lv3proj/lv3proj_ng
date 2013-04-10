@@ -52,8 +52,9 @@ function button.new(w, h, str)
     str = str or ""
     local text = quadtext.new(FONTS.default, 0)
     b.text = text
-    text:setText(str)
     b:addChild(text)
+    b.centerText = false
+    b:setText(str)
     return b
 end
 
@@ -64,7 +65,13 @@ function button:onClick()
 end
 
 function button:setText(str)
-    return self.text:setText(str)
+    self.text:setText(str)
+    if self.centerText then
+        self.text:position(self.text.textWidth * -0.5, 0)
+    else
+        local w, h = self:getWH()
+        self.text:position(w * -0.5 + self.text.font:getCharSize(), 0)
+    end
 end
 
 function button:onFocus()

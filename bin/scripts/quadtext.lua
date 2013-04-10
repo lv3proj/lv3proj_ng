@@ -7,6 +7,8 @@ function quadtext.new(font, layer)
     setclass(q, quadtext)
     q.lines = {}
     q.font = font
+    q.textWidth = 0
+    q.textHeight = 0
     return q
 end
 
@@ -41,17 +43,21 @@ function quadtext:setText(s)
     s = s:upper() -- HACK FIXME
     local a = s:explode("\n")
     local i = 1
+    self.textWidth = 0
+    local cs = self.font:getCharSize()
     for _, line in ipairs(a) do
+        self.textWidth = math.max(self.textWidth, #line * cs)
         local row = self.lines[i]
         if not row then
             row = {}
             self.lines[i] = row
         end
-        self:_writeRow(row, line, (i - 1) * self.font:getCharSize() )
+        self:_writeRow(row, line, (i - 1) * cs )
         i = i + 1
     end
+    self.textHeight = #a * cs
     for i = #a+1, #self.lines do
-        self:_writeRow(self.lines[i], "", (i - 1) * self.font:getCharSize() )
+        self:_writeRow(self.lines[i], "", (i - 1) * cs )
     end
 end
 

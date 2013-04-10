@@ -9,6 +9,7 @@ function textinput.new(layer)
     
     e.text = quadtext.new(FONTS.default, 0)
     e:addChild(e.text)
+    
     return e
 end
 
@@ -20,6 +21,9 @@ local shifttab =
 }
 
 function textinput:getInput()
+    local w, h = self:getWH()
+    self.text:position(w * -0.5 + self.text.font:getCharSize() + 32, 0)
+    
     local oldpause = getPause()
     setPause(PAUSELEVEL_INPUT)
     local oldOnKeyDown = onKeyDown

@@ -4,8 +4,10 @@ local currentMapParams
 
 rawset(_G, "clearMap", function()
     for i = 0, 31 do
+        setTileGridCollision(i, false)
         clearTiles(i)
     end
+    initObsGrid(0, 0)
     clearEntities()
     clearQuads()
     clearGarbage()

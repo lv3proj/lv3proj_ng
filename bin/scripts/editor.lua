@@ -46,7 +46,7 @@ end
 
 function editor:init()
 
-    self.ui.bar = button.new(700, 20, "--[ Test ]--"):position(400, 15)
+    self.ui.bar = button.new(700, 20, "--[ Menu ]--"):position(400, 15)
     self:addChild(self.ui.bar)
     
     local dd = dropdown.new():position(-200, 20):alpha(0)
@@ -59,17 +59,17 @@ function editor:init()
         end
     end
     
-    local bLoad = button.new(250, 20, "Load")
-    bLoad.onAction = function()
-        loadMapUser()
-    end
+    local bLoad = button.new(250, 20,     "Load map...         (Shift+F1)")
+    bLoad.onAction = loadMapUser
     
-    local bSave = button.new(250, 20, "Save")
-    bSave.onAction = function()
-        saveMap()
-    end
+    local bReload = button.new(250, 20,   "Reload map          (F1)")
+    bReload.onAction = reloadMap
+    
+    local bSave = button.new(250, 20,     "Save map            (F2)")
+    bSave.onAction = saveMap
     
     dd:add(bLoad)
+    dd:add(bReload)
     dd:add(bSave)
     
     --local ts = tileset.new("ship/tileset.png")
