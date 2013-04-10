@@ -18,6 +18,7 @@ editor.needinit = true
 editor.ui = {}
 
 addEventListener("onKeyDown", function(...) editor:onKeyDown(...) end)
+addEventListener("onKeyUp", function(...) editor:onKeyUp(...) end)
 
 rawset(_G, "isInEditor", function()
     return editor.on
@@ -42,6 +43,11 @@ function editor:setOn(on)
     else
         self:onDisable()
     end
+end
+
+function editor:addChild(ch)
+    ro.addChild(self, ch)
+    ch:setPauseLevel(PAUSELEVEL_EDITOR)
 end
 
 function editor:init()
@@ -75,6 +81,10 @@ function editor:init()
     --local ts = tileset.new("ship/tileset.png")
     --ts:position(400, 300)
     --self:addChild(ts)
+    
+    self.ui.layertext = quadtext.new(FONTS.default, 0):position(10, 570):alpha(0)
+    self:addChild(self.ui.layertext)
+    self:updateLayerText()
 end
 
 
@@ -160,11 +170,44 @@ function editor:update(dt)
 
 end
 
+function editor:updateLayerText()
+    local s = ""
+    for i = 1, 31 do
+        if isLayerVisible(i) then
+            if i >= 10 then
+                s = s .. " " .. i
+            else 
+                s = s .. "  " .. i
+            end
+        else
+            s = s .. "  -"
+        end
+        if (i % 10) == 0 then
+            s = s .. "\n"
+        end
+    end
+    self.ui.layertext:setText(s)
+end
 
 function editor:updateSelection()
 
 end
 
+function editor:selectLayer(layer)
+    print("Select layer " .. layer)
+end
+
+function editor:toggleLayerVisible(layer)
+    local vis = isLayerVisible(layer)
+    if vis then
+        print("Hide layer " .. layer)
+        setLayerVisible(layer, false)
+    else
+        print("Show layer " .. layer)
+        setLayerVisible(layer, true)
+    end
+    self:updateLayerText()
+end
 
 function editor:onKeyDown(key, mod)
     if not self.on then
@@ -177,6 +220,34 @@ function editor:onKeyDown(key, mod)
             reloadMap()
         end
     end
+    
+    if key >= KEY_1 and key <= KEY_9 then
+        local hide = false
+        local num = key - KEY_1 + 1
+        if bit32.btest(KMOD_ALT, mod) then
+            hide = true
+        end
+        if bit32.btest(KMOD_SHIFT, mod) then
+            num = num + 10
+        elseif bit32.btest(KMOD_CTRL, mod) then
+            num = num + 20
+        end
+        
+        if hide then
+            self:toggleLayerVisible(num)
+        else
+            self:selectLayer(num)
+        end
+    end
+    
+    if key == KEY_LALT or key == KEY_RALT then
+        self.ui.layertext:alpha(1, 0.2)
+    end
 end
 
+function editor:onKeyUp(key, mod)
+    if key == KEY_LALT or key == KEY_RALT then
+        self.ui.layertext:alpha(0, 0.4)
+    end
+end
 

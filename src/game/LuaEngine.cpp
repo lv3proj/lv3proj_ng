@@ -240,6 +240,29 @@ luaFunc(setLayerParallax)
     luaReturnNil();
 }
 
+luaFunc(setLayerVisible)
+{
+    RenderLayer *layer = getLayerByID(L, 1);
+    if(!layer)
+    {
+        logerror("setLayerVisible(): Invalid layer");
+        luaReturnNil();
+    }
+    layer->visible = getBool(L, 2);
+    luaReturnNil();
+}
+
+luaFunc(isLayerVisible)
+{
+    RenderLayer *layer = getLayerByID(L, 1);
+    if(!layer)
+    {
+        logerror("isLayerVisible(): Invalid layer");
+        luaReturnNil();
+    }
+    luaReturnBool(layer->visible);
+}
+
 luaFunc(setPause)
 {
     engine->SetPause(lua_tointeger(L, 1));
@@ -360,6 +383,8 @@ static LuaFunctions s_functab[] =
     luaRegister(setTileGridCollision),
     luaRegister(initObsGrid),
     luaRegister(setLayerParallax),
+    luaRegister(setLayerVisible),
+    luaRegister(isLayerVisible),
     luaRegister(isPause),
     luaRegister(setPause),
     luaRegister(getPause),
