@@ -154,7 +154,7 @@ Resource *ResourceMgr::_GetResource(ResourceType type, const char *name)
 
 void ResourceMgr::Add(Resource *r)
 {
-    if(_res[r->type()].insert(std::make_pair<const char*, Resource*>(r->name(), r)).second)
+    if(_res[r->type()].insert(std::make_pair(r->name(), r)).second)
         _accountMem(r->usedMem());
     else
         logdebug("WARNING: Resource '%s' not added, already exists", r->name());
