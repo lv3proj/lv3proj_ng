@@ -10,7 +10,7 @@
 namespace bithacks {
 
 // floor to next power of 2
-FORCE_INLINE uint32 flp2(uint32 x)
+inline uint32 flp2(uint32 x)
 {
 	x |= (x >> 1);
 	x |= (x >> 2);
@@ -21,7 +21,7 @@ FORCE_INLINE uint32 flp2(uint32 x)
 }
 
 // ceil to next power of 2
-FORCE_INLINE uint32 clp2(uint32 x)
+inline uint32 clp2(uint32 x)
 {
 	--x;
 	x |= (x >> 1);
@@ -32,7 +32,7 @@ FORCE_INLINE uint32 clp2(uint32 x)
 	return x + 1;
 }
 
-FORCE_INLINE uint32 popcnt(uint32 x)
+inline uint32 popcnt(uint32 x)
 {
 	x -= ((x >> 1) & 0x55555555);
 	x = (((x >> 2) & 0x33333333) + (x & 0x33333333));
@@ -42,13 +42,13 @@ FORCE_INLINE uint32 popcnt(uint32 x)
 	return x & 0x0000003f;
 }
 
-FORCE_INLINE uint32 ctz(uint32 x)
+inline uint32 ctz(uint32 x)
 {
 #ifdef __GNUC__
 	return __builtin_ctz(x);
-#elif _MSC_VER && defined(_M_IX86)
+#elif defined(_MSC_VER) && defined(_M_IX86)
 	unsigned long r = 0;
-	_BitScanReverse(&r, x);
+	_BitScanForward(&r, x);
 	return r;
 #else
 	return popcnt((x & -x) - 1);
@@ -56,13 +56,13 @@ FORCE_INLINE uint32 ctz(uint32 x)
 }
 
 // FIXME: verify this
-FORCE_INLINE unsigned int clz(uint32 x)
+inline unsigned int clz(uint32 x)
 {
 #ifdef __GNUC__
-	return __builtin_clz((x));
+	return __builtin_clz(x);
 #elif defined(_MSC_VER) && defined(_M_IX86)
 	unsigned long r = 0;
-	_BitScanForward(&r, x);
+	_BitScanReverse(&r, x);
 	return r;
 #else
 	x |= (x >> 1);

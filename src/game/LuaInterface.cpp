@@ -15,11 +15,7 @@ void *LuaInterface::the_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
     LuaInterface *this_ = (LuaInterface*)ud;
     DBG ++this_->_stats[nsize];
-
-    _ASSERTE( _CrtCheckMemory( ) ); // TEMP DEBUG
-    void *p = this_->_sballoc.Alloc(ptr, nsize, osize);
-    _ASSERTE( _CrtCheckMemory( ) ); // TEMP DEBUG
-    return p;
+    return this_->_sballoc.Alloc(ptr, nsize, osize);
 }
 
 static int the_panic (lua_State *L) {

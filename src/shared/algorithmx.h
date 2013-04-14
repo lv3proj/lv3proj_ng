@@ -11,7 +11,7 @@ template <class ForwardIterator, class T, class Compare>
 ForwardIterator lower_bound (ForwardIterator first, ForwardIterator last, const T& val, Compare comp)
 {
     ForwardIterator it;
-    std::iterator_traits<ForwardIterator>::difference_type count, step;
+    typename std::iterator_traits<ForwardIterator>::difference_type count, step;
     count = std::distance(first,last);
     while(count > 0)
     {

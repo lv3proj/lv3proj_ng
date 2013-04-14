@@ -162,7 +162,7 @@ void *SmallBlockAllocator::Block::allocElem()
     for( ; !bitmap[i]; ++i) // as soon as one isn't all zero, there's a free slot
         ASSERT(i < bitmapInts);
     ASSERT(i < bitmapInts);
-    int freeidx = bithacks::clz(bitmap[i]);
+    int freeidx = bithacks::ctz(bitmap[i]);
     ASSERT(bitmap[i] & (1 << freeidx)); // make sure this is '1' (= free)
     bitmap[i] &= ~(1 << freeidx); // put '0' where '1' was (-> mark as non-free)
     --freeElems;
@@ -254,7 +254,7 @@ void SmallBlockAllocator::_Free(void *ptr, unsigned int size)
         {
             ASSERT(blk->elemSize >= size); // ptr might be from a larger block in case _Realloc() failed to shrink
             blk->freeElem((unsigned char*)ptr);
-            if(blk->freeElems == blk->maxElems) 
+            if(blk->freeElems == blk->maxElems)
                 _FreeBlock(blk); // remove if completely unused
             return;
         }
