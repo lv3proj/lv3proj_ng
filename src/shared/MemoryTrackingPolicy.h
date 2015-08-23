@@ -1,6 +1,7 @@
 #ifndef MEMORY_TRACKING_POLICY_H
 #define MEMORY_TRACKING_POLICY_H
 
+#include "log.h"
 
 class NoMemoryTracking
 {
@@ -55,6 +56,33 @@ private:
     size_t _aliveB, _alive;
     mutable int _iAlive, _iAliveB;
     mutable int _rAlive, _rAliveB;
+};
+
+template<typename T> class PrintMemoryTrackingWrapper
+{
+public:
+    //               plainMemory, newSize, alignment, sourceInfo
+    inline void OnAllocation(void *p, size_t sz, size_t aln, const XSourceInfo& src)
+    {
+        logdev("** Memtrack: Alloced %p, size %u, alignment %u, in %s:%u [%s] **\n", p, sz, aln, src.file, src.line, src.func);
+        _piggy.OnAllocation(p, sz, aln, src);
+    }
+    inline void OnDeallocation(void *p, size_t sz)
+    {
+        logdev("** Memtrack: Freeing %p, size %u **\n", p, sz);
+        _piggy.OnDeallocation(p, sz);
+    }
+
+    inline size_t GetActiveAllocations() const { return _piggy.GetActiveAllocations(); }
+    inline size_t GetActiveBytes() const { return _piggy.GetActiveBytes(); }
+
+    inline int GetAllocationsDelta() const { return _piggy.GetAllocationsDelta(); }
+    inline int GetBytesDelta() const { return _piggy.GetBytesDelta(); }
+    inline int GetAllocationsFreedDelta() const { return _piggy.GetAllocationsFreedDelta(); }
+    inline int GetBytesFreedDelta() const { return _piggy.GetBytesFreedDelta(); }
+    inline void ResetDelta() const { _piggy.ResetDelta(); }
+
+    T _piggy;
 };
 
 #endif

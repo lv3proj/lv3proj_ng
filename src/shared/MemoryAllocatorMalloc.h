@@ -1,6 +1,9 @@
 #ifndef MEMORY_ALLOCATOR_MALLOC_H
 #define MEMORY_ALLOCATOR_MALLOC_H
 
+#include "MemoryUtil.h"
+
+
 class BasicHeapAllocator
 {
 public:

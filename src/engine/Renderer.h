@@ -46,6 +46,10 @@ public:
     // TODO: fullscreen
     // TODO: resize support
 
+    void BeginFrame();
+    void EndFrame();
+    unsigned int GetRenderCallCount();
+
     void clear();
     void show();
     void setupRenderPositionAndScale();

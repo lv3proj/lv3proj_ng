@@ -1109,6 +1109,12 @@ luaFn(stats_getObsGridMem)
     return 2;
 }
 
+luaFn(stats_getRenderCallCount)
+{
+    lua_pushinteger(L, engine->GetRenderer()->GetRenderCallCount());
+    return 1;
+}
+
 
 luaFn(vec_fromDeg)
 {
@@ -1264,6 +1270,7 @@ static const luaL_Reg statslib[] =
     { "getQuadMem", stats_getQuadMem },
     { "getEntityMem", stats_getEntityMem },
     { "getObsGridMem", stats_getObsGridMem },
+    { "getRenderCallCount", stats_getRenderCallCount },
     {NULL, NULL}
 };
 

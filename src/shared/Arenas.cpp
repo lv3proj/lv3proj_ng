@@ -2,8 +2,11 @@
 
 namespace Arenas {
 
-
 GlobalArena::GlobalArena()
+{
+}
+
+ChunkArena::ChunkArena()
 {
 }
 
@@ -11,29 +14,29 @@ FallbackArena::FallbackArena()
 {
 }
 
-VectorInterpolation::VectorInterpolation(GlobalArena& underlying, size_t elements, size_t elemSize)
-: VectorInterpolationBase(MemoryData<GlobalArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
+VectorInterpolation::VectorInterpolation(ChunkArena& underlying, size_t elements, size_t elemSize)
+: VectorInterpolationBase(MemoryData<ChunkArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
 {
 }
 
-QuadMem::QuadMem(GlobalArena& underlying, size_t elements, size_t elemSize)
-: QuadMemBase(MemoryData<GlobalArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
+QuadMem::QuadMem(ChunkArena& underlying, size_t elements, size_t elemSize)
+: QuadMemBase(MemoryData<ChunkArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
 {
 }
 
-EntityMem::EntityMem(GlobalArena& underlying, size_t elements, size_t elemSize)
-: EntityMemBase(MemoryData<GlobalArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
+EntityMem::EntityMem(ChunkArena& underlying, size_t elements, size_t elemSize)
+: EntityMemBase(MemoryData<ChunkArena>(elements * elemSize, elemSize, sizeof(void*), 0, underlying))
 {
 }
 
-ObsGridMem::ObsGridMem(GlobalArena& underlying, size_t elements, size_t elemSize)
-: ObsGridMemBase(MemoryData<GlobalArena>(elements * elemSize, elemSize, 0, 0, underlying))
+ObsGridMem::ObsGridMem(ChunkArena& underlying, size_t elements, size_t elemSize)
+: ObsGridMemBase(MemoryData<ChunkArena>(elements * elemSize, elemSize, 0, 0, underlying))
 {
 }
 
 
 FallbackArena fallback;
-GlobalArena chunkAlloc;
+ChunkArena chunkAlloc;
 
 
 

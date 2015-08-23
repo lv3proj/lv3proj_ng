@@ -27,13 +27,29 @@ end
 f:close()
 assert(#data >= w * h, "Not enough data")
 
+
+local layerdata = {}
+local c = 0
+local path = "data/lv1_tilemaps/" .. map .. "_layers.txt"
+local f = io.open(path)
+if f then
+    for line in f:lines() do
+        local a = line:explode(" ", true)
+        layerdata[c] = tonumber(a[1]) -- skip the rest
+        c = c + 1
+    end
+    f:close()
+end
+
+
 local LAYER_DEBUG = 28        -- markers
 local LAYER_DESTRUCTIBLE = 16 -- solid foreground, destructible
+local LAYER_WALLOVERLAY = 15
 local LAYER_WALL = 14         -- solid foreground
 local LAYER_NOWALL = 10       -- foreground, not solid
 local LAYER_BG = 5            -- background, not solid
 local LAYER_SLOPES = 1        -- solid background
-local LAYERS = { LAYER_DESTRUCTIBLE, LAYER_WALL, LAYER_NOWALL, LAYER_BG, LAYER_SLOPES, LAYER_DEBUG }
+local LAYERS = { LAYER_DESTRUCTIBLE, LAYER_WALL, LAYER_NOWALL, LAYER_BG, LAYER_SLOPES, LAYER_DEBUG, LAYER_WALLOVERLAY }
 for _, i in pairs(LAYERS) do
     setTileGridSize(i, math.max(w, h)) 
 end
@@ -77,12 +93,22 @@ for y = 0, h-1 do
         end
         
         if bit == BITS_SOLID then -- solid
-            layer = LAYER_WALL
+            --layer = LAYER_WALL
         elseif bit == BITS_DESTRUCTIBLE or bit == BITS_DESTRUCTIBLE_TRIGGER or bit == BITS_DESTRUCTIBLE_TRIGGER2 then
-            layer = LAYER_DESTRUCTIBLE
+            --layer = LAYER_DESTRUCTIBLE
         elseif BITTAB_SLOPE[bit] then
             local slope = string.format("lv1_tilesets/slopes.png:%d:0:%d:%d", BITTAB_SLOPE[bit]*tilesize, tilesize, tilesize)
             setTile(LAYER_SLOPES, x, y, slope)
+        end
+        
+        if layerdata[num] ~= 0 then
+            if bit == BITS_SOLID then
+                layer = LAYER_WALL
+            elseif bit == BITS_DESTRUCTIBLE or bit == BITS_DESTRUCTIBLE_TRIGGER or bit == BITS_DESTRUCTIBLE_TRIGGER2 then
+                layer = LAYER_DESTRUCTIBLE
+            elseif bit == 0 then
+                layer = LAYER_WALLOVERLAY
+            end
         end
         
         setTile(layer, x, y, tile)

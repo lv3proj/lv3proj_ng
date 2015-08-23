@@ -13,13 +13,24 @@
 #define GLAPIENTRY
 #endif
 
+static unsigned int s_glCalls = 0;
+
 // Populate global namespace with static function pointers pFUNC,
 // and function stubs FUNC that call their associated function pointer
+#ifdef NDEBUG
 #define GL_FUNC(ret,fn,params,call,rt) \
     extern "C" { \
     static ret (GLAPIENTRY *p##fn) params = NULL; \
     ret fn params { rt p##fn call; } \
     }
+#else
+#define GL_FUNC(ret,fn,params,call,rt) \
+    extern "C" { \
+    static ret (GLAPIENTRY *p##fn) params = NULL; \
+    ret fn params { ++s_glCalls; rt p##fn call; } \
+}
+#endif
+
 #include "OpenGLStubs.h"
 #undef GL_FUNC
 
@@ -62,6 +73,16 @@ void ClearSymbols()
     #define GL_FUNC(ret,fn,params,call,rt) p##fn = NULL;
     #include "OpenGLStubs.h"
     #undef GL_FUNC
+}
+
+void ResetCallCount()
+{
+    s_glCalls = 0;
+}
+
+unsigned int GetCallCount()
+{
+    return s_glCalls;
 }
 
 

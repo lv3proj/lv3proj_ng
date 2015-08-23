@@ -75,6 +75,20 @@ unsigned int Renderer::getFreeVideoMemoryKB()
     return meminfo[0];
 }
 
+void Renderer::BeginFrame()
+{
+    OpenGLAPI::ResetCallCount();
+}
+
+void Renderer::EndFrame()
+{
+}
+
+unsigned int Renderer::GetRenderCallCount()
+{
+    return OpenGLAPI::GetCallCount();
+}
+
 void Renderer::Shutdown()
 {
     glFinish();

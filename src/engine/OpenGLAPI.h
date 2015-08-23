@@ -6,6 +6,8 @@ namespace OpenGLAPI
 {
     bool LoadSymbols();
     void ClearSymbols();
+    void ResetCallCount();
+    unsigned int GetCallCount();
 };
 
 

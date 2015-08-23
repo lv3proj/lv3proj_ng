@@ -2,6 +2,7 @@
 #define ARENAS_H
 
 #include "common.h"
+#include "MemorySystem.h"
 #include "MemoryAllocators.h"
 
 
@@ -20,11 +21,18 @@ namespace Arenas
 #endif
 
 
-    #define GlobalArenaBase MemoryArena<BasicHeapAllocator, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    #define GlobalArenaBase MemoryArena<BasicHeapAllocator, SingleThreadPolicy, BoundsCheckingPolicy, SimpleMemoryTracking, MemoryTaggingPolicy>
     class GlobalArena : public GlobalArenaBase
     {
     public:
         GlobalArena();
+    };
+
+    #define ChunkArenaBase MemoryArena<BasicHeapAllocator, SingleThreadPolicy, BoundsCheckingPolicy, SimpleMemoryTracking, MemoryTaggingPolicy>
+    class ChunkArena : public ChunkArenaBase
+    {
+    public:
+        ChunkArena();
     };
 
     #define FallbackArenaBase MemoryArena<BasicHeapAllocator, ThreadPolicy, BoundsCheckingPolicy, SimpleMemoryTracking, MemoryTaggingPolicy>
@@ -34,37 +42,37 @@ namespace Arenas
         FallbackArena();
     };
 
-    #define VectorInterpolationBase MemoryArena<DynamicPoolAllocator<GlobalArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    #define VectorInterpolationBase MemoryArena<DynamicPoolAllocator<ChunkArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
     class VectorInterpolation : public VectorInterpolationBase
     {
     public:
-        VectorInterpolation(GlobalArena&, size_t elements, size_t elemSize);
+        VectorInterpolation(ChunkArena&, size_t elements, size_t elemSize);
     };
 
-    #define QuadMemBase MemoryArena<DynamicPoolAllocator<GlobalArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    #define QuadMemBase MemoryArena<DynamicPoolAllocator<ChunkArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
     class QuadMem : public QuadMemBase
     {
     public:
-        QuadMem(GlobalArena&, size_t elements, size_t elemSize);
+        QuadMem(ChunkArena&, size_t elements, size_t elemSize);
     };
 
-    #define EntityMemBase MemoryArena<DynamicPoolAllocator<GlobalArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    #define EntityMemBase MemoryArena<DynamicPoolAllocator<ChunkArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
     class EntityMem : public EntityMemBase
     {
     public:
-        EntityMem(GlobalArena&, size_t elements, size_t elemSize);
+        EntityMem(ChunkArena&, size_t elements, size_t elemSize);
     };
 
-    #define ObsGridMemBase MemoryArena<DynamicPoolAllocator<GlobalArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
+    #define ObsGridMemBase MemoryArena<DynamicPoolAllocator<ChunkArena>, SingleThreadPolicy, BoundsCheckingPolicy, MemoryTrackingPolicy, MemoryTaggingPolicy>
     class ObsGridMem : public ObsGridMemBase
     {
     public:
-        ObsGridMem(GlobalArena&, size_t elements, size_t elemSize);
+        ObsGridMem(ChunkArena&, size_t elements, size_t elemSize);
     };
 
 
     extern FallbackArena fallback;
-    extern GlobalArena chunkAlloc;
+    extern ChunkArena chunkAlloc;
 
     // Defined in their individual files
     extern EntityMem entityArena;

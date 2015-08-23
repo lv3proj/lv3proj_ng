@@ -494,12 +494,14 @@ void EngineBase::_Render(void)
     camera->update(0);
 
     render->clear();
+    render->BeginFrame();
     //render->setupRenderPositionAndScale();
 
     layers->Render();
 
     OnRender();
 
+    render->EndFrame();
     render->show();
 }
 
