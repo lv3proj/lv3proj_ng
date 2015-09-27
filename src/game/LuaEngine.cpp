@@ -19,6 +19,7 @@
 #include "collision/Circle.h"
 #include "collision/Line.h"
 #include "Arenas.h"
+#include "TileMgr.h"
 
 struct LuaFunctions
 {
@@ -152,6 +153,19 @@ luaFunc(clearGarbage)
     luaReturnNil();
 }
 
+luaFunc(createTile)
+{
+    const char *texname = getCStrSafe(L, 1);
+    Texture *tex = engine->GetTexture(texname);
+    Rect r;
+    r.x = lua_tointeger(L, 2);
+    r.y = lua_tointeger(L, 3);
+    r.w = lua_tointeger(L, 4);
+    r.h = lua_tointeger(L, 5);
+    Tile *tile = engine->tiles->CreateTile(tex, r);
+    luaReturnInt(tile->getIdx());
+}
+
 luaFunc(setTile)
 {
     RenderLayer *layer = getLayerByID(L, 1);
@@ -162,7 +176,9 @@ luaFunc(setTile)
     }
     unsigned int x = lua_tointeger(L, 2);
     unsigned int y = lua_tointeger(L, 3);
-    layer->tiles->SetTileByName(x, y, getCStr(L, 4)); // can be NULL
+    unsigned int tileID = lua_tointeger(L, 4);
+    Tile *tile = engine->tiles->GetTile(tileID);
+    layer->tiles->SetTile(x, y, tile); // can be NULL
     engine->obsgrid.UpdateTile(x, y);
     luaReturnNil();
 }
@@ -381,6 +397,7 @@ static LuaFunctions s_functab[] =
     luaRegister(setMousePos),
     luaRegister(msgbox),
     luaRegister(clearGarbage),
+    luaRegister(createTile),
     luaRegister(setTile),
     luaRegister(getTile),
     luaRegister(clearTiles),
@@ -719,7 +736,12 @@ luaFn(quad_new)
         luaReturnNil();
     }
 
-    Quad *q = Quad::create(getCStr(L, 1), lua_tointeger(L, 3), lua_tointeger(L, 4));
+    Quad *q = Quad::create();
+    q->setTexture(getCStr(L, 1));
+    int w = lua_tointeger(L, 3);
+    int h = lua_tointeger(L, 4);
+    if(w || h)
+        q->setWH(w, h ? h : w);
     lr->Add(q);
     return registerObject(L, q, OT_QUAD, NULL);
 }
@@ -728,7 +750,15 @@ luaFn(quad_texture)
 {
     Quad *q = getQuad(L);
     if(q)
-        q->setTexture(getCStrSafe(L, 2));
+    {
+        const char *tex = getCStrSafe(L, 2);
+        Rect r;
+        r.x = lua_tointeger(L, 3);
+        r.y = lua_tointeger(L, 4);
+        r.w = lua_tointeger(L, 5);
+        r.h = lua_tointeger(L, 6);
+        q->setTexture(tex, (r.x || r.y || r.w || r.h) ? &r : NULL);
+    }
     luaReturnSelf();
 }
 

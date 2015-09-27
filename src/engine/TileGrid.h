@@ -13,7 +13,6 @@ public:
 
     void SetSize(unsigned int dim);
     void SetTile(unsigned int x, unsigned int y, Tile *tile);
-    void SetTileByName(unsigned int x, unsigned int y, const char *name);
 
     inline unsigned int GetSize() const { return _tiles.size1d(); }
     inline Tile *GetTile(unsigned int x, unsigned int y) const { return _tiles(x, y); }

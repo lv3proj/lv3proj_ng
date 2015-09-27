@@ -30,10 +30,6 @@
 #include <float.h>
 #include <math.h>
 #include <string>
-#include <sstream>
-#include <list>
-#include <deque>
-#include <vector>
 
 #include "SysDefs.h"
 #include "PlatformSpecific.h"
@@ -45,6 +41,11 @@ struct memblock
     memblock(uint8 *p, uint32 s) : size(s), ptr(p) {}
     uint8 *ptr;
     uint32 size;
+};
+
+struct Rect
+{
+    unsigned x, y, w, h;
 };
 
 

@@ -44,8 +44,6 @@ public:
     MemResource *LoadFile(const char *name);
     MemResource *LoadTextFile(const char *name);
 
-    Tile *LoadTile(const char *name);
-
     Texture *_GetTexture(const char *name); // does *NOT* load a texture if not known. The engine does texture management.
 
 

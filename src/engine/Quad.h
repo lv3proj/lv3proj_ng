@@ -6,24 +6,24 @@
 
 class Texture;
 
+
 class Quad : public RenderObject
 {
 public:
-    static Quad *create(const char *tex = NULL, int w = 0, int h = 0);
+    static Quad *create();
     virtual void destroy();
 
     // DO NOT USE - only used by memory system
     virtual ~Quad();
 
-    bool setTexture(const char *tex);
+    bool setTexture(const char *tex, const Rect *bound = NULL);
     inline Texture *getTexture() const { return _texture; }
 
-    // FIXME: This should be part of the texture class
-    Vector upperLeftTextureCoordinates;
-    Vector lowerRightTextureCoordinates;
+    UV upperLeftTextureCoordinates;
+    UV lowerRightTextureCoordinates;
 
 protected:
-    Quad(const char *tex = NULL, int w = 0, int h = 0);
+    Quad();
 
 
     virtual void onRender() const;

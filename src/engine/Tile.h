@@ -3,9 +3,13 @@
 
 class Texture;
 
+#include "Vector.h"
 #include "array2d.h"
 #include "Resource.h"
 #include "ObsGrid.h"
+
+class TileMgr;
+class TileGrid;
 
 enum TileObsType
 {
@@ -16,14 +20,14 @@ enum TileObsType
 
 // A Tile is a texture with collision/obstruction information.
 
-
-class Tile : public Resource
+class Tile
 {
-public:
-    Tile(Texture *tex);
-    virtual ~Tile();
+    friend class TileMgr;
+    friend class TileGrid;
 
-    virtual unsigned int usedMem() const { return _mask.size2d(); }
+public:
+    Tile(Texture *tex, const Rect& r);
+    ~Tile();
 
     inline Texture *getTexture() const { return _tex; }
 
@@ -43,13 +47,21 @@ public:
 
     inline const array2d<unsigned char>& getObsMask() const { return _mask; }
     inline unsigned int getSize() const { return _mask.size1d(); }
+    inline unsigned getIdx() const { return idx; }
+
+    inline const UV& getULTC() const { return upperLeftTextureCoords; }
+    inline const UV& getLRTC() const { return lowerRightTextureCoords; }
 
 protected:
 
-    Texture *_tex;
     TileObsType _tileobs;
     array2d<unsigned char> _mask;
-
+    Texture *_tex;
+    UV upperLeftTextureCoords;
+    UV lowerRightTextureCoords;
+    Rect rect;
+    unsigned idx;// index in store
+    unsigned refcount;
 };
 
 #endif

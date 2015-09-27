@@ -5,11 +5,15 @@
 #include "SDL_func.h"
 #include "ResourceMgr.h"
 
-Tile::Tile(Texture *tex)
-: Resource(tex->name(), RESOURCE_TILE)
-, _tex(tex), _tileobs(TO_FULLFREE)
+Tile::Tile(Texture *tex, const Rect& r)
+: _tileobs(TO_FULLFREE), _tex(tex), rect(r), refcount(0)
 {
     tex->incref();
+    CalcCollision();
+    const float tw = float(tex->getWidth());
+    const float th = float(tex->getHeight());
+    upperLeftTextureCoords  = UV(r.x / tw, r.y / th);
+    lowerRightTextureCoords = UV((r.x + r.w) / tw, (r.y + r.h) / th);
 }
 
 Tile::~Tile()
@@ -19,30 +23,26 @@ Tile::~Tile()
 
 bool Tile::CalcCollision()
 {
-    SDLSurfaceResource *res = resMgr.LoadImg(name());
+    SDLSurfaceResource *res = resMgr.LoadImg(_tex->name());
     if(!res)
     {
-        logerror("Tile::CalcCollision(): No image for %s", name());
+        logerror("Tile::CalcCollision(): No image for %s", _tex->name());
         return false;
     }
 
-    unsigned int pix;
-    unsigned char r, g, b, a;
     SDL_Surface *surf = res->getSurface();
     SDL_PixelFormat *fmt = surf->format;
-    unsigned int w = surf->w, h = surf->h;
 
-    _mask.resize(std::max(w, h), 0);
+    _mask.resize(std::max(rect.w, rect.h), 0);
 
     unsigned int fre = 0, solid = 0;
 
-    // TODO: speed this up. This is really slow.
-    for(unsigned int y = 0; y < h; ++y)
+    for(unsigned int y = 0; y < rect.h; ++y)
     {
-        for(unsigned int x = 0; x < w; ++x)
+        for(unsigned int x = 0; x < rect.w; ++x)
         {
-            pix = SDLfunc_getpixel(surf, x, y);
-            SDL_GetRGBA(pix, fmt, &r, &g, &b, &a);
+            unsigned pix = SDLfunc_getpixel(surf, rect.x + x, rect.y + y);
+            unsigned a = pix >> 24;
 
             // TODO: max. threshold?
             if(a)

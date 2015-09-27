@@ -9,6 +9,7 @@
 #include "ObjectMgr.h"
 #include "Camera.h"
 #include "RenderLayerMgr.h"
+#include "TileMgr.h"
 
 
 // global, static
@@ -72,6 +73,7 @@ EngineBase::~EngineBase()
     delete objmgr;
     delete render;
     delete sound;
+    delete tiles;
 
     engine = NULL;
 }
@@ -95,6 +97,7 @@ bool EngineBase::Setup(void)
     objmgr = new ObjectMgr();
     layers = new RenderLayerMgr();
     camera = new Camera();
+    tiles = new TileMgr();
 
 
     if(!OnInit())

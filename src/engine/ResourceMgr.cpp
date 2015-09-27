@@ -21,28 +21,6 @@
 #include "Tile.h"
 
 
-
-// splits string like "filename.anim:4:default" or "image.png:32:32:16:16". leaves unused args unchanged!
-static void SplitFilenameToProps(const char *in, std::string *fn, std::string *s1 /* = NULL */,
-                          std::string *s2 /* = NULL */, std::string *s3 /* = NULL */, std::string *s4 /* = NULL */,
-                          std::string *s5 /* = NULL */)
-{
-    std::vector<std::string> fields;
-    StrSplit(in, ":", fields, true);
-    if(fields.size() >= 1 && fn)
-        *fn = fields[0];
-    if(fields.size() >= 2 && s1)
-        *s1 = fields[1];
-    if(fields.size() >= 3 && s2)
-        *s2 = fields[2];
-    if(fields.size() >= 4 && s3)
-        *s3 = fields[3];
-    if(fields.size() >= 5 && s4)
-        *s4 = fields[4];
-    if(fields.size() >= 6 && s5)
-        *s5 = fields[5];
-}
-
 static bool exists(const std::string& fn)
 {
     return !!vfs.GetFile(fn.c_str());
@@ -172,9 +150,6 @@ SDLSurfaceResource *ResourceMgr::LoadImg(const char *name)
 
 SDLSurfaceResource *ResourceMgr::_LoadImgInternal(const char *name)
 {
-    std::string fn,s1,s2,s3,s4,s5;
-    SplitFilenameToProps(name, &fn, &s1, &s2, &s3, &s4, &s5);
-
     SDLSurfaceResource *imgRes = (SDLSurfaceResource*)_GetResource(RESOURCE_IMAGE, name);
     if(imgRes)
     {
@@ -186,72 +161,18 @@ SDLSurfaceResource *ResourceMgr::_LoadImgInternal(const char *name)
     ttvfs::VFSFile *vf = NULL;
     SDL_RWops *rwop = NULL;
 
-    // we got additional properties
-    if(fn != name)
+    vf = vfs.GetFile(name);
+    if(vf && vf->size())
     {
-        SDLSurfaceResource *originRes = _LoadImgInternal(fn.c_str());
-        SDL_Surface *origin = originRes ? originRes->getSurface() : NULL;
-        if(origin)
+        rwop = SDL_RWFromMem((void*)vf->getBuf(), vf->size());
+        if(rwop)
         {
-            SDL_Rect rect;
-            rect.x = atoi(s1.c_str());
-            rect.y = atoi(s2.c_str());
-            rect.w = atoi(s3.c_str());
-            rect.h = atoi(s4.c_str());
-            if(!rect.w)
-                rect.w = origin->w - rect.x;
-            if(!rect.h)
-                rect.h = origin->h - rect.y;
-            bool flipH = s5.find('h') != std::string::npos;
-            bool flipV = s5.find('v') != std::string::npos;
-
-            SDL_Surface *section = SDL_CreateRGBSurface(0, rect.w, rect.h, 32,
-                0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000); // TODO: fix this for big endian
-            
-            // properly blit alpha values, save original flags + alpha before blitting, and restore after
-            uint8 oalpha = origin->format->alpha;
-            uint8 oflags = origin->flags;
-            SDL_SetAlpha(origin, 0, 0); 
-            SDL_BlitSurface(origin, &rect, section, NULL);
-            origin->format->alpha = oalpha;
-            origin->flags = oflags;
-
-            if(flipH && flipV)
-            {
-                img = SurfaceFlipHV(section);
-                //SDL_FreeSurface(section);
-            }
-            else if(flipH)
-            {
-                img = SurfaceFlipH(section);
-                //SDL_FreeSurface(section);
-            }
-            else if(flipV)
-            {
-                img = SurfaceFlipV(section);
-                //SDL_FreeSurface(section);
-            }
-            else
-            {
-                img = section;
-            }
-            originRes->decref();
+            img = IMG_Load_RW(rwop, 0);
+            SDL_RWclose(rwop);
         }
+        vf->dropBuf(true); // delete original buf -- even if it could not load an image from it - its useless to keep this memory
     }
-    else // nothing special, just load image normally
-    {
-        vf = vfs.GetFile(fn.c_str());
-        if(vf && vf->size())
-        {
-            rwop = SDL_RWFromMem((void*)vf->getBuf(), vf->size());
-            if(rwop)
-            {
-                img = IMG_Load_RW(rwop, 0);
-                SDL_RWclose(rwop);
-            }
-            vf->dropBuf(true); // delete original buf -- even if it could not load an image from it - its useless to keep this memory
-        }
-    }
+
     if(!img)
     {
         logerror("LoadImg failed: '%s'", name);
@@ -345,9 +266,6 @@ SDLMusicResource *ResourceMgr::LoadMusic(const char *name)
     std::string fn("music/");
     fn += name;
 
-    // HACK: In this method, we use FILENAME_MUSIC_INDIC to give the music file a different name then its raw data.
-    // This is necessary because SoundCore may read a file as raw binary in case SDL can't handle it internally,
-    // but we still need to differentiate pointers by type. This fixes some crash problems on music unload.
     SDLMusicResource *musicRes = (SDLMusicResource*)_GetResource(RESOURCE_MUSIC, name);
     if(musicRes)
     {
@@ -476,32 +394,8 @@ Texture *ResourceMgr::_GetTexture(const char *name)
     return tex;
 }
 
-Tile *ResourceMgr::LoadTile(const char *name)
-{
-    Tile *tile = (Tile*)_GetResource(RESOURCE_TILE, name);
-    if(tile)
-    {
-        tile->incref();
-        return tile;
-    }
-
-    Texture *tex = engine->GetTexture(name);
-    if(!tex)
-    {
-        logerror("Failed to load tile '%s' - missing texture", name);
-        return NULL;
-    }
-
-    tile = new Tile(tex);
-    tile->CalcCollision();
-    tex->decref();
-
-    Add(tile);
-    return tile;
-}
 
 
-
-// extern, global (since we aren't using singletons here)
+// extern, global
 ResourceMgr resMgr;
 

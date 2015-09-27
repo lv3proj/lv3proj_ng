@@ -9,9 +9,9 @@ namespace Arenas {
     Arenas::QuadMem quadArena(Arenas::chunkAlloc, 1000, sizeof(Quad) );
 };
 
-Quad *Quad::create(const char *tex /* = NULL */, int w /* = 0 */, int h /* = 0 */)
+Quad *Quad::create()
 {
-    Quad *q = XNEW(Quad, Arenas::quadArena)(tex, w, h);
+    Quad *q = XNEW(Quad, Arenas::quadArena)();
     engine->objmgr->AddObject(q);
     return q;
 }
@@ -23,21 +23,10 @@ void Quad::destroy()
 }
 
 
-Quad::Quad(const char *tex /* = NULL */, int w /* = 0 */, int h /* = 0 */)
- : upperLeftTextureCoordinates(0, 0)
- , lowerRightTextureCoordinates(1, 1)
- , _texture(NULL)
+Quad::Quad()
+: _texture(NULL)
 {
-    if(tex && *tex)
-        setTexture(tex);
-    if(w > 0)
-    {
-        width = w;
-        if(h > 0)
-            height = h;
-        else
-            height = w;
-    }
+    setWH(0, 0);
 }
 
 Quad::~Quad()
@@ -46,10 +35,11 @@ Quad::~Quad()
         _texture->decref();
 }
 
-bool Quad::setTexture(const char *tex)
+
+bool Quad::setTexture(const char *tex, const Rect *bound /* = NULL */)
 {
     // Not necessary to set texture if already set to same
-    if(_texture && !strcmp(tex, _texture->name()))
+    if(tex && _texture && !strcmp(tex, _texture->name()))
         return true;
 
     Texture *newtex = engine->GetTexture(tex); // increases refcount
@@ -61,6 +51,15 @@ bool Quad::setTexture(const char *tex)
 
     _texture = newtex;
     setWH(newtex->getWidth(), newtex->getHeight());
+
+    if(bound)
+    {
+        upperLeftTextureCoordinates.u = (float)(int)bound->x / (float)(int)newtex->getWidth();
+        upperLeftTextureCoordinates.v = (float)(int)(bound->x + bound->w) / (float)(int)newtex->getWidth();
+        lowerRightTextureCoordinates.u = (float)(int)bound->y / (float)(int)newtex->getHeight();
+        lowerRightTextureCoordinates.v = (float)(int)(bound->y + bound->h) / (float)(int)newtex->getHeight();
+    }
+
     return true;
 }
 

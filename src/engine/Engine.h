@@ -13,6 +13,7 @@ class ScriptObject;
 class ObjectMgr;
 class RenderLayerMgr;
 class Camera;
+class TileMgr;
 
 struct MouseState
 {
@@ -102,6 +103,7 @@ public:
     SoundCore *sound;
     ObjectMgr *objmgr;
     RenderLayerMgr *layers;
+    TileMgr *tiles;
 
     Texture *GetTexture(const char *name);
     inline Renderer *GetRenderer() const { return render; }

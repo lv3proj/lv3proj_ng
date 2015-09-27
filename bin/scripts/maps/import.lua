@@ -73,6 +73,17 @@ local BITTAB_SLOPE =
 }
 ----------------
 
+local tiles = {}
+
+local function gettile(num, tex, ...)
+    local t = tiles[num]
+    if not t then
+        t = createTile(tex, ...)
+        tiles[num] = t
+    end
+    return t
+end
+
 local didx = 0
 for y = 0, h-1 do
     bits[y] = {}
@@ -84,12 +95,11 @@ for y = 0, h-1 do
         num = bit32.band(num, 0x3ff)
         
         local layer = LAYER_BG
-        local col = math.floor(num / tilesPerRow)
-        local row = num % tilesPerRow
-        local tile = string.format("lv1_tilesets/%s.png:%d:%d:%d:%d", map, row*tilesize, col*tilesize, tilesize, tilesize)
+
         
         if bit ~= 0 and bit ~= BITS_SOLID and not BITTAB_SLOPE[bit] then
-            setTile(LAYER_DEBUG, x, y, "debug/marker16.png")
+            -- FIXME
+            --setTile(LAYER_DEBUG, x, y, "debug/marker16.png")
         end
         
         if bit == BITS_SOLID then -- solid
@@ -97,8 +107,9 @@ for y = 0, h-1 do
         elseif bit == BITS_DESTRUCTIBLE or bit == BITS_DESTRUCTIBLE_TRIGGER or bit == BITS_DESTRUCTIBLE_TRIGGER2 then
             --layer = LAYER_DESTRUCTIBLE
         elseif BITTAB_SLOPE[bit] then
-            local slope = string.format("lv1_tilesets/slopes.png:%d:0:%d:%d", BITTAB_SLOPE[bit]*tilesize, tilesize, tilesize)
-            setTile(LAYER_SLOPES, x, y, slope)
+            -- FIXME
+            --local slope = string.format("lv1_tilesets/slopes.png:%d:0:%d:%d", BITTAB_SLOPE[bit]*tilesize, tilesize, tilesize)
+            --setTile(LAYER_SLOPES, x, y, slope)
         end
         
         if layerdata[num] ~= 0 then
@@ -111,7 +122,12 @@ for y = 0, h-1 do
             end
         end
         
-        setTile(layer, x, y, tile)
+        local col = math.floor(num / tilesPerRow)
+        local row = num % tilesPerRow
+        local tex = "lv1_tilesets/" .. map .. ".png"
+        --row*tilesize, col*tilesize, tilesize, tilesize
+        local tileidx = gettile(num, tex, row*tilesize, col*tilesize, tilesize, tilesize)
+        setTile(layer, x, y, tileidx)
     end
 end
 

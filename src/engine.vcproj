@@ -314,6 +314,14 @@
 				RelativePath=".\engine\TileGrid.h"
 				>
 			</File>
+			<File
+				RelativePath=".\engine\TileMgr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\TileMgr.h"
+				>
+			</File>
 			<Filter
 				Name="GL"
 				>

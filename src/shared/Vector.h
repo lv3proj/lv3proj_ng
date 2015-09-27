@@ -558,4 +558,31 @@ protected:
 
 Vector lerp(const Vector &v1, const Vector &v2, float dt, int lerpType);
 
+
+class UV
+{
+public:
+    inline UV() : u(0), v(0) {}
+    inline UV(scalar_t a, scalar_t b) : u(a), v(b) {}
+    inline UV(const UV& uv) : u(uv.u), v(uv.v) {}
+    inline UV(const Vector& vec) : u(vec.x), v(vec.y) {}
+    inline UV operator+(const UV& uv) const { return UV(u + uv.u, v + uv.v); }
+    inline UV operator-(const UV& uv) const { return UV(u - uv.u, v - uv.v); }
+    inline UV operator*(const scalar_t x) const { return UV(u * x, v * x); }
+    inline UV operator/(const scalar_t x) const { return *this * (1 / x); }
+    inline UV operator-() const { return UV(-u, -v); }
+
+    inline UV& operator+=(const UV& uv) { u += uv.u; v += uv.v; return *this; }
+    inline UV& operator-=(const UV& uv) { u -= uv.u; v -= uv.v; return *this; }
+    inline UV& operator*=(const scalar_t x) { u *= x; v *= x; return *this; }
+    inline UV& operator/=(const scalar_t x) { scalar_t i = 1 / x; u *= i; v *= i; return *this; }
+
+    scalar_t u;
+    scalar_t v;
+};
+
+inline UV operator*(scalar_t x, const UV& uv) { return UV(uv.u * x, uv.v * x); }
+inline UV operator/(scalar_t x, const UV& uv) { scalar_t i = 1 / x; return UV(uv.u * i, uv.v * i); }
+
+
 #endif // VECTOR_H

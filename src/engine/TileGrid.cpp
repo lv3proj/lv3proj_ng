@@ -58,22 +58,6 @@ void TileGrid::SetSize(unsigned int dim)
     _tiles.resize(newsize, NULL);
 }
 
-void TileGrid::SetTileByName(unsigned int x, unsigned int y, const char *name)
-{
-    if(name && *name)
-    {
-        Tile *tile = resMgr.LoadTile(name);
-        if(!tile)
-            return;
-
-        SetTile(x, y, tile);
-        tile->decref();
-        return;
-    }
-
-    SetTile(x, y, NULL);
-}
-
 // Puts a tile to location (x,y). Set tile to NULL to remove current tile. Does ref-counting.
 void TileGrid::SetTile(unsigned int x, unsigned int y, Tile *tile)
 {
@@ -90,7 +74,7 @@ void TileGrid::SetTile(unsigned int x, unsigned int y, Tile *tile)
     // update amount of used tiles and drop the old one out of the tilemap, if required
     if(tileref)
     {
-        tileref->decref(); // will be overwritten, decr ref
+        --tileref->refcount; // will be overwritten, decr ref
         if(!tile)
             --_used; // we have a tile currently, but setting NULL -> one tile less used
     }
@@ -101,10 +85,10 @@ void TileGrid::SetTile(unsigned int x, unsigned int y, Tile *tile)
 
     if(tile) // we will use this, incr ref
     {
-        tile->incref();
+        ++tile->refcount;
 
         if(!_tileSize)
-            _tileSize = tile->getTexture()->getWidth();
+            _tileSize = tile->getSize();
     }
     else if(!_used)
         _tileSize = 0;
@@ -135,16 +119,13 @@ void TileGrid::onRender() const
 
     Vector start(_tileSize * xstart + _tileSize / 2, _tileSize * ystart + _tileSize / 2);
     const Vector step(_tileSize, 0);
-    Texture **texarray = (Texture**)alloca(dim * sizeof(Texture*));
+    Vector tileHalfSize = Vector(_tileSize * 0.5f, _tileSize * 0.5f);
     for(int y = ystart; y < yend; ++y)
     {
-        Tile * const * tileptr = &_tiles(0, y);
-        for(int x = xstart; x < xend; ++x)
-        {
-            Tile *tile = tileptr[x];
-            texarray[x-xstart] = tile ? tile->getTexture() : NULL;
-        }
-        render->renderTextureArray(texarray, dim, start, step);
+        Tile * const * tileptr = &_tiles(xstart, y);
+        //ASSERT(false);
+        // TODO: fix, use array of vertex coords
+        render->renderTileArray(tileptr, dim, start, step, tileHalfSize);
         start.y += _tileSize;
     }
 }

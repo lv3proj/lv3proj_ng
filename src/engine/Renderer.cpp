@@ -8,6 +8,7 @@
 #include "GLTexture.h"
 #include "Quad.h"
 #include "Camera.h"
+#include "Tile.h"
 
 #define GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX  0x9049
 #define TEXTURE_FREE_MEMORY_ATI 0x87FC
@@ -435,8 +436,8 @@ void Renderer::renderQuad(const Quad *q)
     tex->apply();
     const float w2 = q->getHalfWidth();
     const float h2 = q->getHalfHeight();
-    const Vector& upperLeftTextureCoordinates = q->upperLeftTextureCoordinates;
-    const Vector &lowerRightTextureCoordinates = q->lowerRightTextureCoordinates;
+    const UV upperLeftTextureCoordinates = q->upperLeftTextureCoordinates;
+    const UV lowerRightTextureCoordinates = q->lowerRightTextureCoordinates;
 
     /*glBegin(GL_QUADS);
     {
@@ -465,10 +466,10 @@ void Renderer::renderQuad(const Quad *q)
     };
     const GLfloat texCoords[] =
     {
-        upperLeftTextureCoordinates.x,   1.0f-lowerRightTextureCoordinates.y, // upper left
-        lowerRightTextureCoordinates.x,  1.0f-lowerRightTextureCoordinates.y, // upper right
-        upperLeftTextureCoordinates.x,   1.0f-upperLeftTextureCoordinates.y, // lower right
-        lowerRightTextureCoordinates.x,  1.0f-upperLeftTextureCoordinates.y, // lower left
+        upperLeftTextureCoordinates.u,   1.0f-lowerRightTextureCoordinates.v, // upper left
+        lowerRightTextureCoordinates.u,  1.0f-lowerRightTextureCoordinates.v, // upper right
+        upperLeftTextureCoordinates.u,   1.0f-upperLeftTextureCoordinates.v, // lower right
+        lowerRightTextureCoordinates.u,  1.0f-upperLeftTextureCoordinates.v, // lower left
     };
     glVertexPointer(2, GL_FLOAT, 0, &vertexData);
     glTexCoordPointer(2, GL_FLOAT, 0, &texCoords);
@@ -550,16 +551,16 @@ void Renderer::renderSingleTexture(Texture *tex, const Vector& pos, const Vector
     ++_renderedObjects;
 }
 
-void Renderer::renderTextureArray(Texture **textures, unsigned int size, const Vector& start, const Vector& step, const Vector& halfsize)
+void Renderer::renderTileArray(Tile * const *tiles, unsigned int size, const Vector& start, const Vector& step, const Vector& halfsize)
 {
     Vector trans = start;
     {
         int skipped = 0;
         // skip forward until first usable tile is in tiles[0], or abort if nothing found
-        while(size && !*textures)
+        while(size && !*tiles)
         {
             --size;
-            ++textures;
+            ++tiles;
             ++skipped;
         }
         if(!size)
@@ -572,27 +573,42 @@ void Renderer::renderTextureArray(Texture **textures, unsigned int size, const V
 
     _enableVertexAndTexCoords();
 
-    Texture *tex = textures[0];
-    const float w2 = halfsize.x ? halfsize.x : tex->getHalfWidth();
-    const float h2 = halfsize.y ? halfsize.y : tex->getHalfHeight();
-
-    const GLfloat vertexData[] =
-    {
-        -w2, -h2, // upper left
-        +w2, -h2, // upper right
-        -w2, +h2, // lower right
-        +w2, +h2, // lower left
-    };
-
-    glVertexPointer(2, GL_FLOAT, 0, &vertexData);
-    glTexCoordPointer(2, GL_FLOAT, 0, &simpleTexCoords);
+    const float w2 = halfsize.x;
+    const float h2 = halfsize.y;
 
     do
     {
-        if((tex = *textures++))
+        Tile *tile = *tiles++;
+        if(tile)
         {
+            tile->getTexture()->apply();
+
+            {
+                const GLfloat vertexData[] =
+                {
+                    -w2, -h2, // upper left
+                    +w2, -h2, // upper right
+                    -w2, +h2, // lower left
+                    +w2, +h2, // lower right
+                };
+
+                glVertexPointer(2, GL_FLOAT, 0, &vertexData);
+            }
+
+            {
+                const UV& ultc = tile->getULTC();
+                const UV& lrtc = tile->getLRTC();
+                const GLfloat texCoords[] =
+                {
+                    ultc.u, ultc.v, // upper left
+                    lrtc.u, ultc.v, // upper right
+                    ultc.u, lrtc.v, // lower left
+                    lrtc.u, lrtc.v, // lower right
+                };
+                glTexCoordPointer(2, GL_FLOAT, 0, &texCoords);
+            }
+
             glTranslatef(trans.x, trans.y, trans.z);
-            tex->apply();
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             _renderedVerts += 4;
             trans.x = trans.y = trans.z = 0;

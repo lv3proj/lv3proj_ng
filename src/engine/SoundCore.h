@@ -5,6 +5,7 @@
 #include "SDLSoundResource.h"
 #include "ScriptObject.h"
 
+#include <vector>
 #include <map>
 #include <list>
 

@@ -12,6 +12,7 @@ class RenderObject;
 class Texture;
 class SDLSurfaceResource;
 class Quad;
+class Tile;
 
 struct RenderSettings
 {
@@ -62,7 +63,7 @@ public:
     void renderSingleTexture(Texture *tex, const Vector& pos, const Vector& halfsize);
 
     // optimized function for TileGrid rendering
-    void renderTextureArray(Texture **textures, unsigned int size, const Vector& start, const Vector& step, const Vector& halfsize = Vector(0, 0));
+    void renderTileArray(Tile * const *tiles, unsigned int size, const Vector& start, const Vector& step, const Vector& halfsize);
 
     void render2DVertexArray(float *verts, unsigned int size);
     void drawLine(float x1, float y1, float x2, float y2, float width, float r, float g, float b, float a);

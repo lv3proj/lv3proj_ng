@@ -60,6 +60,8 @@ Tile.cpp
 Tile.h
 TileGrid.cpp
 TileGrid.h
+TileMgr.h
+TileMgr.cpp
 collision/AABB.cpp
 collision/AABB.h
 collision/Circle.cpp

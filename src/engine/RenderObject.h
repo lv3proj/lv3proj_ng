@@ -4,7 +4,7 @@
 #include "ScriptObject.h"
 #include "Vector.h"
 #include "RenderLayer.h"
-#include <set>
+#include <vector>
 
 class RenderLayer;
 class Collidable;

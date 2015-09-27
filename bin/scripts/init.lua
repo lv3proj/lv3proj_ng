@@ -26,7 +26,7 @@ dofile("ui.lua")
 dofile("textinput.lua")
 dofile("player.lua")
 dofile("editor_tileset.lua")
-dofile("debugkeys.lua")
+--dofile("debugkeys.lua")
 
 -- forbid os functions, these are dangerous.
 --os = nil -- TODO: add replacement functions in engine
@@ -39,7 +39,7 @@ TQ = tq_create()
 
 
 rawset(_G, "onInit", function()
-
+--[[
     local    f = pixfont:new()
     
     local chars = "               °"
@@ -59,11 +59,11 @@ rawset(_G, "onInit", function()
     
     TEXTINP = textinput.new(31):position(400, 300):texture("white.png"):color2(0,0,0.4):setWH(500, 50):alpha(0)
     
-    dofile("editor.lua")
+    --dofile("editor.lua")
     
     setLayerParallax(30, 0, 0)
     setLayerParallax(31, 0, 0)
-    
+    ]]
 end)
 
 
@@ -88,7 +88,7 @@ end)
 
 
 rawset(_G, "onRender", function()
-    --[[
+    
     local mx, my = getMouseWorldPos()
     drawLine(mx, my, mx, my+20, 10, 0, 1, 0, 0.5)
     
@@ -97,7 +97,7 @@ rawset(_G, "onRender", function()
     drawLine(800, 0, 800, 600, 10, 0, 1, 1, 0.5)
     drawLine(800, 600, 0, 600, 10, 0, 1, 1, 0.5)
     drawLine(0, 600, 0, 0,     10, 0, 1, 1, 0.5)
-    ]]
+    
 end)
 
 rawset(_G, "onKeyDown", function(key, mod)
