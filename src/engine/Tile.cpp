@@ -6,19 +6,35 @@
 #include "ResourceMgr.h"
 
 Tile::Tile(Texture *tex, const Rect& r)
-: _tileobs(TO_FULLFREE), _tex(tex), rect(r), refcount(0)
+: _tileobs(TO_FULLFREE), _tex(NULL), rect(r), refcount(0)
 {
-    tex->incref();
-    CalcCollision();
-    const float tw = float(tex->getWidth());
-    const float th = float(tex->getHeight());
-    upperLeftTextureCoords  = UV(r.x / tw, r.y / th);
-    lowerRightTextureCoords = UV((r.x + r.w) / tw, (r.y + r.h) / th);
+    setTexture(tex);
 }
 
 Tile::~Tile()
 {
-    _tex->decref();
+    if(_tex)
+        _tex->decref();
+}
+
+void Tile::setTexture(Texture *tex)
+{
+    if(tex == _tex)
+        return;
+    if(_tex)
+        _tex->decref();
+    tex->incref();
+    _tex = tex;
+    setRect(rect);
+}
+
+void Tile::setRect(const Rect& r)
+{
+    CalcCollision();
+    const float tw = float(_tex->getWidth());
+    const float th = float(_tex->getHeight());
+    upperLeftTextureCoords  = UV(r.x / tw, r.y / th);
+    lowerRightTextureCoords = UV((r.x + r.w) / tw, (r.y + r.h) / th);
 }
 
 bool Tile::CalcCollision()

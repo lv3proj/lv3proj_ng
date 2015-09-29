@@ -10,6 +10,7 @@ class Texture;
 
 class TileMgr;
 class TileGrid;
+class Texture;
 
 enum TileObsType
 {
@@ -51,6 +52,11 @@ public:
 
     inline const UV& getULTC() const { return upperLeftTextureCoords; }
     inline const UV& getLRTC() const { return lowerRightTextureCoords; }
+
+    void setTexture(Texture *tex);
+    void setRect(const Rect& r);
+
+    const Rect& getRect() const { return rect; }
 
 protected:
 

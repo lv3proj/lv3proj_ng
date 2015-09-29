@@ -166,6 +166,49 @@ luaFunc(createTile)
     luaReturnInt(tile->getIdx());
 }
 
+luaFunc(tileSetTexture)
+{
+    Tile *tile = engine->tiles->GetTile(lua_tointeger(L, 1));
+    bool done = false;
+    if(tile)
+    {
+        Texture *tex = engine->GetTexture(getCStr(L, 2));
+        done = !!tex;
+        Rect r = tile->getRect();
+        tile->setTexture(tex);
+        if(!lua_isnoneornil(L, 3))
+        {
+            r.x = lua_tointeger(L, 3);
+            r.y = lua_tointeger(L, 4);
+            if(!lua_isnoneornil(L, 5))
+            {
+                r.w = lua_tointeger(L, 5);
+                r.h = lua_tointeger(L, 6);
+            }
+            tile->setRect(r);
+        }
+    }
+    luaReturnBool(done);
+}
+
+luaFunc(tileSetRect)
+{
+    Tile *tile = engine->tiles->GetTile(lua_tointeger(L, 1));
+    if(tile)
+    {
+        Rect r = tile->getRect();
+        r.x = lua_tointeger(L, 2);
+        r.y = lua_tointeger(L, 3);
+        if(!lua_isnoneornil(L, 4))
+        {
+            r.w = lua_tointeger(L, 4);
+            r.h = lua_tointeger(L, 5);
+        }
+        tile->setRect(r);
+    }
+    luaReturnNil();
+}
+
 luaFunc(setTile)
 {
     RenderLayer *layer = getLayerByID(L, 1);
@@ -423,6 +466,8 @@ static LuaFunctions s_functab[] =
     luaRegister(isObjectValid),
     luaRegister(getObs),
     luaRegister(resetEngine),
+    luaRegister(tileSetTexture),
+    luaRegister(tileSetRect),
 
     { NULL, NULL }
 };
