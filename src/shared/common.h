@@ -46,6 +46,8 @@ struct memblock
 struct Rect
 {
     unsigned x, y, w, h;
+
+    inline bool isZero() const { return !(x | y | w | h); }
 };
 
 

@@ -42,12 +42,12 @@ if f then
 end
 
 
-local LAYER_DEBUG = 28        -- markers
-local LAYER_DESTRUCTIBLE = 16 -- solid foreground, destructible
-local LAYER_WALLOVERLAY = 15
-local LAYER_WALL = 14         -- solid foreground
-local LAYER_NOWALL = 10       -- foreground, not solid
-local LAYER_BG = 5            -- background, not solid
+local LAYER_DEBUG = 7        -- markers
+local LAYER_DESTRUCTIBLE = 6 -- solid foreground, destructible
+local LAYER_WALLOVERLAY = 5
+local LAYER_WALL = 4         -- solid foreground
+local LAYER_NOWALL = 3       -- foreground, not solid
+local LAYER_BG = 2            -- background, not solid
 local LAYER_SLOPES = 1        -- solid background
 local LAYERS = { LAYER_DESTRUCTIBLE, LAYER_WALL, LAYER_NOWALL, LAYER_BG, LAYER_SLOPES, LAYER_DEBUG, LAYER_WALLOVERLAY }
 for _, i in pairs(LAYERS) do
@@ -84,6 +84,8 @@ local function gettile(num, tex, ...)
     return t
 end
 
+local marker16 = createTile("debug/marker16.png")
+
 local didx = 0
 for y = 0, h-1 do
     bits[y] = {}
@@ -99,17 +101,18 @@ for y = 0, h-1 do
         
         if bit ~= 0 and bit ~= BITS_SOLID and not BITTAB_SLOPE[bit] then
             -- FIXME
-            --setTile(LAYER_DEBUG, x, y, "debug/marker16.png")
+            setTile(LAYER_DEBUG, x, y, marker16)
         end
         
         if bit == BITS_SOLID then -- solid
-            --layer = LAYER_WALL
+            layer = LAYER_WALL
         elseif bit == BITS_DESTRUCTIBLE or bit == BITS_DESTRUCTIBLE_TRIGGER or bit == BITS_DESTRUCTIBLE_TRIGGER2 then
-            --layer = LAYER_DESTRUCTIBLE
+            layer = LAYER_DESTRUCTIBLE
         elseif BITTAB_SLOPE[bit] then
             -- FIXME
+            local slope = gettile("slope" .. bit, "lv1_tilesets/slopes.png", BITTAB_SLOPE[bit]*tilesize, 0, tilesize, tilesize)
             --local slope = string.format("lv1_tilesets/slopes.png:%d:0:%d:%d", BITTAB_SLOPE[bit]*tilesize, tilesize, tilesize)
-            --setTile(LAYER_SLOPES, x, y, slope)
+            setTile(LAYER_SLOPES, x, y, slope)
         end
         
         if layerdata[num] ~= 0 then

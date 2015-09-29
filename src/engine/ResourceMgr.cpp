@@ -181,6 +181,11 @@ SDLSurfaceResource *ResourceMgr::_LoadImgInternal(const char *name)
         SDL_PixelFormat fmt = *img->format;
         fmt.BitsPerPixel = 32;
         fmt.BytesPerPixel = 4;
+        fmt.alpha = 0xff;
+        fmt.Rmask = 0x000000ff; // TODO: fix for big endian
+        fmt.Gmask = 0x0000ff00;
+        fmt.Bmask = 0x00ff0000;
+        fmt.Amask = 0xff000000;
         SDL_Surface *newimg = SDL_ConvertSurface(img, &fmt, 0);
         if(newimg && img != newimg)
         {

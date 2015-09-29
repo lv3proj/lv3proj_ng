@@ -28,8 +28,14 @@ void Tile::setTexture(Texture *tex)
     setRect(rect);
 }
 
-void Tile::setRect(const Rect& r)
+void Tile::setRect(Rect r)
 {
+    if(r.isZero())
+    {
+        r.w = _tex->getWidth();
+        r.h = _tex->getHeight();
+    }
+    rect = r;
     CalcCollision();
     const float tw = float(_tex->getWidth());
     const float th = float(_tex->getHeight());

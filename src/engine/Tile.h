@@ -54,7 +54,7 @@ public:
     inline const UV& getLRTC() const { return lowerRightTextureCoords; }
 
     void setTexture(Texture *tex);
-    void setRect(const Rect& r);
+    void setRect(Rect r);
 
     const Rect& getRect() const { return rect; }
 
