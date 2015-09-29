@@ -88,7 +88,7 @@ end)
 
 
 rawset(_G, "onRender", function()
-    
+    --[[
     local mx, my = getMouseWorldPos()
     drawLine(mx, my, mx, my+20, 10, 0, 1, 0, 0.5)
     
@@ -97,7 +97,7 @@ rawset(_G, "onRender", function()
     drawLine(800, 0, 800, 600, 10, 0, 1, 1, 0.5)
     drawLine(800, 600, 0, 600, 10, 0, 1, 1, 0.5)
     drawLine(0, 600, 0, 0,     10, 0, 1, 1, 0.5)
-    
+    ]]
 end)
 
 rawset(_G, "onKeyDown", function(key, mod)

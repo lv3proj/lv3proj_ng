@@ -19,8 +19,8 @@ public:
     bool setTexture(const char *tex, const Rect *bound = NULL);
     inline Texture *getTexture() const { return _texture; }
 
-    UV upperLeftTextureCoordinates;
-    UV lowerRightTextureCoordinates;
+    UV upperLeftTextureCoords;
+    UV lowerRightTextureCoords;
 
 protected:
     Quad();

@@ -3,6 +3,8 @@ rawset(_G, "FONTS", {})
 
 newclass("font")
 
+local unpack = table.unpack
+
 function font.new()
     local f = {}
     setmetatable(f, font)
@@ -16,7 +18,7 @@ function font:load()
 end
 
 function font:getChar(c)
-    return self.glyphs[c] or self.glyphs["?"]
+    return unpack(self.glyphs[c] or self.glyphs["?"])
 end
 
 function font:getCharSize()

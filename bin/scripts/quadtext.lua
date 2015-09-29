@@ -14,22 +14,25 @@ end
 
 function quadtext:_writeRow(row, s, y)
     --print("_WriteRow()", s, y)
-    local len = s:len()
+    local len = #s
     local x = 0
     local c, q
-    
+    local font = self.font
     for i = 1, len do
         c = s:sub(i, i)
         q = row[i]
-        local tex = self.font:getChar(c)
+        local tex, tx, ty, tw, th = font:getChar(c)
         if q then
-            q:texture(tex):alpha(1)
+            q:texture(tex, tx, ty, tw, th):alpha(1)
+            --q:delete()
+        --end
         else
-            q = quad.new(tex, 1):position(x, y)
+            q = quad.new(tex, 1, tx, ty, tw, th):position(x, y)
+            q:setPauseLevel(99) -- HACK: remove this! Only check pause level for root objects!
             row[i] = q
             self:addChild(q)
         end
-        x = x + self.font:getCharSize()
+        x = x + font:getCharSize(c)
     end
     
     len = len + 1

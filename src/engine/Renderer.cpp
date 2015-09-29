@@ -436,24 +436,8 @@ void Renderer::renderQuad(const Quad *q)
     tex->apply();
     const float w2 = q->getHalfWidth();
     const float h2 = q->getHalfHeight();
-    const UV upperLeftTextureCoordinates = q->upperLeftTextureCoordinates;
-    const UV lowerRightTextureCoordinates = q->lowerRightTextureCoordinates;
-
-    /*glBegin(GL_QUADS);
-    {
-        glTexCoord2f(upperLeftTextureCoordinates.x, 1.0f-upperLeftTextureCoordinates.y);
-        glVertex2f(-w2, +h2);
-
-        glTexCoord2f(lowerRightTextureCoordinates.x, 1.0f-upperLeftTextureCoordinates.y);
-        glVertex2f(+w2, +h2);
-
-        glTexCoord2f(lowerRightTextureCoordinates.x, 1.0f-lowerRightTextureCoordinates.y);
-        glVertex2f(+w2, -h2);
-
-        glTexCoord2f(upperLeftTextureCoordinates.x, 1.0f-lowerRightTextureCoordinates.y);
-        glVertex2f(-w2, -h2);
-    }
-    glEnd();*/
+    const UV& ultc = q->upperLeftTextureCoords;
+    const UV& lrtc = q->lowerRightTextureCoords;
 
     _enableVertexAndTexCoords();
 
@@ -461,15 +445,15 @@ void Renderer::renderQuad(const Quad *q)
     {
         -w2, -h2, // upper left
         +w2, -h2, // upper right
-        -w2, +h2, // lower right
-        +w2, +h2, // lower left
+        -w2, +h2, // lower left
+        +w2, +h2, // lower right
     };
     const GLfloat texCoords[] =
     {
-        upperLeftTextureCoordinates.u,   1.0f-lowerRightTextureCoordinates.v, // upper left
-        lowerRightTextureCoordinates.u,  1.0f-lowerRightTextureCoordinates.v, // upper right
-        upperLeftTextureCoordinates.u,   1.0f-upperLeftTextureCoordinates.v, // lower right
-        lowerRightTextureCoordinates.u,  1.0f-upperLeftTextureCoordinates.v, // lower left
+        ultc.u, ultc.v, // upper left
+        lrtc.u, ultc.v, // upper right
+        ultc.u, lrtc.v, // lower left
+        lrtc.u, lrtc.v, // lower right
     };
     glVertexPointer(2, GL_FLOAT, 0, &vertexData);
     glTexCoordPointer(2, GL_FLOAT, 0, &texCoords);
@@ -488,7 +472,7 @@ void Renderer::renderQuad(const Quad *q)
         glVertexPointer(2, GL_FLOAT, 0, &vertexData2);
         glBindTexture(GL_TEXTURE_2D, 0);
         Texture::clearLastApplied();
-        glLineWidth(2);
+        glLineWidth(1);
         glDrawArrays(GL_LINE_LOOP, 0, 4);
         _renderedVerts += 4;
     }

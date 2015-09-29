@@ -23,7 +23,7 @@ void Tile::setTexture(Texture *tex)
         return;
     if(_tex)
         _tex->decref();
-    tex->incref();
+    //tex->incref();
     _tex = tex;
     setRect(rect);
 }

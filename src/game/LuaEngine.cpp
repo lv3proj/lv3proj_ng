@@ -782,11 +782,12 @@ luaFn(quad_new)
     }
 
     Quad *q = Quad::create();
-    q->setTexture(getCStr(L, 1));
-    int w = lua_tointeger(L, 3);
-    int h = lua_tointeger(L, 4);
-    if(w || h)
-        q->setWH(w, h ? h : w);
+    Rect r;
+    r.x = lua_tointeger(L, 3);
+    r.y = lua_tointeger(L, 4);
+    r.w = lua_tointeger(L, 5);
+    r.h = lua_tointeger(L, 6);
+    q->setTexture(getCStr(L, 1), (r.x || r.y || r.w || r.h) ? &r : NULL);
     lr->Add(q);
     return registerObject(L, q, OT_QUAD, NULL);
 }
