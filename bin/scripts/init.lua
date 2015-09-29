@@ -26,7 +26,7 @@ dofile("ui.lua")
 dofile("textinput.lua")
 dofile("player.lua")
 dofile("editor_tileset.lua")
---dofile("debugkeys.lua")
+dofile("debugkeys.lua")
 
 -- forbid os functions, these are dangerous.
 --os = nil -- TODO: add replacement functions in engine
@@ -39,7 +39,7 @@ TQ = tq_create()
 
 
 rawset(_G, "onInit", function()
---[[
+
     local    f = pixfont:new()
     
     local chars = "               °"
@@ -59,11 +59,11 @@ rawset(_G, "onInit", function()
     
     TEXTINP = textinput.new(31):position(400, 300):texture("white.png"):color2(0,0,0.4):setWH(500, 50):alpha(0)
     
-    --dofile("editor.lua")
+    dofile("editor.lua")
     
     setLayerParallax(30, 0, 0)
     setLayerParallax(31, 0, 0)
-    ]]
+    
 end)
 
 

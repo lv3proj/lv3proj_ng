@@ -5,7 +5,6 @@
 #include "SDLSurfaceResource.h"
 #include "Quad.h"
 #include "Texture.h"
-#include "AnimatedTexture.h"
 #include "ObjectMgr.h"
 #include "Camera.h"
 #include "RenderLayerMgr.h"
@@ -539,18 +538,7 @@ Texture *EngineBase::GetTexture(const char *name)
     if(!tex)
     {
         if(!*name)
-        {
             tex = render->createNullTexture();
-        }
-        else if(fileHasExtension(name, "anim"))
-        {
-            Anim *ani = resMgr.LoadAnim(name);
-            if(ani)
-            {
-                tex = new AnimatedTexture(ani);
-                ani->decref();
-            }
-        }
         else
             tex = render->createTexture(name);
 

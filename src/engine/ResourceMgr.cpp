@@ -8,8 +8,6 @@
 #include "FileAPI.h"
 #include "ResourceMgr.h"
 #include "mathtools.h"
-#include "AnimParser.h"
-//#include "PropParser.h"
 #include "Engine.h"
 
 #include "SDLSurfaceResource.h"
@@ -17,7 +15,6 @@
 #include "SDLSoundResource.h"
 #include "MemResource.h"
 #include "Texture.h"
-#include "Anim.h"
 #include "Tile.h"
 
 
@@ -198,67 +195,6 @@ SDLSurfaceResource *ResourceMgr::_LoadImgInternal(const char *name)
     Add(imgRes);
 
     return imgRes;
-}
-
-
-Anim *ResourceMgr::LoadAnim(const char *name)
-{
-    std::string realname = "gfx/";
-    realname += name;
-
-    //TODO: add extensions automatically?
-
-    return _LoadAnimInternal(realname.c_str());
-}
-
-
-Anim *ResourceMgr::_LoadAnimInternal(const char *name)
-{
-
-    Anim *ani = (Anim*)_GetResource(RESOURCE_ANIM, name);
-    if(ani)
-    {
-        ani->incref();
-        return ani;
-    }
-
-    // a .anim file is just a text file, so we use the internal text file loader
-    MemResource *memRes = _LoadFileInternal(name, true);
-    if(!memRes)
-    {
-        logerror("LoadAnim: Failed to open '%s'", name);
-        return NULL;
-    }
-
-    ani = ParseAnimData((const char*)memRes->ptr(), name + 4); // HACK: drop "gfx/"
-    ani->mem = memRes->size(); // rough guess; is probably more
-    memRes->decref(); // text data are no longer needed
-
-    if(!ani)
-    {
-        logerror("LoadAnim: Failed to parse '%s'", name);
-        return NULL;
-    }
-
-    // load all additional files referenced in this .anim file
-    for(AnimMap::iterator am = ani->anims.begin(); am != ani->anims.end(); am++)
-        for(AnimFrameVector::iterator af = am->second.store.begin(); af != am->second.store.end(); af++)
-        {
-            Texture *tex = engine->GetTexture(af->GetTextureName());
-            if(!tex)
-            {
-                logerror("LoadAnim: '%s': Failed to open referenced texture '%s'", name, af->GetTextureName());
-                // we keep the NULL-ptr anyways
-                continue;
-            }
-            af->tex = tex;
-        }
-
-    logdebug("LoadAnim: '%s' -> "PTRFMT , name, ani);
-
-    Add(ani);
-
-    return ani;
 }
 
 SDLMusicResource *ResourceMgr::LoadMusic(const char *name)

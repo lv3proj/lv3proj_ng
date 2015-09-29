@@ -13,7 +13,6 @@ enum ResourceType
     RESOURCE_SOUND,
     RESOURCE_MUSIC, // TODO: merge this with sound whenever feasible
     RESOURCE_TEXTURE, // depends on an image
-    RESOURCE_ANIM, // depends on multiple textures
 
     RESOURCE_MAX
 };

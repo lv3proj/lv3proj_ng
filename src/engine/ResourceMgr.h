@@ -38,7 +38,6 @@ public:
 
     SDLSurfaceResource *LoadImg(const char *name);
 
-    Anim *LoadAnim(const char *name);
     SDLMusicResource *LoadMusic(const char *name);
     SDLSoundResource *LoadSound(const char *name);
     MemResource *LoadFile(const char *name);
@@ -57,7 +56,6 @@ public:
 private:
     Resource *_GetResource(ResourceType type, const char *name);
     SDLSurfaceResource *_LoadImgInternal(const char *name);
-    Anim *_LoadAnimInternal(const char *name);
     MemResource * _LoadFileInternal(const char *name, bool textmode);
 
     void _accountMem(unsigned int bytes);
