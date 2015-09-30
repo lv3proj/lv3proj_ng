@@ -5,6 +5,7 @@
 #include "GL/gl.h"
 #include "SDLSurfaceResource.h"
 #include "ResourceMgr.h"
+#include "bithacks.h"
 
 
 GLTexture::GLTexture(const char *name)
@@ -18,7 +19,7 @@ GLTexture::~GLTexture()
     glDeleteTextures(1, &_texID);
 }
 
-void GLTexture::doApply()
+void GLTexture::doApply() const
 {
     GLuint tex = _texID;
     glBindTexture(GL_TEXTURE_2D, tex);
@@ -45,32 +46,38 @@ bool GLTexture::reload()
     fmt.Bmask = 0x00ff0000;
     fmt.Amask = 0xff000000;
 
-    // TODO: expand to power of 2 texture size
+    SDL_Surface *converted = src;
 
-    uint32 w = src->w;
-    uint32 h = src->h;
-
-    // First, convert to 32 bpp RGBA-texture
-    SDL_Surface *converted = SDL_ConvertSurface(src, &fmt, 0);
-    res->decref();
-    if(!converted)
+    const unsigned oldw = src->w;
+    const unsigned oldh = src->h;
+    // expand to power of 2 texture size
+    const unsigned neww = bithacks::clp2(oldw);
+    const unsigned newh = bithacks::clp2(oldh);
+    if(src->format->BitsPerPixel != 32)
     {
-        logerror("Failed to convert surface to OpenGL texture: %s", res->name());
-        return false;
+        // Convert to 32 bpp RGBA-texture
+        converted = SDL_ConvertSurface(src, &fmt, 0);
+        if(!converted)
+        {
+            logerror("Failed to convert surface to OpenGL texture: %s", res->name());
+            return false;
+        }
     }
 
     // Then, transfer that to the final format.
     // This step seems necessary, because omitting it
     // resulted in left out pixels and the like, when testing.
-    uint32 *raw = new uint32[w * h];
+    uint32 *raw = new uint32[neww * newh];
+    memset(raw, 0, sizeof(uint32) * neww * newh);
     uint32 *ptr = raw;
 
     // FIXME: this is *VERY* slow and could be done better.
-    for(uint32 y = 0; y < h; ++y)
-        for(uint32 x = 0; x < w; ++x)
+    for(uint32 y = 0; y < oldh; ++y)
+        for(uint32 x = 0; x < oldw; ++x)
             *ptr++ = SDLfunc_getpixel(converted, x, y);
 
-    SDL_FreeSurface(converted);
+    if(converted != src)
+        SDL_FreeSurface(converted);
 
     GLint pack, unpack;
     glGetIntegerv(GL_PACK_ALIGNMENT, &pack);
@@ -89,7 +96,7 @@ bool GLTexture::reload()
 
     // No mipmapping for now.
     // TODO: Maybe later?
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, raw);
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, neww, newh, 0, GL_RGBA, GL_UNSIGNED_BYTE, raw);
 
     glPixelStorei(GL_PACK_ALIGNMENT, pack);
     glPixelStorei(GL_UNPACK_ALIGNMENT, unpack);
@@ -97,10 +104,10 @@ bool GLTexture::reload()
     delete [] raw;
 
     setID(texId);
-    this->width = w;
-    this->height = h;
-    this->halfWidth = w / 2.0f;
-    this->halfHeight = h / 2.0f;
+    this->width = neww;
+    this->height = newh;
+    this->halfWidth = neww / 2.0f;
+    this->halfHeight = newh / 2.0f;
 
     return true;
 }

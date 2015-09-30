@@ -15,7 +15,7 @@ public:
 
 protected:
     ~GLTexture();
-    void doApply();
+    void doApply() const;
     unsigned int _texID; // for OpenGL
 };
 

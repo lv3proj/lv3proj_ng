@@ -110,6 +110,9 @@ void EngineBase::Shutdown(void)
 {
     obsgrid.Clear();
     layers->ClearAll();
+    tiles->DeleteUnused();
+    if(tiles->GetNumTiles())
+        logerror("TileMgr: %u tiles not deleted", tiles->GetNumTiles());
     objmgr->ClearAll();
     sound->Shutdown();
     ClearGarbage(true);
@@ -143,7 +146,7 @@ void EngineBase::InitScreen(uint32 sizex, uint32 sizey, uint8 bpp /* = 0 */, uin
     for(ResourceStore::const_iterator it = rs.begin(); it != rs.end(); ++it)
     {
         logdev("Reloading texture: %s", it->second->name());
-        ((Texture*)(it->second))->reload();
+        ((Texture*)(it->second.content()))->reload();
     }
 
     /*

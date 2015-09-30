@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include "refcounted.h"
 
 
 enum ResourceType
@@ -18,7 +19,7 @@ enum ResourceType
 };
 
 
-class Resource
+class Resource : public Refcounted
 {
 protected:
     Resource(const char *n, ResourceType t);
@@ -30,9 +31,6 @@ public:
     inline const char *name() const { return _name.c_str(); }
     inline size_t nameLen() const { return _name.length(); }
     inline ResourceType type() const { return _type; }
-    inline void incref() { ++_refcount; }
-    inline unsigned int refcount() const { return _refcount; }
-    void decref();
 
     void addDep(Resource *); // add other resource this resource depends on
 
@@ -44,11 +42,9 @@ protected:
 
 
 private:
-
-    unsigned int _refcount;
-    std::string _name;
     ResourceType _type;
-    std::list<Resource*> _dep;
+    std::string _name;
+    std::list<CountedPtr<Resource> > _dep;
 };
 
 

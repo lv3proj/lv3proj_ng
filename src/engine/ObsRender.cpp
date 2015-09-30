@@ -17,7 +17,6 @@ ObsRender::ObsRender(unsigned int layer)
 
 ObsRender::~ObsRender()
 {
-    _tex->decref();
 }
 
 void ObsRender::onRender() const
@@ -134,7 +133,6 @@ ObsGridRender::ObsGridRender()
 
 ObsGridRender::~ObsGridRender()
 {
-    _tex->decref();
 }
 
 void ObsGridRender::onRender() const

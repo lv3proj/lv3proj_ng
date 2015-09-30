@@ -13,17 +13,12 @@ Tile::Tile(Texture *tex, const Rect& r)
 
 Tile::~Tile()
 {
-    if(_tex)
-        _tex->decref();
 }
 
 void Tile::setTexture(Texture *tex)
 {
-    if(tex == _tex)
+    if(tex == _tex.content())
         return;
-    if(_tex)
-        _tex->decref();
-    //tex->incref();
     _tex = tex;
     setRect(rect);
 }
@@ -79,8 +74,6 @@ bool Tile::CalcCollision()
             }
         }
     }
-
-    res->decref();
 
     if(!solid)
         _tileobs = TO_FULLFREE;

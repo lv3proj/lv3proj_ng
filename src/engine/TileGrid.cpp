@@ -105,6 +105,7 @@ void TileGrid::onRender() const
     Renderer *render = engine->GetRenderer();
 
     /*
+    unsigned dim = _tiles.size1d();
     for(unsigned int y = 0; y < dim; ++y)
         for(unsigned int x = 0; x < dim; ++x)
             if(Tile *tile = _tiles(x, y))
@@ -114,7 +115,7 @@ void TileGrid::onRender() const
     int xstart, ystart, xend, yend;
     CalcRenderLimits(xstart, ystart, xend, yend);
     int dim = xend - xstart;
-    if(dim <= 0 || (yend - ystart) <= 0)
+    if(dim <= 0 || yend <= ystart)
         return;
 
     Vector start(_tileSize * xstart + _tileSize / 2, _tileSize * ystart + _tileSize / 2);
@@ -123,8 +124,6 @@ void TileGrid::onRender() const
     for(int y = ystart; y < yend; ++y)
     {
         Tile * const * tileptr = &_tiles(xstart, y);
-        //ASSERT(false);
-        // TODO: fix, use array of vertex coords
         render->renderTileArray(tileptr, dim, start, step, tileHalfSize);
         start.y += _tileSize;
     }

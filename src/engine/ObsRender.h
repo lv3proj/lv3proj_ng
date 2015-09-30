@@ -4,6 +4,7 @@
 // For debugging mostly
 
 #include "RenderObject.h"
+#include "refcounted.h"
 
 class Texture;
 class Tile;
@@ -19,7 +20,7 @@ public:
 
 protected:
     unsigned int _layer;
-    Texture *_tex;
+    CountedPtr<Texture> _tex;
 
 private:
     void _renderMixedTile(Tile *tile, float xpos, float ypos) const;
@@ -37,7 +38,7 @@ public:
     virtual void onRender() const;
 
 protected:
-    Texture *_tex;
+    CountedPtr<Texture> _tex;
 
 private:
     void _renderMixedBlock(const unsigned char *tile, float xpos, float ypos) const;

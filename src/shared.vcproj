@@ -209,6 +209,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\shared\refcounted.h"
+				>
+			</File>
+			<File
 				RelativePath=".\shared\tools.cpp"
 				>
 			</File>

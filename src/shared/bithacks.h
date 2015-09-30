@@ -32,6 +32,11 @@ inline uint32 clp2(uint32 x)
 	return x + 1;
 }
 
+inline bool isPowerOf2(uint32 x)
+{
+    return x && !(x & (x - 1));
+}
+
 inline uint32 popcnt(uint32 x)
 {
 	x -= ((x >> 1) & 0x55555555);

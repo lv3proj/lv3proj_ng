@@ -10,7 +10,7 @@ protected:
     virtual ~Texture();
 
 public:
-   inline void apply()
+   inline void apply() const
    {
        if(s_lastApplied != this)
        {
@@ -29,9 +29,9 @@ public:
    static void clearLastApplied() { s_lastApplied = NULL; }
 
 protected:
-    virtual void doApply() = 0;
+    virtual void doApply() const = 0;
 
-    static Texture *s_lastApplied;
+    static const Texture *s_lastApplied;
 
     int width, height;
     float halfWidth, halfHeight;

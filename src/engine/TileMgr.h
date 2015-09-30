@@ -18,6 +18,7 @@ public:
     void DeleteTile(Tile *);
     void DeleteAll();
     void DeleteUnused();
+    unsigned GetNumTiles() const { return (unsigned)_tiles.size() - _holes; }
 
 
 private:

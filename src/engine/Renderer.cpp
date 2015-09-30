@@ -326,6 +326,7 @@ void Renderer::clear()
     Texture::clearLastApplied();
     _renderedObjects = 0;
     _renderedVerts = 0;
+    _renderedTiles = 0;
 }
 
 void Renderer::show()
@@ -429,7 +430,7 @@ void Renderer::_applyBlendType(BlendType blend)
 
 void Renderer::renderQuad(const Quad *q)
 {
-    Texture *tex = q->getTexture();
+    const Texture *tex = q->getTexture();
     if(!tex)
         return;
 
@@ -553,8 +554,6 @@ void Renderer::renderTileArray(Tile * const *tiles, unsigned int size, const Vec
         trans += step * skipped;
     }
 
-    glPushMatrix();
-
     _enableVertexAndTexCoords();
 
     const float w2 = halfsize.x;
@@ -567,43 +566,51 @@ void Renderer::renderTileArray(Tile * const *tiles, unsigned int size, const Vec
         {
             tile->getTexture()->apply();
 
+            const float l = trans.x - w2;
+            const float r = trans.x + w2;
+            const float u = trans.y - h2;
+            const float d = trans.y + h2;
+            const UV& ultc = tile->getULTC();
+            const UV& lrtc = tile->getLRTC();
+
+            /*{
+                glBegin(GL_TRIANGLE_STRIP);
+                glTexCoord2f(ultc.u, ultc.v);
+                glVertex3f(l, u, 0);
+                glTexCoord2f(lrtc.u, ultc.v);
+                glVertex3f(r, u, 0);
+                glTexCoord2f(ultc.u, lrtc.v);
+                glVertex3f(l, d, 0);
+                glTexCoord2f(lrtc.u, lrtc.v);
+                glVertex3f(r, d, 0);
+                glEnd();
+            }*/
+
+            const GLfloat vertexData[] =
             {
-                const GLfloat vertexData[] =
-                {
-                    -w2, -h2, // upper left
-                    +w2, -h2, // upper right
-                    -w2, +h2, // lower left
-                    +w2, +h2, // lower right
-                };
+                l, u, // upper left
+                r, u, // upper right
+                l, d, // lower left
+                r, d, // lower right
+            };
 
-                glVertexPointer(2, GL_FLOAT, 0, &vertexData);
-            }
-
+            const GLfloat texCoords[] =
             {
-                const UV& ultc = tile->getULTC();
-                const UV& lrtc = tile->getLRTC();
-                const GLfloat texCoords[] =
-                {
-                    ultc.u, ultc.v, // upper left
-                    lrtc.u, ultc.v, // upper right
-                    ultc.u, lrtc.v, // lower left
-                    lrtc.u, lrtc.v, // lower right
-                };
-                glTexCoordPointer(2, GL_FLOAT, 0, &texCoords);
-            }
+                ultc.u, ultc.v, // upper left
+                lrtc.u, ultc.v, // upper right
+                ultc.u, lrtc.v, // lower left
+                lrtc.u, lrtc.v, // lower right
+            };
 
-            glTranslatef(trans.x, trans.y, trans.z);
+            glVertexPointer(2, GL_FLOAT, 0, &vertexData);
+            glTexCoordPointer(2, GL_FLOAT, 0, &texCoords);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
             _renderedVerts += 4;
-            trans.x = trans.y = trans.z = 0;
-
-            ++_renderedObjects;
+            ++_renderedTiles;
         }
         trans += step;
     }
     while(--size);
-
-    glPopMatrix();
 }
 
 void Renderer::render2DVertexArray(float *verts, unsigned int size)
@@ -625,7 +632,7 @@ void Renderer::_enableVertexAndTexCoords()
 
 void Renderer::_disableVertexAndTexCoords()
 {
-    if(_clientState != CLS_VERT_TEXCOORD)
+    if(_clientState != CLS_NONE)
     {
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);

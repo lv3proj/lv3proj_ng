@@ -21,7 +21,7 @@ struct charptr_less
     }
 };
 
-typedef std::map<const char *, Resource*, charptr_less> ResourceStore;
+typedef std::map<const char *, CountedPtr<Resource>, charptr_less> ResourceStore;
 
 class ResourceMgr
 {
@@ -32,7 +32,7 @@ public:
     void Shutdown();
 
     void DropUnused(void);
-    void Add(Resource *r);
+    void Add(CountedPtr<Resource> r);
     void Update(float dt);
 
 

@@ -35,7 +35,7 @@ private:
     SoundFile(SDLSoundResource *);
     virtual ~SoundFile();
 
-    SDLSoundResource *_res;
+    CountedPtr<SDLSoundResource> _res;
     int _channel;
     bool _deletable;
 };
@@ -63,7 +63,7 @@ public:
     void SetMusicVolume(float vol);
     float GetMusicVolume();
 
-    inline SDLMusicResource *_GetMusicPtr() { return _music; }
+    inline SDLMusicResource *_GetMusicPtr() { return _music.content(); }
     inline void SetLoopPoint(float msec) { _looppoint = msec; }
     inline float GetLoopPoint() { return _looppoint; }
     inline uint32 GetSampleSize() { return _sampleSize; }
@@ -74,7 +74,7 @@ public:
 
 private:
     bool _LoadWithGME(MemResource *memRes);
-    SDLMusicResource *_music;
+    CountedPtr<SDLMusicResource> _music;
     gme_t *_gme;
     float _looppoint;
     float _volume;

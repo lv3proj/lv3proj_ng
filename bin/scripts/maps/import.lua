@@ -169,7 +169,8 @@ function e:update(dt)
     self.lastx = tx
     self.lasty = ty
     
-    local b = bits[ty][tx] or 0
+    local bitsy = bits[ty]
+    local b = (bitsy and bitsy[tx]) or 0
     local desc = ""
     local bitstr = ""
     if b ~= 0 then

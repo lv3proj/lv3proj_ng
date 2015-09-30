@@ -31,8 +31,6 @@ Quad::Quad()
 
 Quad::~Quad()
 {
-    if(_texture)
-        _texture->decref();
 }
 
 
@@ -56,13 +54,6 @@ bool Quad::setTexture(const char *tex, const Rect *bound /* = NULL */)
         lowerRightTextureCoords = UV(1, 1);
         setWH(tw, th);
     }
-
-    // Not necessary to set texture if already set to same
-    if(tex && _texture && !strcmp(tex, _texture->name()))
-        return true;
-
-    if(_texture)
-        _texture->decref();
 
     _texture = newtex;
 

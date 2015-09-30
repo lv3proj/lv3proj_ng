@@ -1,6 +1,6 @@
 #include "Texture.h"
 
-Texture *Texture::s_lastApplied = NULL;
+const Texture *Texture::s_lastApplied = NULL;
 
 Texture::Texture(const char *name)
  : Resource(name, RESOURCE_TEXTURE)

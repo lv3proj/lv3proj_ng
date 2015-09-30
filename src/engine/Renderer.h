@@ -76,6 +76,7 @@ public:
     unsigned int getFreeVideoMemoryKB();
     unsigned int getRenderedObjects() const { return _renderedObjects; }
     unsigned int getRenderedVerts() const { return _renderedVerts; }
+    unsigned int getRenderedTiles() const { return _renderedTiles; }
 
     inline const Vector& getGlobalResolutionScale() const { return globalResolutionScale; }
 
@@ -99,6 +100,7 @@ private:
     BlendType _activeBlend;
     unsigned int _renderedObjects;
     unsigned int _renderedVerts;
+    unsigned int _renderedTiles;
 
     void _enableVertexAndTexCoords(); // 1
     void _disableVertexAndTexCoords(); // 1

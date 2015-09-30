@@ -1,6 +1,6 @@
 
 local dbgstring =
-      "Rendered Objs:  %u, Verts: %u\n"
+      "Rendered Objs:  %u, Verts: %u, Tiles: %u\n"
    .. "Render calls:   %u\n"
    .. "Video mem free: %u KB\n"
    .. "Cam:           (%.3f, %.3f)\n"
@@ -34,7 +34,7 @@ local function updateDebugText(obj)
     local fbKB, fbC = stats.getFallbackMem()
     local fbBa, fbCa, fbBf, fbCf = stats.getFallbackMemDelta()
     local s = string.format(dbgstring,
-        stats.getRenderedObjects(), stats.getRenderedVertices(),
+        stats.getRenderedObjects(), stats.getRenderedVertices(), stats.getRenderedTiles(),
         stats.getRenderCallCount(),
         stats.getFreeVideoMemory(),
         cx, cy,

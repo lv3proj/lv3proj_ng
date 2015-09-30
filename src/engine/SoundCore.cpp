@@ -50,13 +50,11 @@ static void channelFinished(int channel)
 SoundFile::SoundFile(SDLSoundResource *res)
 : _res(res), _channel(-1), _deletable(false)
 {
-    res->incref();
 }
 
 SoundFile::~SoundFile()
 {
     Stop();
-    _res->decref();
 }
 
 void SoundFile::SetVolume(float vol)
@@ -210,11 +208,8 @@ bool SoundCore::PlayMusic(const char *fn)
 
     if(mus)
     {
-        if(_music == mus)
-        {
-            mus->decref();
+        if(_music.content() == mus)
             return true;
-        }
 
         SetLoopPoint(mus->getLoopPoint());
 
@@ -223,14 +218,10 @@ bool SoundCore::PlayMusic(const char *fn)
         int result = Mix_PlayMusic(mus->getMusic(), 0);
         if(!result) // everything ok
         {
-            if(_music)
-                _music->decref();
             _music = mus;
             Mix_HookMusicFinished(musicFinished);
             return true;
         }
-        else
-            mus->decref();
     }
 
     // SDL_Mixer can't play it...
@@ -248,9 +239,6 @@ bool SoundCore::PlayMusic(const char *fn)
         {
             return true; // all fine now
         }
-
-        // unable to load, memory no longer used here
-        memRes->decref();
     }
 
     // still no success, give up
@@ -278,11 +266,7 @@ void SoundCore::StopMusic()
     SDL_LockAudio();
     SDL_UnlockAudio();
 
-    if(_music)
-    {
-        _music->decref();
-        _music = NULL;
-    }
+    _music = NULL;
 
     if(_gme)
     {
@@ -333,7 +317,6 @@ SoundFile *SoundCore::GetSound(const char *fn)
     if(res)
     {
         soundf = new SoundFile(res);
-        res->decref();
         used.push_back(soundf);
     }
     return soundf;
@@ -378,6 +361,7 @@ bool SoundCore::_LoadWithGME(MemResource *memRes)
         gme_start_track(emu, 0); // TODO FIXME: add support for other track IDs (NSF files)
         gme_set_user_cleanup(emu, stop_music_gme);
         gme_set_user_data(emu, memRes);
+        memRes->incref();
         Mix_HookMusic(play_music_gme, (void*)emu);
         gme_set_volume(emu, _volume);
         return true;

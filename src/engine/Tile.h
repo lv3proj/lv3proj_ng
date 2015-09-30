@@ -30,7 +30,7 @@ public:
     Tile(Texture *tex, const Rect& r);
     ~Tile();
 
-    inline Texture *getTexture() const { return _tex; }
+    inline Texture *getTexture() { return _tex.content(); }
 
     bool CalcCollision(); // sets up collision mask
 
@@ -62,7 +62,7 @@ protected:
 
     TileObsType _tileobs;
     array2d<unsigned char> _mask;
-    Texture *_tex;
+    CountedPtr<Texture> _tex;
     UV upperLeftTextureCoords;
     UV lowerRightTextureCoords;
     Rect rect;

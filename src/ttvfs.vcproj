@@ -114,7 +114,7 @@
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
-				EnableEnhancedInstructionSet="1"
+				EnableEnhancedInstructionSet="2"
 				RuntimeTypeInfo="false"
 				WarningLevel="3"
 				DebugInformationFormat="3"

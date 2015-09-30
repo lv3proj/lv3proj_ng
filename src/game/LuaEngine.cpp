@@ -37,7 +37,6 @@ static int loadFile_helper(lua_State *L, const char *fn)
     }
 
     int result = luaL_loadbuffer(L, (const char*)data->ptr(), data->size(), fn);
-    data->decref();
     return result;
 }
 
@@ -1133,6 +1132,11 @@ luaFn(stats_getRenderedVertices)
     luaReturnInt(engine->GetRenderer()->getRenderedVerts());
 }
 
+luaFn(stats_getRenderedTiles)
+{
+    luaReturnInt(engine->GetRenderer()->getRenderedTiles());
+}
+
 luaFn(stats_getFallbackMem)
 {
     lua_pushinteger(L, Arenas::fallback.GetTracker().GetActiveBytes() / 1024);
@@ -1336,6 +1340,7 @@ static const luaL_Reg statslib[] =
 {
     { "getResourceMem", stats_getResourceMem },
     { "getResourceCount", stats_getResourceCount },
+    { "getRenderedTiles", stats_getRenderedTiles },
     { "getRenderedObjects", stats_getRenderedObjects },
     { "getRenderedVertices", stats_getRenderedVertices },
     { "getFreeVideoMemory", stats_getFreeVideoMemory },

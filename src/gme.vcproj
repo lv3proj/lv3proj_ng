@@ -139,6 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				GenerateDebugInformation="true"
 				ImportLibrary="$(OutDir)\$(ProjectName).lib"
 			/>
 			<Tool

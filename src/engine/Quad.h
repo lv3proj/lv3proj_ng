@@ -2,6 +2,7 @@
 #define QUAD_H
 
 #include "RenderObject.h"
+#include "refcounted.h"
 #include <string>
 
 class Texture;
@@ -17,7 +18,7 @@ public:
     virtual ~Quad();
 
     bool setTexture(const char *tex, const Rect *bound = NULL);
-    inline Texture *getTexture() const { return _texture; }
+    inline const Texture *getTexture() const { return _texture.content(); }
 
     UV upperLeftTextureCoords;
     UV lowerRightTextureCoords;
@@ -28,7 +29,7 @@ protected:
 
     virtual void onRender() const;
 
-    Texture *_texture;
+    CountedPtr<Texture> _texture;
 
 };
 

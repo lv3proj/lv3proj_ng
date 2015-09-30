@@ -116,7 +116,7 @@
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
-				BufferSecurityCheck="true"
+				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="false"
 				EnableEnhancedInstructionSet="2"
 				RuntimeTypeInfo="false"

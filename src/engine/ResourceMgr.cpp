@@ -47,7 +47,7 @@ void ResourceMgr::Shutdown()
 
         for(ResourceStore::iterator it = res.begin(); it != res.end(); ++it)
         {
-            Resource *r = it->second;
+            Resource *r = it->second.content();
             logerror("WARNING: [type %u] Forgot to free resource %s (ref %u, mem %u)",
                 r->type(), r->name(), r->refcount(), r->usedMem());
         }
@@ -68,15 +68,19 @@ void ResourceMgr::DropUnused(void)
 
             for(ResourceStore::iterator it = res.begin(); it != res.end(); )
             {
-                if(!it->second->refcount())
+                assert(it->second->refcount());
+                if(it->second->refcount() <= 1) // we are the only one left holding a reference?
                 {
                     changed = true;
+                    logdev("Delete resource [%s], %u KB", it->second->name(), it->second->usedMem() / 1024);
                     _unaccountMem(it->second->usedMem());
-                    delete it->second;
-                    res.erase(it++);
+                    res.erase(it++); // decrefs, and deletes
                 }
                 else
+                {
+                    logdev("* Keep resource [%s], %u KB", it->second->name(), it->second->usedMem() / 1024);
                     ++it;
+                }
             }
         }
     }
@@ -124,10 +128,10 @@ void ResourceMgr::_unaccountMem(unsigned int bytes)
 Resource *ResourceMgr::_GetResource(ResourceType type, const char *name)
 {
     ResourceStore::iterator it = _res[type].find(name);
-    return it != _res[type].end() ? it->second : NULL;
+    return it != _res[type].end() ? it->second.content() : NULL;
 }
 
-void ResourceMgr::Add(Resource *r)
+void ResourceMgr::Add(CountedPtr<Resource> r)
 {
     if(_res[r->type()].insert(std::make_pair(r->name(), r)).second)
         _accountMem(r->usedMem());
@@ -149,10 +153,7 @@ SDLSurfaceResource *ResourceMgr::_LoadImgInternal(const char *name)
 {
     SDLSurfaceResource *imgRes = (SDLSurfaceResource*)_GetResource(RESOURCE_IMAGE, name);
     if(imgRes)
-    {
-        imgRes->incref();
         return imgRes;
-    }
 
     SDL_Surface *img = NULL;
     ttvfs::VFSFile *vf = NULL;
@@ -209,10 +210,7 @@ SDLMusicResource *ResourceMgr::LoadMusic(const char *name)
 
     SDLMusicResource *musicRes = (SDLMusicResource*)_GetResource(RESOURCE_MUSIC, name);
     if(musicRes)
-    {
-        musicRes->incref();
         return musicRes;
-    }
 
     MemResource *mr = _LoadFileInternal(fn.c_str(), false);
     SDL_RWops *rwop = NULL;
@@ -232,7 +230,6 @@ SDLMusicResource *ResourceMgr::LoadMusic(const char *name)
         if(!music)
         {
             // SDL_mixer didn't recognize the format...
-            mr->decref();
             SDL_RWclose(rwop);
             return NULL;
         }
@@ -242,7 +239,6 @@ SDLMusicResource *ResourceMgr::LoadMusic(const char *name)
 
     musicRes = new SDLMusicResource(name, music, rwop);
     musicRes->addDep(mr);
-    mr->decref(); // we don't actually mean to keep it referenced, as addDep() already increased the count
 
     Add(musicRes);
 
@@ -256,10 +252,7 @@ SDLSoundResource *ResourceMgr::LoadSound(const char *name)
 
     SDLSoundResource *soundRes = (SDLSoundResource*)_GetResource(RESOURCE_SOUND, fn.c_str());
     if(soundRes)
-    {
-        soundRes->incref();
         return soundRes;
-    }
 
     ttvfs::VFSFile *vf = vfs.GetFile(fn.c_str());
     if(!vf)
@@ -302,10 +295,7 @@ MemResource *ResourceMgr::_LoadFileInternal(const char *name, bool textmode)
 
     MemResource *memRes = (MemResource*)_GetResource(RESOURCE_MEM, name);
     if(memRes)
-    {
-        memRes->incref();
         return memRes;
-    }
 
     ttvfs::VFSFile *vf = vfs.GetFile(name);
     
@@ -329,10 +319,7 @@ MemResource *ResourceMgr::_LoadFileInternal(const char *name, bool textmode)
 
 Texture *ResourceMgr::_GetTexture(const char *name)
 {
-    Texture *tex = (Texture*)_GetResource(RESOURCE_TEXTURE, name);
-    if(tex)
-        tex->incref();
-    return tex;
+    return (Texture*)_GetResource(RESOURCE_TEXTURE, name);
 }
 
 
