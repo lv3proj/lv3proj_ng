@@ -11,7 +11,7 @@ SDLMusicResource::SDLMusicResource(const char *name, Mix_Music *m, SDL_RWops *rw
 SDLMusicResource::~SDLMusicResource()
 {
     Mix_MusicType musType = Mix_GetMusicType(_music);
-    DBG logdebug("ResourceMgr:: Deleting Mix_Music "PTRFMT" (music type %u)", _music, musType);
+    DBG logdebug("ResourceMgr:: Deleting Mix_Music " PTRFMT " (music type %u)", _music, musType);
     Mix_FreeMusic(_music);
     // FIXME!!
     // For unknown reason, OGG frees the RWop, but MikMod and WAV do not (not sure about the rest).

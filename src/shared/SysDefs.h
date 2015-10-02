@@ -52,8 +52,10 @@
     #define I64FMTD "%I64u"
     #define I64LIT(x) (x ## i64)
     #define UI64LIT(x) (x ## ui64)
+	#if _MSC_VER<1900
     #define snprintf _snprintf
-    #define FORCE_INLINE __forceinline
+	#endif
+#define FORCE_INLINE __forceinline
     typedef __int64            int64;
     typedef __int32            int32;
     typedef __int16            int16;

@@ -195,7 +195,7 @@ SDLSurfaceResource *ResourceMgr::_LoadImgInternal(const char *name)
         }
     }
 
-    logdebug("LoadImg: '%s' [%s] -> "PTRFMT , name, vf ? vf->getType() : "*", img);
+    logdebug("LoadImg: '%s' [%s] -> " PTRFMT , name, vf ? vf->getType() : "*", img);
 
     imgRes = new SDLSurfaceResource(name, img);
     Add(imgRes);
@@ -235,7 +235,7 @@ SDLMusicResource *ResourceMgr::LoadMusic(const char *name)
         }
     }
     
-    logdebug("LoadMusic: '%s' -> "PTRFMT , name, music);
+    logdebug("LoadMusic: '%s' -> " PTRFMT , name, music);
 
     musicRes = new SDLMusicResource(name, music, rwop);
     musicRes->addDep(mr);
@@ -272,7 +272,7 @@ SDLSoundResource *ResourceMgr::LoadSound(const char *name)
         return NULL;
     }
 
-    logdebug("LoadSound: '%s' [%s] -> "PTRFMT , name, vf->getType(), sound);
+    logdebug("LoadSound: '%s' [%s] -> " PTRFMT , name, vf->getType(), sound);
 
     soundRes = new SDLSoundResource(fn.c_str(), sound);
     Add(soundRes);
@@ -309,7 +309,7 @@ MemResource *ResourceMgr::_LoadFileInternal(const char *name, bool textmode)
     vf->dropBuf(false);
     size_t size = vf->size();
 
-    logdebug("LoadFile: '%s' [%s], %u bytes at ["PTRFMT"]" , name, vf->getType(), (uint32)size, buf);
+    logdebug("LoadFile: '%s' [%s], %u bytes at [" PTRFMT "]" , name, vf->getType(), (uint32)size, buf);
 
     memRes = new MemResource(name, buf, size);
     Add(memRes);

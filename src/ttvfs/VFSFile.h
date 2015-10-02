@@ -6,6 +6,7 @@
 
 #include "VFSBase.h"
 #include <string>
+#include <algorithm>
 
 VFS_NAMESPACE_START
 

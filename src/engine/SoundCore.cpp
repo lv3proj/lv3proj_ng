@@ -35,7 +35,7 @@ static void play_music_gme(void *udata, Uint8 *stream, int len)
 
 static void stop_music_gme(void *userdata)
 {
-    logdev("SoundCore: delete GME, mem ptr "PTRFMT, userdata);
+    logdev("SoundCore: delete GME, mem ptr " PTRFMT, userdata);
     MemResource *memRes = (MemResource*)userdata;
     memRes->decref();
 }
@@ -306,7 +306,7 @@ SoundFile *SoundCore::GetSound(const char *fn)
         soundf = *it;
         if(soundf->CanBeDeleted())
         {
-            logdev("SoundCore: Recycling "PTRFMT" (%s)", soundf, fn);
+            logdev("SoundCore: Recycling " PTRFMT " (%s)", soundf, fn);
             soundf->SetDeleteWhenStopped(false); // Revive it
             return soundf;
         }
@@ -355,7 +355,7 @@ bool SoundCore::_LoadWithGME(MemResource *memRes)
     if(!err)
     {
         const char *ty = gme_type_system(gme_type(emu));
-        logdebug("_LoadWithGME() ptr = "PTRFMT"  Type: %s" , memRes->ptr(), ty);
+        logdebug("_LoadWithGME() ptr = " PTRFMT "  Type: %s" , memRes->ptr(), ty);
         StopMusic();
         _gme = emu;
         gme_start_track(emu, 0); // TODO FIXME: add support for other track IDs (NSF files)

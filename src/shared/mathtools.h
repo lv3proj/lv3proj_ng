@@ -1,6 +1,8 @@
 #ifndef MATHTOOLS_H
 #define MATHTOOLS_H
 
+#include <algorithm>
+
 #include "SysDefs.h"
 
 #ifndef M_PI

@@ -1,6 +1,8 @@
 #ifndef TILE_H
 #define TILE_H
 
+#include <algorithm>
+
 class Texture;
 
 #include "Vector.h"
