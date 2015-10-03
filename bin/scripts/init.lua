@@ -27,6 +27,7 @@ dofile("textinput.lua")
 dofile("player.lua")
 dofile("editor_tileset.lua")
 dofile("debugkeys.lua")
+dofile("snespad.lua")
 
 -- forbid os functions, these are dangerous.
 --os = nil -- TODO: add replacement functions in engine
@@ -109,8 +110,17 @@ rawset(_G, "onKeyUp", function(key, mod)
     triggerEvent("onKeyUp", key, mod)
 end)
 
-rawset(_G, "onJoystickEvent", function(device, type, id, val)
+local pads = setmetatable({}, {
+    __index = function(t, k)
+        local p = snespad.new()
+        rawset(t, k, p)
+        return p
+    end,
+})
 
+rawset(_G, "onJoystickEvent", function(device, type, id, val)
+    --print("joypad", device, type, id, val)
+    pads[device]:rawInput(type, id, val)
 end)
 
 rawset(_G, "getUserInputText", function()
