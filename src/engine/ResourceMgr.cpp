@@ -141,7 +141,7 @@ CountedPtr<Texture> ResourceMgr::getTex(const char *fn)
 
     CountedPtr<ImageResource> img = getImage(fn);
     unsigned texid = render->loadTex(img->getImage());
-    Texture *tex = new Texture(img->content(), texid);
+    Texture *tex = new Texture(img.content(), texid);
     add(tex);
     return tex;
 }

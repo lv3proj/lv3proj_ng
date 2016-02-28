@@ -153,7 +153,7 @@ void RenderObject::toLayer(unsigned int target)
             return;
         _layerPtr->Remove(this);
     }
-    engine->layers->GetLayer(target)->Add(this);
+    g_engine->layers->GetLayer(target)->Add(this);
 }
 
 void RenderObject::moveToBack()
@@ -221,7 +221,7 @@ bool RenderObject::isOnScreen() const
     if(_noCull)
         return true;
 
-    const Vector p = getParallaxRenderPosition(engine->camera->screenCenter);
+    const Vector p = getParallaxRenderPosition(g_engine->camera->screenCenter);
     const float ws = halfWidth * scale.x;
     const float hs = halfHeight * scale.y;
     return p.x >= s_cullX1 - ws

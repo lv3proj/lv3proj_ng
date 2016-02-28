@@ -44,20 +44,11 @@ public:
     ObjectMgr *objmgr;
     RenderLayerMgr *layers;
     TileMgr *tiles;
+    ResourceMgr *resmgr;
+    Renderer *render;
 
     virtual void UnregisterObject(ScriptObject *obj);
     virtual void ClearGarbage(bool deep);
-
-    bool IsMouseButton(unsigned int btn);
-    void SetMousePos(const Vector& pos);
-
-    Vector ToWorldPosition(const Vector& v) const; // window -> world
-    Vector ToWindowPosition(const Vector& v) const; // world -> window
-
-    Vector ToWorldScale(const Vector& v) const; // window -> world
-    Vector ToWindowScale(const Vector& v) const; // world -> window
-
-    Vector GetCameraPositionFor(const Vector &pos);
 
     inline bool IsPause(int32 level = 0) const { return level < _pause; }
     inline void SetPause(int32 level) { _pause = level; }
@@ -65,12 +56,11 @@ public:
 
 protected:
 
-    ResourceMgr *resmgr;
-    Renderer *render;
-
     bool _reset;
     bool _quit;
     int32 _pause;
 };
+
+extern EngineBase *g_engine;
 
 #endif

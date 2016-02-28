@@ -5,11 +5,9 @@
 
 class Texture : public Resource
 {
-protected:
+public:
     Texture(ImageResource *img, unsigned id);
     virtual ~Texture();
-
-public:
 
     inline unsigned getID() const { return id; }
     inline int getWidth() const { return width; }

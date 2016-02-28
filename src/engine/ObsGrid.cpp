@@ -219,10 +219,10 @@ void ObsGrid::UpdateTile(unsigned int x, unsigned int y)
     _dropBlock(block);
     _grid(x, y) = block = const_cast<mask*>(_empty);
 
-    unsigned int lrcount = engine->layers->GetLayerCount();
+    unsigned int lrcount = g_engine->layers->GetLayerCount();
     for(unsigned int lr = 1; lr < lrcount; ++lr)
     {
-        RenderLayer *layer = engine->layers->GetLayer(lr);
+        RenderLayer *layer = g_engine->layers->GetLayer(lr);
         if(!layer)
             continue;
         if(!layer->tiles->colliding)

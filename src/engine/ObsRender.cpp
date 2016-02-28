@@ -6,12 +6,13 @@
 #include "RenderLayer.h"
 #include "Texture.h"
 #include "ObsGrid.h"
+#include "ResourceMgr.h"
 
 
 ObsRender::ObsRender(unsigned int layer)
  : _layer(layer)
 {
-    _tex = engine->GetTexture("");
+    _tex = g_engine->resmgr->getTex("");
     _noCull = true;
 }
 
@@ -21,8 +22,10 @@ ObsRender::~ObsRender()
 
 void ObsRender::onRender() const
 {
-    TileGrid& grid = *(engine->layers->GetLayer(_layer)->tiles);
-
+    TileGrid& grid = *(g_engine->layers->GetLayer(_layer)->tiles);
+    
+    ASSERT(false);
+/*
     int xstart, ystart, xend, yend;
     grid.CalcRenderLimits(xstart, ystart, xend, yend);
     if((xend - xstart) <= 0 || (yend - ystart) <= 0)
@@ -77,12 +80,14 @@ void ObsRender::onRender() const
             c = 0;
         }
     }
+    */
 }
 
+/*
 void ObsRender::_renderMixedTile(Tile *tile, float xpos, float ypos) const
 {
     const int tdim = tile->getSize();
-    Renderer *render = engine->GetRenderer();
+    Renderer *render = g_engine->GetRenderer();
 
     float vertexData[8];
 
@@ -118,6 +123,7 @@ void ObsRender::_renderMixedTile(Tile *tile, float xpos, float ypos) const
         }
     }
 }
+*/
 
 //-----------------------------------------------------------------------
 
@@ -127,7 +133,7 @@ void ObsRender::_renderMixedTile(Tile *tile, float xpos, float ypos) const
 
 ObsGridRender::ObsGridRender()
 {
-    _tex = engine->GetTexture("");
+    _tex = g_engine->resmgr->getTex("");
     _noCull = true;
 }
 
@@ -137,11 +143,14 @@ ObsGridRender::~ObsGridRender()
 
 void ObsGridRender::onRender() const
 {
-    ObsGrid& ogrid = engine->obsgrid;
+    ObsGrid& ogrid = g_engine->obsgrid;
     const float ts = ogrid._blockdim;
 
+    ASSERT(false);
+
+    /*
     int xstart, ystart, xend, yend;
-    engine->CalcRenderLimits(ogrid._grid.size1d(), ts, xstart, ystart, xend, yend);
+    g_engine->CalcRenderLimits(ogrid._grid.size1d(), ts, xstart, ystart, xend, yend);
     if((xend - xstart) <= 0 || (yend - ystart) <= 0)
         return;
 
@@ -191,8 +200,10 @@ void ObsGridRender::onRender() const
             c = 0;
         }
     }
+    */
 }
 
+/*
 void ObsGridRender::_renderMixedBlock(const unsigned char *block, float xpos, float ypos) const
 {
     const int tdim = engine->obsgrid._blockdim;
@@ -232,4 +243,4 @@ void ObsGridRender::_renderMixedBlock(const unsigned char *block, float xpos, fl
         }
     }
 }
-
+*/

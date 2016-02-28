@@ -246,14 +246,16 @@ void RenderLayer::Render(Renderer *r)
 
     if(isFixedPos())
     {
-        r->setupScreenScale();
-        r->renderObject(tiles);
+        ASSERT(false);
+        //r->setupScreenScale();
+        //r->renderObject(tiles);
         _RenderNoCull(r);
     }
     else
     {
-        r->setupRenderPositionAndScale();
-        r->renderObject(tiles);
+        ASSERT(false);
+        //r->setupRenderPositionAndScale();
+        //r->renderObject(tiles);
         _RenderCull(r);
     }
 }
@@ -268,7 +270,8 @@ void RenderLayer::_RenderCull(Renderer *r)
             if(RenderObject *ro = *roptr++)
             {
                 if(!ro->getParent() && ro->isOnScreen())
-                    r->renderObject(ro);
+                    ASSERT(false);
+                    //r->renderObject(ro);
             }
         }
     }
@@ -284,7 +287,8 @@ void RenderLayer::_RenderNoCull(Renderer *r)
             if(RenderObject *ro = *roptr++)
             {
                 if(!ro->getParent())
-                    r->renderObject(ro);
+                    ASSERT(false);
+                    //r->renderObject(ro);
             }
         }
     }

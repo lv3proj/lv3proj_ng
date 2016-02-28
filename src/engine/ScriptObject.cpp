@@ -18,7 +18,7 @@ ScriptObject::~ScriptObject()
 
 bool ScriptObject::isPaused() const
 {
-    return engine->IsPause(_pauseLevel);
+    return g_engine->IsPause(_pauseLevel);
 }
 
 
@@ -49,7 +49,7 @@ void LifeObject::onEndOfLife()
     if(!_dead)
     {
         _dead = true;
-        engine->UnregisterObject(this);
+        g_engine->UnregisterObject(this);
     }
 }
 

@@ -4,6 +4,7 @@
 #include "Texture.h"
 #include "Arenas.h"
 #include "ObjectMgr.h"
+#include "ResourceMgr.h"
 
 namespace Arenas {
     Arenas::QuadMem quadArena(Arenas::chunkAlloc, 1000, sizeof(Quad) );
@@ -12,7 +13,7 @@ namespace Arenas {
 Quad *Quad::create()
 {
     Quad *q = XNEW(Quad, Arenas::quadArena)();
-    engine->objmgr->AddObject(q);
+    g_engine->objmgr->AddObject(q);
     return q;
 }
 
@@ -36,7 +37,7 @@ Quad::~Quad()
 
 bool Quad::setTexture(const char *tex, const Rect *bound /* = NULL */)
 {
-    Texture *newtex = engine->GetTexture(tex); // increases refcount
+    CountedPtr<Texture> newtex = g_engine->resmgr->getTex(tex); // increases refcount
     if(!newtex)
         return false;
 
@@ -62,6 +63,7 @@ bool Quad::setTexture(const char *tex, const Rect *bound /* = NULL */)
 
 void Quad::onRender() const
 {
-    engine->GetRenderer()->renderQuad(this);
+    ASSERT(false);
+    //g_engine->render->renderQuad(this);
 }
 

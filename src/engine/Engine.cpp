@@ -9,6 +9,8 @@
 #include "RenderLayerMgr.h"
 #include "TileMgr.h"
 
+EngineBase *g_engine = NULL;
+
 EngineBase::EngineBase(Renderer *r)
 : camera(NULL)
 , virtualOffX(0)
@@ -20,6 +22,8 @@ EngineBase::EngineBase(Renderer *r)
 , _pause(0)
 {
     log("Game Engine start.");
+    ASSERT(!g_engine);
+    g_engine = this;
 }
 
 EngineBase::~EngineBase()
@@ -30,6 +34,8 @@ EngineBase::~EngineBase()
     //delete sound;
     delete tiles;
     delete resmgr;
+
+    g_engine = NULL;
 }
 
 bool EngineBase::Init(void)
