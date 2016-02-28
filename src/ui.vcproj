@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir);shared;include;ui"
+				AdditionalIncludeDirectories="$(ProjectDir);shared;include;ui;..\dep\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -64,7 +64,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalDependencies="winmm.lib SDL2.lib SDL2main.lib"
-				AdditionalLibraryDirectories="lib\win32"
+				AdditionalLibraryDirectories="..\dep\lib\win32"
 				IgnoreDefaultLibraryNames="libcmt.lib"
 			/>
 			<Tool
@@ -113,7 +113,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
-				AdditionalIncludeDirectories="$(ProjectDir);shared;include;ui"
+				AdditionalIncludeDirectories="$(ProjectDir);shared;include;ui;..\dep\include"
 				PreprocessorDefinitions="WIN32;_CONSOLE;_HAS_EXCEPTIONS=0;_STATIC_CPPLIB"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -140,7 +140,7 @@
 			<Tool
 				Name="VCLibrarianTool"
 				AdditionalDependencies="winmm.lib SDL2.lib SDL2main.lib"
-				AdditionalLibraryDirectories="lib\win32"
+				AdditionalLibraryDirectories="..\dep\lib\win32"
 				IgnoreDefaultLibraryNames="libcmt.lib"
 			/>
 			<Tool

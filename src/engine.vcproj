@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir);shared;vfs;include;ui"
+				AdditionalIncludeDirectories="$(ProjectDir);shared;vfs;include;ui;..\dep\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,8 +62,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="SDL2.lib"
-				AdditionalLibraryDirectories="$(ProjectDir)\lib\win32"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -111,7 +110,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir);shared;vfs;include;ui"
+				AdditionalIncludeDirectories="$(ProjectDir);shared;vfs;include;ui;..\dep\include"
 				PreprocessorDefinitions="WIN32;_CONSOLE;_HAS_EXCEPTIONS=0;_STATIC_CPPLIB"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -136,6 +135,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"

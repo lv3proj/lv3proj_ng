@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories="lib\win32"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="libcmt.lib"
 			/>
 			<Tool
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories="lib\win32"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="libcmt.lib"
 			/>
 			<Tool
