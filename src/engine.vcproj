@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir);shared;ttvfs;include"
+				AdditionalIncludeDirectories="$(ProjectDir);shared;vfs;include;ui"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="SDL.lib SDL_mixer.lib"
+				AdditionalDependencies="SDL2.lib"
 				AdditionalLibraryDirectories="$(ProjectDir)\lib\win32"
 			/>
 			<Tool
@@ -111,7 +111,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir);shared;ttvfs;include"
+				AdditionalIncludeDirectories="$(ProjectDir);shared;vfs;include;ui"
 				PreprocessorDefinitions="WIN32;_CONSOLE;_HAS_EXCEPTIONS=0;_STATIC_CPPLIB"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -163,14 +163,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\engine\Bootstrap.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\Bootstrap.h"
-				>
-			</File>
-			<File
 				RelativePath=".\engine\Camera.cpp"
 				>
 			</File>
@@ -195,15 +187,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\engine\FileAPI.cpp"
+				RelativePath=".\engine\MouseState.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\engine\FileAPI.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\MemResource.h"
+				RelativePath=".\engine\MouseState.h"
 				>
 			</File>
 			<File
@@ -263,22 +251,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\engine\ResourceMgr.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\ResourceMgr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\SoundCore.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\SoundCore.h"
-				>
-			</File>
-			<File
 				RelativePath=".\engine\Tile.cpp"
 				>
 			</File>
@@ -303,91 +275,34 @@
 				>
 			</File>
 			<Filter
-				Name="GL"
+				Name="Resource"
 				>
 				<File
-					RelativePath=".\engine\GL\gl.h"
+					RelativePath=".\engine\ImageResource.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\engine\GL\glext.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="OpenGL"
-				>
-				<File
-					RelativePath=".\engine\GLTexture.cpp"
+					RelativePath=".\engine\ImageResource.h"
 					>
 				</File>
 				<File
-					RelativePath=".\engine\GLTexture.h"
+					RelativePath=".\engine\MemResource.h"
 					>
 				</File>
 				<File
-					RelativePath=".\engine\OpenGLAPI.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							GeneratePreprocessedFile="0"
-							KeepComments="false"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\engine\OpenGLAPI.h"
+					RelativePath=".\engine\ResourceMgr.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\engine\OpenGLStubs.h"
+					RelativePath=".\engine\ResourceMgr.h"
 					>
 				</File>
 				<File
-					RelativePath=".\engine\Renderer.cpp"
+					RelativePath=".\engine\Texture.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\engine\Renderer.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="SDL"
-				>
-				<File
-					RelativePath=".\engine\SDL_func.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\SDL_func.h"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\SDLMusicResource.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\SDLMusicResource.h"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\SDLSoundResource.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\SDLSoundResource.h"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\SDLSurfaceResource.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\SDLSurfaceResource.h"
+					RelativePath=".\engine\Texture.h"
 					>
 				</File>
 			</Filter>
@@ -408,14 +323,6 @@
 				</File>
 				<File
 					RelativePath=".\engine\ScriptObject.h"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\Texture.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\Texture.h"
 					>
 				</File>
 			</Filter>

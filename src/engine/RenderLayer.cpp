@@ -236,7 +236,7 @@ void RenderLayer::MoveToFront(RenderObject *ro)
     _PrependRO(ro);
 }
 
-void RenderLayer::Render()
+void RenderLayer::Render(Renderer *r)
 {
     // If no objects exist, no blocks exist
     ASSERT(_objectCount || !(_firstBlock || _lastBlock));
@@ -244,8 +244,6 @@ void RenderLayer::Render()
     if(!visible)
         return;
 
-    Renderer *r = engine->GetRenderer();
-    
     if(isFixedPos())
     {
         r->setupScreenScale();

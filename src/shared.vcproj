@@ -63,8 +63,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="winmm.lib SDL.lib SDLmain.lib SDL_image.lib SDL_mixer.lib"
-				AdditionalLibraryDirectories="lib\win32"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="libcmt.lib"
 			/>
 			<Tool
@@ -139,8 +138,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalDependencies="winmm.lib SDL.lib SDLmain.lib SDL_image.lib SDL_mixer.lib"
-				AdditionalLibraryDirectories="lib\win32"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="libcmt.lib"
 			/>
 			<Tool
@@ -194,18 +192,6 @@
 			</File>
 			<File
 				RelativePath=".\shared\PlatformSpecific.h"
-				>
-			</File>
-			<File
-				RelativePath=".\shared\pugiconfig.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\shared\pugixml.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\shared\pugixml.hpp"
 				>
 			</File>
 			<File
@@ -326,6 +312,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\shared\ByteBuffer.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

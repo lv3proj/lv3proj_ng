@@ -70,13 +70,7 @@ luaFunc(loadfile_wrap)
 
 static RenderLayer *getLayerByID(lua_State *L, int idx = 1)
 {
-    if(lua_isnumber(L, idx))
-        return engine->layers->GetLayer(lua_tointeger(L, idx));
-    else if(lua_isstring(L, idx))
-        return engine->layers->GetLayer(getCStr(L, idx));
-    else if(lua_isnil(L, idx))
-        return engine->layers->GetLayer(0);
-    return NULL;
+    return engine->layers->GetLayer(lua_tointeger(L, idx));
 }
 
 luaFunc(wait)

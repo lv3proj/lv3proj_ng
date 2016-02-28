@@ -2,7 +2,7 @@
 #define RESOURCE_BASE_H
 
 #include <string>
-#include <list>
+#include <vector>
 #include "refcounted.h"
 
 
@@ -32,7 +32,7 @@ public:
     inline size_t nameLen() const { return _name.length(); }
     inline ResourceType type() const { return _type; }
 
-    void addDep(Resource *); // add other resource this resource depends on
+    //void addDep(Resource *); // add other resource this resource depends on
 
     virtual void update(float dt) {}
     virtual unsigned int usedMem() const { return 0; }
@@ -44,7 +44,7 @@ protected:
 private:
     ResourceType _type;
     std::string _name;
-    std::list<CountedPtr<Resource> > _dep;
+    //std::vector<CountedPtr<Resource> > _dep;
 };
 
 

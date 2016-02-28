@@ -27,19 +27,11 @@ void RenderLayerMgr::ClearAll()
     _layers[0]->RemoveAll();
 }
 
-void RenderLayerMgr::Render()
+void RenderLayerMgr::Render(Renderer *render)
 {
     // Not rendering layer 0 is intentional.
     // It serves as a parking space for unused objects.
     for(size_t i = 1; i < _layers.size(); ++i)
-        _layers[i]->Render();
-}
-
-RenderLayer *RenderLayerMgr::GetLayer(const char *name)
-{
-    for(size_t i = 1; i < _layers.size(); ++i)
-        if(_layers[i]->name == name)
-            return _layers[i];
-    return NULL;
+        _layers[i]->Render(render);
 }
 

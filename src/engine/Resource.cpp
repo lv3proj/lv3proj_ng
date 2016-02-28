@@ -9,8 +9,3 @@ Resource::Resource(const char *n, ResourceType t)
 Resource::~Resource()
 {
 }
-
-void Resource::addDep(Resource *r)
-{
-    _dep.push_back(r);
-}

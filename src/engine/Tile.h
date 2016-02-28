@@ -34,7 +34,7 @@ public:
 
     inline Texture *getTexture() { return _tex.content(); }
 
-    bool CalcCollision(); // sets up collision mask
+    void CalcCollision(); // sets up collision mask
 
     inline TileObsType getTileObsType() const { return _tileobs; }
 

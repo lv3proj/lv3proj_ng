@@ -39,7 +39,6 @@ public:
     ~RenderObject();
 
     virtual void update(float dt);
-    virtual void updateFixed(float dt);
 
     InterpolatedVector position;
     InterpolatedVector offset;

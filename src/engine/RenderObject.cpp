@@ -63,16 +63,6 @@ void RenderObject::update(float dt)
     }
 }
 
-void RenderObject::updateFixed(float dt)
-{
-    for(Children::iterator it = _children.begin(); it != _children.end(); ++it)
-    {
-        RenderObject *ro = *it;
-        if(ro->_objIndex == -1 && !(ro->isDead() || ro->isPaused()))
-            ro->updateFixed(dt);
-    }
-}
-
 void RenderObject::onUpdate(float dt)
 {
     updatePhysics(dt);

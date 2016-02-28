@@ -1,4 +1,4 @@
-#include <SDL/SDL.h>
+#include "SDLMaster.h"
 #include "common.h"
 #include "Bootstrap.h"
 #include "ScriptedEngine.h"

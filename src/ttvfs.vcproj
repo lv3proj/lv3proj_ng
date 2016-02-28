@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="ttvfs"
+				AdditionalIncludeDirectories="vfs/ttvfs;vfs/ttvfs_zip"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -107,7 +107,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="true"
-				AdditionalIncludeDirectories="ttvfs"
+				AdditionalIncludeDirectories="vfs/ttvfs;vfs/ttvfs_zip"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_HAS_EXCEPTIONS=0;_STATIC_CPPLIB"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -157,99 +157,111 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\ttvfs\VFS.h"
+				RelativePath=".\vfs\ttvfs\ttvfs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSArchiveLoader.h"
+				RelativePath=".\vfs\ttvfs\VFSArchiveLoader.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSAtomic.cpp"
+				RelativePath=".\vfs\ttvfs\VFSBase.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSAtomic.h"
+				RelativePath=".\vfs\ttvfs\VFSBase.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSBase.cpp"
+				RelativePath=".\vfs\ttvfs\VFSDebug.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSBase.h"
+				RelativePath=".\vfs\ttvfs\VFSDebug.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSDefines.h"
+				RelativePath=".\vfs\ttvfs\VFSDefines.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSDir.cpp"
+				RelativePath=".\vfs\ttvfs\VFSDir.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSDir.h"
+				RelativePath=".\vfs\ttvfs\VFSDir.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSFile.cpp"
+				RelativePath=".\vfs\ttvfs\VFSDirInternal.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSFile.h"
+				RelativePath=".\vfs\ttvfs\VFSDirInternal.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSFileFuncs.cpp"
+				RelativePath=".\vfs\ttvfs\VFSDirView.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSFileFuncs.h"
+				RelativePath=".\vfs\ttvfs\VFSDirView.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSHashmap.h"
+				RelativePath=".\vfs\ttvfs\VFSFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSHelper.cpp"
+				RelativePath=".\vfs\ttvfs\VFSFile.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSHelper.h"
+				RelativePath=".\vfs\ttvfs\VFSFileFuncs.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSInternal.h"
+				RelativePath=".\vfs\ttvfs\VFSFileFuncs.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSLoader.cpp"
+				RelativePath=".\vfs\ttvfs\VFSInternal.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSLoader.h"
+				RelativePath=".\vfs\ttvfs\VFSLoader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSSelfRefCounter.h"
+				RelativePath=".\vfs\ttvfs\VFSLoader.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSSystemPaths.cpp"
+				RelativePath=".\vfs\ttvfs\VFSRefcounted.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSSystemPaths.h"
+				RelativePath=".\vfs\ttvfs\VFSRoot.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSTools.cpp"
+				RelativePath=".\vfs\ttvfs\VFSRoot.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs\VFSTools.h"
+				RelativePath=".\vfs\ttvfs\VFSSystemPaths.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vfs\ttvfs\VFSSystemPaths.h"
+				>
+			</File>
+			<File
+				RelativePath=".\vfs\ttvfs\VFSTools.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vfs\ttvfs\VFSTools.h"
 				>
 			</File>
 		</Filter>
@@ -259,35 +271,59 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath=".\ttvfs_zip\miniz.c"
+				RelativePath=".\vfs\ttvfs_zip\miniz.c"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs_zip\miniz.h"
+				RelativePath=".\vfs\ttvfs_zip\miniz.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs_zip\VFSDirZip.cpp"
+				RelativePath=".\vfs\ttvfs_zip\ttvfs_zip.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs_zip\VFSDirZip.h"
+				RelativePath=".\vfs\ttvfs_zip\VFSDirZip.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs_zip\VFSFileZip.cpp"
+				RelativePath=".\vfs\ttvfs_zip\VFSDirZip.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs_zip\VFSFileZip.h"
+				RelativePath=".\vfs\ttvfs_zip\VFSFileZip.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs_zip\VFSZipArchiveLoader.cpp"
+				RelativePath=".\vfs\ttvfs_zip\VFSFileZip.h"
 				>
 			</File>
 			<File
-				RelativePath=".\ttvfs_zip\VFSZipArchiveLoader.h"
+				RelativePath=".\vfs\ttvfs_zip\VFSZipArchiveLoader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vfs\ttvfs_zip\VFSZipArchiveLoader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\vfs\ttvfs_zip\VFSZipArchiveRef.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vfs\ttvfs_zip\VFSZipArchiveRef.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="ttvfs_cfileapi"
+			>
+			<File
+				RelativePath=".\vfs\ttvfs_cfileapi\ttvfs_stdio.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vfs\ttvfs_cfileapi\ttvfs_stdio.h"
 				>
 			</File>
 		</Filter>

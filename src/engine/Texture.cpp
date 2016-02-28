@@ -1,13 +1,13 @@
 #include "Texture.h"
 
-const Texture *Texture::s_lastApplied = NULL;
-
-Texture::Texture(const char *name)
- : Resource(name, RESOURCE_TEXTURE)
- , width(0)
- , height(0)
- , halfWidth(0)
- , halfHeight(0)
+Texture::Texture(ImageResource *img, unsigned texID)
+ : Resource(img->name(), RESOURCE_TEXTURE)
+ , id(texID)
+ , width(img->getImage()->w())
+ , height(img->getImage()->h())
+ , halfWidth(img->getImage()->w() / 2.0f)
+ , halfHeight(img->getImage()->h() / 2.0f)
+ , _srcImg(img)
 {
 }
 

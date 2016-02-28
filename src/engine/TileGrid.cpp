@@ -102,7 +102,9 @@ void TileGrid::onRender() const
     if(!_used)
         return;
 
-    Renderer *render = engine->GetRenderer();
+    ASSERT(false);
+
+    //Renderer *render = engine->GetRenderer();
 
     /*
     unsigned dim = _tiles.size1d();
@@ -112,7 +114,7 @@ void TileGrid::onRender() const
                 render->renderSingleTexture(tile->getTexture(), Vector(x * _tileSize, y * _tileSize));
     */
 
-    int xstart, ystart, xend, yend;
+    /*int xstart, ystart, xend, yend;
     CalcRenderLimits(xstart, ystart, xend, yend);
     int dim = xend - xstart;
     if(dim <= 0 || yend <= ystart)
@@ -126,7 +128,7 @@ void TileGrid::onRender() const
         Tile * const * tileptr = &_tiles(xstart, y);
         render->renderTileArray(tileptr, dim, start, step, tileHalfSize);
         start.y += _tileSize;
-    }
+    }*/
 }
 
 void TileGrid::CalcRenderLimits(int& x, int& y, int& x2, int& y2) const

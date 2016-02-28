@@ -1,6 +1,6 @@
 #include "common.h"
 #include "GLTexture.h"
-#include <SDL/SDL.h>
+#include "SDLMaster.h"
 #include "SDL_func.h"
 #include "GL/gl.h"
 #include "SDLSurfaceResource.h"

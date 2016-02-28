@@ -41,7 +41,7 @@ public:
     void AddFront(RenderObject *);
     void Remove(RenderObject *);
     void RemoveAll();
-    void Render();
+    void Render(Renderer *r);
     void MoveToFront(RenderObject *);
     void MoveToBack(RenderObject *);
     inline unsigned int GetID() const { return _id; }
@@ -49,7 +49,6 @@ public:
 
     TileGrid *tiles;
 
-    std::string name;
     Vector parallax;
     bool visible;
 

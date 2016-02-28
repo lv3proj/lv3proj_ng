@@ -1,74 +1,44 @@
 #ifndef RESOURCEMGR_H
 #define RESOURCEMGR_H
 
-#include <map>
+#include <vector>
+#include "ImageResource.h"
+#include "Texture.h"
 
-#include "Resource.h"
-
-class SDLSurfaceResource;
-class SDLMusicResource;
-class SDLSoundResource;
-class MemResource;
-class Texture;
-class Anim;
-class Tile;
-
-struct charptr_less
-{
-    inline bool operator() (const char *a, const char *b) const
-    {
-        return strcmp(a, b) < 0;
-    }
-};
-
-typedef std::map<const char *, CountedPtr<Resource>, charptr_less> ResourceStore;
+namespace ttvfs { class Root; }
+class Renderer;
 
 class ResourceMgr
 {
-
 public:
+    static bool StaticInit();
+    static void StaticShutdown();
+
+    struct Frame
+    {
+        std::vector<CountedPtr<Resource> > res;
+    };
+
     ResourceMgr();
     ~ResourceMgr();
-    void Shutdown();
 
-    void DropUnused(void);
-    void Add(CountedPtr<Resource> r);
-    void Update(float dt);
+    void setRenderer(Renderer *r);
 
+    void pushFrame();
+    void popFrame();
 
-    SDLSurfaceResource *LoadImg(const char *name);
+    void add(Resource *);
 
-    SDLMusicResource *LoadMusic(const char *name);
-    SDLSoundResource *LoadSound(const char *name);
-    MemResource *LoadFile(const char *name);
-    MemResource *LoadTextFile(const char *name);
-
-    Texture *_GetTexture(const char *name); // does *NOT* load a texture if not known. The engine does texture management.
-
-
-    unsigned int GetUsedCount(void); // amount of resources
-    unsigned int GetUsedMem(void); // estimated total resource memory consumption
-
-
-    inline const ResourceStore& GetResourcesOfType(ResourceType type) const { return _res[type]; }
-
+    CountedPtr<ImageResource> getImage(const char *);
+    CountedPtr<Texture> getTex(const char *); // used by engine
+    //CountedPtr<Resource> getSound(const char *);
 
 private:
-    Resource *_GetResource(ResourceType type, const char *name);
-    SDLSurfaceResource *_LoadImgInternal(const char *name);
-    MemResource * _LoadFileInternal(const char *name, bool textmode);
+    CountedPtr<Resource> *search(const char *, ResourceType ty);
 
-    void _accountMem(unsigned int bytes);
-    void _unaccountMem(unsigned int bytes);
-
-    ResourceStore _res[RESOURCE_MAX];
-
-    unsigned int _usedMem;
+    std::vector<Frame> _frames;
+    Renderer *render; // Needs to know the Renderer to transform Image into Texture
 };
-
-
-extern ResourceMgr resMgr;
-
 
 
 #endif

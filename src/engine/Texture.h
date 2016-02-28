@@ -1,40 +1,29 @@
 #ifndef TEXTURE_BASE_H
 #define TEXTURE_BASE_H
 
-#include "Resource.h"
+#include "ImageResource.h"
 
 class Texture : public Resource
 {
 protected:
-    Texture(const char *name);
+    Texture(ImageResource *img, unsigned id);
     virtual ~Texture();
 
 public:
-   inline void apply() const
-   {
-       if(s_lastApplied != this)
-       {
-           doApply();
-           s_lastApplied = this;
-       }
-   }
 
-   inline int getWidth() const { return width; }
-   inline int getHeight() const { return height; }
-   inline float getHalfWidth() const { return halfWidth; }
-   inline float getHalfHeight() const { return halfHeight; }
-
-   virtual bool reload() = 0;
-
-   static void clearLastApplied() { s_lastApplied = NULL; }
+    inline unsigned getID() const { return id; }
+    inline int getWidth() const { return width; }
+    inline int getHeight() const { return height; }
+    inline float getHalfWidth() const { return halfWidth; }
+    inline float getHalfHeight() const { return halfHeight; }
+    inline const Image *getSourceImage() const { return _srcImg.content()->getImage(); }
 
 protected:
-    virtual void doApply() const = 0;
-
-    static const Texture *s_lastApplied;
+    unsigned id;
 
     int width, height;
     float halfWidth, halfHeight;
+    CountedPtr<ImageResource> _srcImg;
 };
 
 #endif

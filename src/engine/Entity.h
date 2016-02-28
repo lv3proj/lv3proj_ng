@@ -20,8 +20,6 @@ public:
 
     float bounciness;
 
-    static bool s_renderCollisionShapes;
-
 protected:
 
     Entity();

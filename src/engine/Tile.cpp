@@ -1,9 +1,8 @@
 #include "common.h"
 #include "Tile.h"
 #include "Texture.h"
-#include "SDLSurfaceResource.h"
-#include "SDL_func.h"
 #include "ResourceMgr.h"
+#include "io/image.h"
 
 Tile::Tile(Texture *tex, const Rect& r)
 : _tileobs(TO_FULLFREE), _tex(NULL), rect(r), refcount(0)
@@ -38,17 +37,9 @@ void Tile::setRect(Rect r)
     lowerRightTextureCoords = UV((r.x + r.w) / tw, (r.y + r.h) / th);
 }
 
-bool Tile::CalcCollision()
+void Tile::CalcCollision()
 {
-    SDLSurfaceResource *res = resMgr.LoadImg(_tex->name());
-    if(!res)
-    {
-        logerror("Tile::CalcCollision(): No image for %s", _tex->name());
-        return false;
-    }
-
-    SDL_Surface *surf = res->getSurface();
-    SDL_PixelFormat *fmt = surf->format;
+    const Image *img = _tex->getSourceImage();
 
     _mask.resize(std::max(rect.w, rect.h), 0);
 
@@ -58,11 +49,10 @@ bool Tile::CalcCollision()
     {
         for(unsigned int x = 0; x < rect.w; ++x)
         {
-            unsigned pix = SDLfunc_getpixel(surf, rect.x + x, rect.y + y);
-            unsigned a = pix >> 24;
+            Image::Pixel pix = (*img)(rect.x + x, rect.y + y);
 
             // TODO: max. threshold?
-            if(a)
+            if(pix.a)
             {
                 _mask(x, y) |= OBS_ANY; //OBS_WALL;
                 ++solid;
@@ -81,6 +71,4 @@ bool Tile::CalcCollision()
         _tileobs = TO_FULLSOLID;
     else
         _tileobs = TO_MIXED;
-
-    return true;
 }

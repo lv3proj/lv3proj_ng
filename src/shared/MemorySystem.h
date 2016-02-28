@@ -88,9 +88,9 @@ inline T* _X_NewArray(ARENA& arena, size_t N, const XSourceInfo& src, NonPODType
 }
 
 template <typename T, class ARENA>
-inline T* _X_NewArray(ARENA& arena, size_t N, const char* file, size_t line, PODType)
+inline T* _X_NewArray(ARENA& arena, size_t N, const XSourceInfo& src, PODType)
 {
-    return static_cast<T*>(arena.Allocate(sizeof(T)*N, XSourceInfo(file, line)));
+    return static_cast<T*>(arena.Allocate(sizeof(T)*N, src));
 }
 
 template <typename T, class ARENA>

@@ -5,8 +5,6 @@
 #include "Engine.h"
 #include "Renderer.h"
 
-bool Entity::s_renderCollisionShapes = false;
-
 
 Entity::Entity()
  : _collider(NULL)
@@ -40,50 +38,6 @@ void Entity::setCollider(Collidable *c)
 void Entity::onRender() const
 {
     Quad::onRender();
-
-    // DEBUG
-    if(s_renderCollisionShapes && _collider)
-    {
-        switch(_collider->getShape())
-        {
-            case COLL_AABB:
-            {
-                // FIXME: this messes up if we're part of a RO hierarchy
-                // HACK: undo gfx rotation
-                const AABB& aabb = *(const AABB*)_collider;
-                Vector ul = aabb.upleft();
-                Vector dr = aabb.downright();
-                engine->GetRenderer()->drawAABB(ul.x - position.x,
-                                                ul.y - position.y,
-                                                dr.x - position.x,
-                                                dr.y - position.y,
-                                                rotation.x + rotation2.x, 0, 1, 0, 0.5f);
-                break;
-            }
-
-            case COLL_CIRCLE:
-            {
-                const Circle& ci = *(const Circle*)_collider;
-                Vector cpos = ci.getPosition();
-                engine->GetRenderer()->drawCircle(cpos.x, cpos.y, ci.radius, 0, 1, 0, 0.5f);
-                break;
-            }
-
-            case COLL_LINE:
-            {
-                const Line& l = *(const Line*)_collider;
-                Vector start = l.start();
-                Vector end = l.end();
-                // HACK: undo gfx rotation
-                const float rot = rotation.x + rotation2.x;
-                start.rotate2D(-rot);
-                end.rotate2D(-rot);
-                engine->GetRenderer()->drawLine(start.x, start.y, end.x, end.y, 2, 0, 1, 0, 0.5f);
-                break;
-            }
-        }
-    }
-
 }
 
 void Entity::onUpdate(float dt)
