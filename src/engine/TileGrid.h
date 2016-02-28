@@ -21,8 +21,6 @@ public:
 
     virtual void onRender() const;
 
-    void CalcRenderLimits(int& x, int& y, int& x2, int& y2) const;
-
     bool colliding;
 
 protected:

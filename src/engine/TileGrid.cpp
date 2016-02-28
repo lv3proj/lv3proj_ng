@@ -130,8 +130,3 @@ void TileGrid::onRender() const
         start.y += _tileSize;
     }*/
 }
-
-void TileGrid::CalcRenderLimits(int& x, int& y, int& x2, int& y2) const
-{
-    engine->CalcRenderLimits(_tiles.size1d(), _tileSize, x, y, x2, y2);
-}

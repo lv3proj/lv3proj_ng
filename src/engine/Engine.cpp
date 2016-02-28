@@ -89,16 +89,6 @@ void EngineBase::Reset()
     ClearGarbage(true);
 }
 
-CountedPtr<Texture> EngineBase::GetTexture(const char *name)
-{
-    CountedPtr<Texture> tex = resmgr->_getTex(name);
-    if(!tex)
-    {
-
-    }
-    return tex;
-}
-
 void EngineBase::UnregisterObject(ScriptObject *obj)
 {
     if(obj->isManaged())

@@ -136,13 +136,12 @@ CountedPtr<ImageResource> ResourceMgr::getImage(const char *fn)
 
 CountedPtr<Texture> ResourceMgr::getTex(const char *fn)
 {
-    CountedPtr<Resource> *tex = search(fn, RESOURCE_TEXTURE);
-    if(tex)
-        return dyncast<Texture*>(tex->content());
+    if(CountedPtr<Resource> *texr = search(fn, RESOURCE_TEXTURE))
+        return dyncast<Texture*>(texr->content());
 
     CountedPtr<ImageResource> img = getImage(fn);
     unsigned texid = render->loadTex(img->getImage());
-    tex = new Texture(img, texid);
+    Texture *tex = new Texture(img->content(), texid);
     add(tex);
     return tex;
 }

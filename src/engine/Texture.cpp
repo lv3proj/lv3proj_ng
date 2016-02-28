@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "io/image.h"
 
 Texture::Texture(ImageResource *img, unsigned texID)
  : Resource(img->name(), RESOURCE_TEXTURE)
