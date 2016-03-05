@@ -6,27 +6,24 @@
 #include "Renderer.h"
 #include "ScriptedEntity.h"
 
-#include "GL/gl.h"
 #include "ObsRender.h"
 
-ScriptedEngine *scriptedEngine = NULL;
+ScriptedEngine *g_scriptedEngine = NULL;
 
 ScriptedEngine::ScriptedEngine()
- : script(NULL), _obsRender(NULL)
+ : script(NULL)
 {
-    scriptedEngine = this;
+    ASSERT(!g_scriptedEngine);
+    g_scriptedEngine = this;
 }
 
 ScriptedEngine::~ScriptedEngine()
 {
-    scriptedEngine = NULL;
+    g_scriptedEngine = NULL;
 }
 
 void ScriptedEngine::Shutdown()
 {
-    _obsRender->kill();
-    _obsRender = NULL;
-
     EngineBase::Shutdown();
 }
 
@@ -46,7 +43,6 @@ bool ScriptedEngine::OnInit()
 
 void ScriptedEngine::OnReset()
 {
-    _obsRender = NULL;
     EngineBase::OnReset();
     script->Shutdown();
     script->Init();
@@ -57,14 +53,6 @@ void ScriptedEngine::OnReset()
 
 void ScriptedEngine::_CreateInternalObjects()
 {
-    if(!_obsRender)
-    {
-        _obsRender = new ObsGridRender;
-        _obsRender->alpha = 0;
-        _obsRender->color = Vector(1, 0, 0);
-        layers->GetLayer(20)->Add(_obsRender);
-        objmgr->AddObject(_obsRender);
-    }
 }
 
 void ScriptedEngine::OnUpdate(float dt)
@@ -102,26 +90,6 @@ void ScriptedEngine::OnKeyDown(SDLKey key, SDLMod mod)
     EngineBase::OnKeyDown(key, mod);
 
     script->call("onKeyDown", key, mod);
-
-    if(key == SDLK_F9)
-    {
-        if(_obsRender->alpha.x <= 0)
-            _obsRender->alpha.interpolateTo(0.5f, 0);
-        else
-            _obsRender->alpha.interpolateTo(0, 0);
-    }
-    else if(key == SDLK_F8)
-    {
-        Entity::s_renderCollisionShapes = !Entity::s_renderCollisionShapes;
-    }
-    else if(key == SDLK_F5 && (mod & KMOD_CTRL))
-    {
-        SetReset(true);
-    }
-    else if(key == SDLK_F10)
-    {
-        GetRenderer()->renderBorders = !GetRenderer()->renderBorders;
-    }
 }
 
 void ScriptedEngine::OnKeyUp(SDLKey key, SDLMod mod)
@@ -134,20 +102,12 @@ void ScriptedEngine::OnJoystickEvent(uint32 type, uint32 device, uint32 id, int3
     script->call("onJoystickEvent", device, type, id, val);
 }
 
-
-// Handle a raw SDL_Event before anything else. return true for further processing,
-// false to drop the event and NOT pass it to other On..Event functions
-bool EngineBase::OnRawEvent(SDL_Event& evt)
-{
-    return true;
-}
-
-void EngineBase::OnWindowEvent(bool active)
+void ScriptedEngine::OnWindowEvent(bool active)
 {
     // TODO: pause if lost focus?
 }
 
-void EngineBase::OnMouseEvent(uint32 type, uint32 button, uint32 state, uint32 x, uint32 y, int32 rx, int32 ry)
+void ScriptedEngine::OnMouseEvent(uint32 type, uint32 button, uint32 state, uint32 x, uint32 y, int32 rx, int32 ry)
 {
     const RenderSettings &rr = render->getSettings();
     Vector lastMouseWinPos = mouse.winPos;
@@ -184,69 +144,53 @@ void EngineBase::OnMouseEvent(uint32 type, uint32 button, uint32 state, uint32 x
     }
 }
 
-void EngineBase::OnJoystickEvent(uint32 type, uint32 device, uint32 id, int32 val)
+void ScriptedEngine::OnJoystickEvent(uint32 type, uint32 device, uint32 id, int32 val)
 {
 }
 
-void EngineBase::OnKeyDown(SDLKey key, SDLMod mod)
-{
-    if(mod & KMOD_LALT)
-    {
-        if(key == SDLK_F4)
-            SetQuit(true);
-        //else if(key == SDLK_RETURN)
-        //    ToggleFullscreen();
-    }
-
-    if(key == SDLK_PAUSE)
-    {
-        TogglePause();
-    }
-}
-
-void EngineBase::OnKeyUp(SDLKey key, SDLMod mod)
+void ScriptedEngine::OnKeyDown(SDLKey key, SDLMod mod)
 {
 }
 
-void EngineBase::OnWindowResize(uint32 newx, uint32 newy)
-{
-    InitScreen(newx, newy);
-}
-
-void EngineBase::OnLog(const char *, int color, int level, void *user)
+void ScriptedEngine::OnKeyUp(SDLKey key, SDLMod mod)
 {
 }
 
-void EngineBase::OnUpdate(float dt)
+void ScriptedEngine::OnWindowResize(uint32 newx, uint32 newy)
 {
 }
 
-void EngineBase::OnReset()
+void ScriptedEngine::OnLog(const char *, int color, int level, void *user)
+{
+}
+
+void ScriptedEngine::OnUpdate(float dt)
+{
+}
+
+void ScriptedEngine::OnReset()
 {
     _pause = 0;
 }
 
-void EngineBase::OnRender()
+void ScriptedEngine::OnRender()
 {
 }
 
-bool EngineBase::IsMouseButton(unsigned int btn)
+bool ScriptedEngine::IsMouseButton(unsigned int btn)
 {
     return mouse.buttons & SDL_BUTTON(btn);
 }
 
 
-void EngineBase::_ProcessEvents(void)
+void ScriptedEngine::_ProcessEvents(void)
 {
     mouse.worldRel = mouse.winRel = Vector(0, 0);
     mouse.wheelRel = 0;
 
     SDL_Event evt;
-    while(!s_quit && SDL_PollEvent(&evt))
+    while(SDL_PollEvent(&evt))
     {
-        if(!OnRawEvent(evt))
-            continue;
-
         switch(evt.type)
         {
         case SDL_KEYDOWN:

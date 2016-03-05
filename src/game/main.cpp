@@ -6,20 +6,16 @@
 
 int main(int argc, char **argv)
 {
-    SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_JOYSTICK);
+    if(!ttvfs::checkCompat())
+        return 1;
+
+    SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_EVERYTHING);
 
     //Bootstrap::RelocateWorkingDir();
     Bootstrap::HookSignals();
     log_prepare("game_log.txt", "w");
     log_setloglevel(4);
     Bootstrap::PrintSystemSpecs();
-
-    // this should be checked, especially in larger projects
-    if(!ttvfs::checkCompat())
-        return 1;
-
-    vfs.LoadFileSysRoot(false);
-    vfs.Prepare();
 
     srand(42); // FIXME: temporary
 
