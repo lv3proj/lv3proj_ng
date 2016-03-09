@@ -1,7 +1,6 @@
 #ifndef TILEGRID_H
 #define TILEGRID_H
 
-#include "RenderObject.h"
 #include "Tile.h"
 
 class TileGrid : public RenderObject

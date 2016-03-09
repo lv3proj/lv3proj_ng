@@ -84,6 +84,13 @@ public:
     bool operator>=(const CountedPtr& ref) const { return _p >= ref._p; }
     bool operator>(const CountedPtr& ref) const { return _p > ref._p; }
 
+    bool operator<(const T *p) const { return _p < p; }
+    bool operator<=(const T *p) const { return _p <= p; }
+    bool operator==(const T *p) const { return _p == p; }
+    bool operator!=(const T *p) const { return _p != p; }
+    bool operator>=(const T *p) const { return _p >= p; }
+    bool operator>(const T *p) const { return _p > p; }
+
     inline static void swap(CountedPtr& a, CountedPtr& b)
     {
         std::swap(a._p, b._p);

@@ -219,6 +219,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\engine\PreRender.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\PreRender.h"
+				>
+			</File>
+			<File
 				RelativePath=".\engine\Quad.cpp"
 				>
 			</File>
@@ -240,14 +248,6 @@
 			</File>
 			<File
 				RelativePath=".\engine\RenderLayerMgr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\RenderObject.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\RenderObject.h"
 				>
 			</File>
 			<File
@@ -317,14 +317,6 @@
 					RelativePath=".\engine\Resource.h"
 					>
 				</File>
-				<File
-					RelativePath=".\engine\ScriptObject.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\ScriptObject.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Collision"
@@ -363,6 +355,18 @@
 				</File>
 				<File
 					RelativePath=".\engine\collision\Line.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Objects"
+				>
+				<File
+					RelativePath=".\engine\Objects.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\Objects.h"
 					>
 				</File>
 			</Filter>
