@@ -15,6 +15,11 @@ enum ObjectType
     //RO_SCRIPT,
 };
 
+enum ObjectFlags
+{
+    OF_DEAD = 0x01,
+}
+
 // Base class, not rendered
 class BaseObject
 {
@@ -22,6 +27,7 @@ class BaseObject
 public:
     static void _Destroy(BaseObject *);
     inline ObjectType getType() const { return ObjectType(_type); }
+    inline bool isDead() const { return _flags & OF_DEAD; }
 protected:
     BaseObject(ObjectType ty);
     ~BaseObject();
@@ -29,8 +35,8 @@ private:
     inline void incref();
     void decref();
     unsigned char _type;
-    unsigned char _unused[3];
-    unsigned _refcount;
+    unsigned char _flags;
+    unsigned short _refcount;
 };
 
 // Single texture, rendered. Very lightweight.
@@ -39,6 +45,7 @@ class Sprite : public BaseObject
 public:
     static Sprite *Create();
     static void _Destroy(Sprite *);
+    glm::mat4 getLocalTransform() const;
     CountedPtr<Texture> tex;
     glm::vec2 uv[4];
     glm::vec2 size; // width, height
@@ -68,6 +75,7 @@ class GroupObject : public BaseObject
 public:
     static GroupObject *Create();
     static void _Destroy(GroupObject *);
+    glm::mat4 getLocalTransform() const;
     void add(BaseObject *ro) { _ch.push_back(ro); }
     unsigned remove(BaseObject *);
     void remove(unsigned idx);

@@ -5,6 +5,10 @@
 #include "renderer.h"
 #include "glapi.h"
 #include "io/image.h"
+#include "glm/glm.hpp"
+#include "glm/ext.hpp"
+
+using namespace glm;
 
 
 #define GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX  0x9049
@@ -49,6 +53,7 @@ static void __stdcall debugCallback(GLenum source, GLenum type, GLuint id, GLenu
 Renderer::Renderer(SDL_Window *win)
 : window(win)
 , glctx(NULL)
+, drawBorders(true)
 {
 }
 
@@ -120,6 +125,9 @@ void Renderer::beginFrame()
 {
     OpenGLAPI::ResetCallCount();
     SDL_GL_MakeCurrent(window, glctx);
+    int w, h;
+    SDL_GetWindowSize(window, &w, &h);
+    glViewport(0, 0, w, h);
 }
 
 void Renderer::endFrame()
@@ -133,9 +141,6 @@ unsigned int Renderer::getRenderCallCount()
 
 void Renderer::clear()
 {
-    int w, h;
-    SDL_GetWindowSize(window, &w, &h);
-    glViewport(0, 0, w, h);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -182,4 +187,59 @@ unsigned Renderer::loadTex(const Image *img)
     return texId;
 }
 
+
+// ---------------------------------------------
+static unsigned _lastTex = 0;
+static void bindtex(unsigned tex)
+{
+    if(tex != _lastTex)
+    {
+        _lastTex = tex;
+        glBindTexture(GL_TEXTURE_2D, tex);
+    }
+}
+
+static const vec2 quadVertices[] =
+{
+    vec2(-1, -1), // upper left
+    vec2(+1, -1), // upper right
+    vec2(-1, +1), // lower left
+    vec2(+1, +1), // lower right
+};
+
+size_t Renderer::renderObj(const mat4 &proj, const BaseObject *obj)
+{
+    switch(obj->getType())
+    {
+    case RO_SPRITE:
+        return renderSprite(proj, (Sprite*)obj);
+    case RO_GROUP:
+        return renderGroup(proj, (GroupObject*)obj);
+    default:
+        ASSERT(false);
+    }
+    return 0;
+}
+
+void Renderer::renderGroup(mat4 proj, const GroupObject *obj)
+{
+    const size_t sz = obj->size();
+    if(sz)
+    {
+        proj *= obj->getLocalTransform();
+        for(size_t i = 0; i < sz; ++i)
+            renderObj(proj, obj->child(i));
+    }
+}
+
+void Renderer::renderSprite(mat4 proj, const Sprite *obj)
+{
+    bindtex(obj->tex->getID());
+    mat4 mat = proj * obj->getLocalTransform();
+    glLoadMatrixf(value_ptr(mat));
+    glColor4fv(value_ptr(obj->color));
+    glVertexPointer(2, GL_FLOAT, 0, value_ptr(quadVertices[0]));
+    glTexCoordPointer(2, GL_FLOAT, 0, value_ptr(obj->uv[0]));
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
 

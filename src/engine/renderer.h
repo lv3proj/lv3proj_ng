@@ -1,5 +1,7 @@
 #pragma once
 
+#include "glm/glm.hpp"
+
 class Image;
 struct SDL_Window;
 
@@ -24,6 +26,11 @@ public:
 
     void destroyTex(unsigned id);
     unsigned loadTex(const Image *);
+
+    void renderObj(const glm::mat4& proj, const BaseObject *obj);
+    void renderSprite(glm::mat4 proj, const Sprite *obj);
+    void renderGroup(glm::mat4 proj, const GroupObject *obj);
+    void renderLayer(const RenderLayer& lr);
 
 private:
     SDL_Window *window;

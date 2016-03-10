@@ -1,6 +1,7 @@
 #include "Objects.h"
 #include "common.h"
 #include <algorithm>
+#include "glm/ext.hpp"
 
 BaseObject::BaseObject(ObjectType ty)
 : _type(ty)
@@ -39,6 +40,11 @@ void Sprite::_Destroy(Sprite *sp)
     delete sp;
 }
 
+glm::mat4 Sprite::getLocalTransform() const
+{
+    return glm::translate(glm::mat4(1.0f), vec3(pos, 0.0f));
+}
+
 GroupObject *GroupObject::Create()
 {
     return new GroupObject;
@@ -65,3 +71,8 @@ unsigned GroupObject::remove(BaseObject *ro)
     return unsigned(oldsz - newsz);
 }
 
+glm::mat4 GroupObject::getLocalTransform() const
+{
+    ASSERT(false);
+    return glm::mat4(); // FIXME
+}
