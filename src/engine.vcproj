@@ -370,6 +370,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="utility"
+				>
+				<File
+					RelativePath=".\engine\types.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\types_impl.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

@@ -171,6 +171,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\shared\interpolator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\shared\interpolator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\shared\IntervalTimer.h"
 				>
 			</File>
@@ -180,10 +188,6 @@
 			</File>
 			<File
 				RelativePath=".\shared\log.h"
-				>
-			</File>
-			<File
-				RelativePath=".\shared\MersenneTwister.h"
 				>
 			</File>
 			<File
@@ -204,14 +208,6 @@
 			</File>
 			<File
 				RelativePath=".\shared\tools.h"
-				>
-			</File>
-			<File
-				RelativePath=".\shared\Vector.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\shared\Vector.h"
 				>
 			</File>
 			<Filter
