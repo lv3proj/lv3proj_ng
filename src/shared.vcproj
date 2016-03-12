@@ -191,6 +191,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\shared\pcg_basic.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\shared\pcg_basic.h"
+				>
+			</File>
+			<File
 				RelativePath=".\shared\PlatformSpecific.cpp"
 				>
 			</File>
@@ -310,6 +318,10 @@
 			>
 			<File
 				RelativePath=".\shared\ByteBuffer.h"
+				>
+			</File>
+			<File
+				RelativePath=".\shared\tinyrng.h"
 				>
 			</File>
 		</Filter>
