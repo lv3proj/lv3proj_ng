@@ -4,6 +4,7 @@
 #include "refcounted.h"
 #include "glm/glm.hpp"
 #include "Texture.h"
+#include "types.h"
 
 class ObjectMgr;
 
@@ -22,7 +23,7 @@ enum ObjectType
 enum ObjectFlags
 {
     OF_DEAD = 0x01,
-}
+};
 
 // Base class, not rendered
 class BaseObject
@@ -63,21 +64,34 @@ private:
     unsigned _objIndex;
 };
 
-/*
-struct InterpolationData
+
+struct ObjectInterpolationData
 {
+    ipvec2 position;
+    ipfloat rotation;
+    ipvec2 scale;
+    ipvec4 color;
+
+    void update(float dt);
+    glm::mat4 getLocalTransform() const;
 };
-*/
+
 
 // Single texture, rendered. Can rotate and other things
-/*class Quad
+class Quad : public BaseObject, public ObjectInterpolationData
 {
-    // TODO WRITE ME
-    InterpolationData *interp;
-};*/
+public:
+    static Quad *Create();
+    static void _Destroy(Quad *q);
+    CountedPtr<Texture> tex;
+    glm::vec2 uv[4];
+protected:
+    Quad();
+    ~Quad();
+};
 
 // Collection of other objects, itself not rendered
-class GroupObject : public BaseObject
+class GroupObject : public BaseObject, public ObjectInterpolationData
 {
 public:
     static GroupObject *Create();
@@ -94,7 +108,6 @@ protected:
     typedef std::vector<CountedPtr<BaseObject> > Children;
     GroupObject();
     ~GroupObject();
-    //InterpolationData *interp;
 private:
     Children _ch;
 };

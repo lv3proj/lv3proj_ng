@@ -42,7 +42,7 @@ void Sprite::_Destroy(Sprite *sp)
 
 glm::mat4 Sprite::getLocalTransform() const
 {
-    return glm::translate(glm::mat4(1.0f), vec3(pos, 0.0f));
+    return glm::translate(glm::mat4(1.0f), glm::vec3(pos, 0.0f));
 }
 
 GroupObject *GroupObject::Create()
@@ -71,8 +71,37 @@ unsigned GroupObject::remove(BaseObject *ro)
     return unsigned(oldsz - newsz);
 }
 
-glm::mat4 GroupObject::getLocalTransform() const
+glm::mat4 ObjectInterpolationData::getLocalTransform() const
 {
-    ASSERT(false);
-    return glm::mat4(); // FIXME
+    glm::mat4 m = glm::mat4(1);
+    m = glm::translate(m, glm::vec3(position, 0.0f));
+    m = glm::rotate(m, rotation, glm::vec3(0,0,1));
+    return m;
 }
+
+void ObjectInterpolationData::update(float dt)
+{
+    position.update(dt);
+    rotation.update(dt);
+    scale.update(dt);
+    color.update(dt);
+}
+
+Quad::Quad()
+{
+}
+
+Quad::~Quad()
+{
+}
+
+Quad *Quad::Create()
+{
+    return new Quad;
+}
+
+void Quad::_Destroy(Quad *q)
+{
+    delete q;
+}
+

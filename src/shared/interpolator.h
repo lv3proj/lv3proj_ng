@@ -55,9 +55,9 @@ public:
 
     float interpolateTo(const T& to, float t, int loop = 0, bool pingpong = false, InterpolationType ty = INTERP_LINEAR);
 
-private:
-
     T v;
+
+private:
 
     typedef InterpolationData<T> Data;
 

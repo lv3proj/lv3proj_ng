@@ -1,19 +1,20 @@
 #include "tools.h"
-#include "MersenneTwister.h"
+#include "tinyrng.h"
 #include <time.h>
 #include <algorithm>
 
 // not thread safe!
-static MTRand rng;
+static TinyRNG rng;
 
 void rand_seed(uint32 s)
 {
-    rng.seed(s);
+    rng.init(s, 6278291);
 }
 
+const float RMULT = 1.0f / float(UINT_MAX);
 bool chance(float p)
 {
-    return rng.randExc(100) < p;
+    return ((float)rng() * RMULT) < p;
 }
 
 
