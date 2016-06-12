@@ -33,16 +33,6 @@ void ObjectMgr::Update(float dt)
     }
 }
 
-void ObjectMgr::UpdateFixed(float dt)
-{
-    for(size_t i = 0; i < _alive.size(); ++i)
-    {
-        ScriptObject *obj = _alive[i];
-        if(!(obj->isDead() || obj->isPaused() || obj->_objIndex == -1))
-            obj->updateFixed(dt);
-    }
-}
-
 void ObjectMgr::AddObject(ScriptObject *obj)
 {
     ASSERT(obj->isManaged());

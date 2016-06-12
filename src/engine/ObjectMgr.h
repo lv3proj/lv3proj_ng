@@ -3,25 +3,22 @@
 
 #include <vector>
 #include <set>
+#include "Objects.h"
 
-class ScriptObject;
 
 class ObjectMgr
 {
 public:
     ObjectMgr();
     ~ObjectMgr();
-    void AddObject(ScriptObject *);
-    void Garbage(ScriptObject *);
+    void AddObject(BaseObject *);
     void Update(float dt);
-    void UpdateFixed(float dt);
     void ClearGarbage();
     void ClearAll();
 
 private:
-    typedef std::vector<ScriptObject*> ScriptObjectStore;
-    ScriptObjectStore _alive;
-    ScriptObjectStore _garbage;
+    typedef std::vector<BaseObject*> ObjStore;
+    ObjStore _bytype[RO_MAX];
 };
 
 #endif

@@ -219,22 +219,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\engine\PreRender.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\PreRender.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\Quad.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\Quad.h"
-				>
-			</File>
-			<File
 				RelativePath=".\engine\RenderLayer.cpp"
 				>
 			</File>

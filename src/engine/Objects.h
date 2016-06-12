@@ -5,6 +5,8 @@
 #include "glm/glm.hpp"
 #include "Texture.h"
 
+class ObjectMgr;
+
 // NOTE: None of these objects have ANY virtual methods (not even a virtual dtor!)
 
 enum ObjectType
@@ -13,6 +15,8 @@ enum ObjectType
     RO_SPRITE,
     //RO_QUAD,
     //RO_SCRIPT,
+
+    RO_MAX,
 };
 
 enum ObjectFlags
@@ -23,6 +27,7 @@ enum ObjectFlags
 // Base class, not rendered
 class BaseObject
 {
+    friend class ObjectMgr;
     friend class CountedPtr<BaseObject>;
 public:
     static void _Destroy(BaseObject *);
@@ -54,6 +59,8 @@ public:
 protected:
     Sprite();
     ~Sprite();
+private:
+    unsigned _objIndex;
 };
 
 /*
