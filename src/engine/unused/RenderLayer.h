@@ -3,7 +3,7 @@
 
 #include <list>
 #include <string>
-#include "Vector.h"
+#include "glmx.h"
 
 class RenderObject;
 class TileGrid;
@@ -15,14 +15,14 @@ class RenderLayer
 
 public:
 
-    static const unsigned int BLOCK_SIZE = 128;
+    static const unsigned BLOCK_SIZE = 128;
 
     struct Block
     {
         Block *next;
         Block *prev;
-        unsigned int objCount;
-        unsigned int wIdx; // Next index to write to (possibly out of range) [intentionally unsigned, uses wrap in hasSpace()]
+        unsigned objCount;
+        unsigned wIdx; // Next index to write to (possibly out of range) [intentionally unsigned, uses wrap in hasSpace()]
         int direction; // either +1 or -1 (append or prepend)
         RenderObject *ptrs[BLOCK_SIZE];
 
@@ -44,12 +44,12 @@ public:
     void Render(Renderer *r);
     void MoveToFront(RenderObject *);
     void MoveToBack(RenderObject *);
-    inline unsigned int GetID() const { return _id; }
-    inline bool isFixedPos() const { return parallax.isZero(); }
+    inline unsigned GetID() const { return _id; }
+    //inline bool isFixedPos() const { return parallax.isZero(); }
 
     TileGrid *tiles;
 
-    Vector parallax;
+    glm::vec2 parallax;
     bool visible;
 
 protected:
@@ -64,10 +64,10 @@ protected:
     void _RenderCull(Renderer *r);
     void _RenderNoCull(Renderer *r);
 
-    unsigned int _id; // position in vector in RenderLayerMgr
+    unsigned _id; // position in vector in RenderLayerMgr
     //std::list<RenderObject*> _objs;
 
-    unsigned int _objectCount;
+    unsigned _objectCount;
     Block *_firstBlock;
     Block *_lastBlock;
 

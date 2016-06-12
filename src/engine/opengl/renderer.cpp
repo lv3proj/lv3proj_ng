@@ -5,8 +5,8 @@
 #include "renderer.h"
 #include "glapi.h"
 #include "io/image.h"
-#include "glm/glm.hpp"
-#include "glm/ext.hpp"
+#include "glmx.h"
+#include "Objects.h"
 
 using namespace glm;
 
@@ -53,7 +53,6 @@ static void __stdcall debugCallback(GLenum source, GLenum type, GLuint id, GLenu
 Renderer::Renderer(SDL_Window *win)
 : window(win)
 , glctx(NULL)
-, drawBorders(true)
 {
 }
 
@@ -104,23 +103,6 @@ bool Renderer::init()
     return true;
 }
 
-unsigned int Renderer::getFreeVideoMemoryKB()
-{
-    GLint meminfo[4];
-    memset(meminfo, 0, 4 * sizeof(GLint));
-
-    // nvidia?
-    glGetIntegerv(GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, meminfo); // in KB
-    if(!meminfo[0])
-    {
-        // ATI?
-        glGetIntegerv(TEXTURE_FREE_MEMORY_ATI, meminfo); // in KB, // [0] = total memory free in the pool
-    }
-    GLenum err = glGetError();
-
-    return meminfo[0];
-}
-
 void Renderer::beginFrame()
 {
     OpenGLAPI::ResetCallCount();
@@ -132,11 +114,6 @@ void Renderer::beginFrame()
 
 void Renderer::endFrame()
 {
-}
-
-unsigned int Renderer::getRenderCallCount()
-{
-    return OpenGLAPI::GetCallCount();
 }
 
 void Renderer::clear()
@@ -207,7 +184,7 @@ static const vec2 quadVertices[] =
     vec2(+1, +1), // lower right
 };
 
-size_t Renderer::renderObj(const mat4 &proj, const BaseObject *obj)
+unsigned Renderer::renderObj(const mat4 &proj, const BaseObject *obj)
 {
     switch(obj->getType())
     {
@@ -221,7 +198,7 @@ size_t Renderer::renderObj(const mat4 &proj, const BaseObject *obj)
     return 0;
 }
 
-void Renderer::renderGroup(mat4 proj, const GroupObject *obj)
+unsigned Renderer::renderGroup(mat4 proj, const GroupObject *obj)
 {
     const size_t sz = obj->size();
     if(sz)
@@ -230,9 +207,10 @@ void Renderer::renderGroup(mat4 proj, const GroupObject *obj)
         for(size_t i = 0; i < sz; ++i)
             renderObj(proj, obj->child(i));
     }
+    return unsigned(sz);
 }
 
-void Renderer::renderSprite(mat4 proj, const Sprite *obj)
+unsigned Renderer::renderSprite(mat4 proj, const Sprite *obj)
 {
     bindtex(obj->tex->getID());
     mat4 mat = proj * obj->getLocalTransform();
@@ -241,5 +219,6 @@ void Renderer::renderSprite(mat4 proj, const Sprite *obj)
     glVertexPointer(2, GL_FLOAT, 0, value_ptr(quadVertices[0]));
     glTexCoordPointer(2, GL_FLOAT, 0, value_ptr(obj->uv[0]));
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    return 1;
 }
 

@@ -1,7 +1,7 @@
 #ifndef INTERPOLATOR_H
 #define INTERPOLATOR_H
 
-// Explicit instantiations are in the c++ file
+// Explicit instantiations are in types_impl.cpp
 
 enum InterpolationFlags
 {
@@ -35,7 +35,7 @@ public:
     Interpolated();
     Interpolated(const T& val);
     Interpolated(const Interpolated&);
-    ~Interpolated();
+    ~Interpolated() { freeData(); }
 
     Interpolated& operator= (const Interpolated& o);
     inline bool isInterpolating() const
@@ -52,6 +52,7 @@ public:
             _interpUpdate(dt);
     }
     inline operator T() const { return v; }
+    inline T value() const { return v; }
 
     float interpolateTo(const T& to, float t, int loop = 0, bool pingpong = false, InterpolationType ty = INTERP_LINEAR);
 
@@ -72,7 +73,7 @@ private:
     static Data *allocData();
     static Data *allocData(const Data& dat);
     void freeData();
-    static void _interpTo(Data *data, const T& to, float t, int loop, InterpolationFlags flags, InterpolationType ty);
+    static void _interpTo(Data *data, const T& from, const T& to, float t, int loop, InterpolationFlags flags, InterpolationType ty);
 
     Data *_data;
 };

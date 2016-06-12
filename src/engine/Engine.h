@@ -2,8 +2,7 @@
 #define ENGINE_H
 
 #include "common.h"
-#include "Vector.h"
-#include "ObsGrid.h"
+//#include "ObsGrid.h"
 #include "MouseState.h"
 #include "refcounted.h"
 
@@ -40,10 +39,10 @@ public:
     EngineBase(Renderer *r);
     virtual ~EngineBase();
 
-    virtual bool Init(void);
-    virtual void Shutdown(void);
-    virtual void Update(float dt);
-    virtual void Render();
+    bool Init(void);
+    void Shutdown(void);
+    void Update(float dt);
+    void Render();
 
     void SetTitle(const char *title);
     inline void SetReset(bool r = true) { _reset = r; }
@@ -52,30 +51,30 @@ public:
 
     MouseState mouse;
 
-    Camera *camera;
+    //Camera *camera;
     float virtualOffX;
     float virtualOffY;
     
-    ObsGrid obsgrid;
+    //ObsGrid obsgrid;
     //SoundCore *sound;
-    ObjectMgr *objmgr;
-    RenderLayerMgr *layers;
-    TileMgr *tiles;
+    //ObjectMgr *objmgr;
+    //RenderLayerMgr *layers;
+    //TileMgr *tiles;
     ResourceMgr *resmgr;
-    Renderer *render;
 
-    virtual void UnregisterObject(ScriptObject *obj);
-    virtual void ClearGarbage(bool deep);
+    //virtual void UnregisterObject(ScriptObject *obj);
+    //virtual void ClearGarbage(bool deep);
 
-    inline bool IsPause(int32 level = 0) const { return level < _pause; }
-    inline void SetPause(int32 level) { _pause = level; }
-    inline int32 GetPause() const { return _pause; }
+    inline bool IsQuit() const { return _quit; }
+    inline bool IsPause(int level = 0) const { return level < _pause; }
+    inline void SetPause(int level) { _pause = level; }
+    inline int GetPause() const { return _pause; }
 
 protected:
 
     bool _reset;
     bool _quit;
-    int32 _pause;
+    int _pause;
 };
 
 extern EngineBase *g_engine;

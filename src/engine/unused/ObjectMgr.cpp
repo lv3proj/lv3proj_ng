@@ -1,5 +1,5 @@
 #include "ObjectMgr.h"
-#include "ScriptObject.h"
+#include "Objects.h"
 #include "common.h"
 #include <assert.h>
 

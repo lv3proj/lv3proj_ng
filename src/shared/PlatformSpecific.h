@@ -1,14 +1,13 @@
 #ifndef PLATFORM_SPECIFIC_H
 #define PLATFORM_SPECIFIC_H
 
+#include <string>
+
 void TriggerBreakpoint();
-
-#include "common.h"
-
-std::string GetProgramDir(void);
-bool SetWorkingDir(std::string d);
+bool SetWorkingDir(const char *d);
 std::string GetWorkingDir(void);
-uint32 GetConsoleWidth(void);
+std::string GetProgramDir(void);
+unsigned GetConsoleWidth(void);
 void MsgBox(const char *s);
 
 

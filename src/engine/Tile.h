@@ -5,7 +5,6 @@
 
 class Texture;
 
-#include "Vector.h"
 #include "array2d.h"
 #include "Resource.h"
 #include "ObsGrid.h"
@@ -52,9 +51,6 @@ public:
     inline unsigned int getSize() const { return _mask.size1d(); }
     inline unsigned getIdx() const { return idx; }
 
-    inline const UV& getULTC() const { return upperLeftTextureCoords; }
-    inline const UV& getLRTC() const { return lowerRightTextureCoords; }
-
     void setTexture(Texture *tex);
     void setRect(Rect r);
 
@@ -65,8 +61,6 @@ protected:
     TileObsType _tileobs;
     array2d<unsigned char> _mask;
     CountedPtr<Texture> _tex;
-    UV upperLeftTextureCoords;
-    UV lowerRightTextureCoords;
     Rect rect;
     unsigned idx;// index in store
     unsigned refcount;

@@ -1,8 +1,8 @@
 #ifndef RENDEROBJECT_H
 #define RENDEROBJECT_H
 
+#include "glmx.h"
 #include "refcounted.h"
-#include "glm/glm.hpp"
 #include "Texture.h"
 #include "types.h"
 
@@ -14,7 +14,7 @@ enum ObjectType
 {
     RO_GROUP,
     RO_SPRITE,
-    //RO_QUAD,
+    RO_QUAD,
     //RO_SCRIPT,
 
     RO_MAX,
@@ -38,7 +38,7 @@ protected:
     BaseObject(ObjectType ty);
     ~BaseObject();
 private:
-    inline void incref();
+    inline void incref() { ++_refcount; }
     void decref();
     unsigned char _type;
     unsigned char _flags;
@@ -96,7 +96,7 @@ class GroupObject : public BaseObject, public ObjectInterpolationData
 public:
     static GroupObject *Create();
     static void _Destroy(GroupObject *);
-    glm::mat4 getLocalTransform() const;
+    //glm::mat4 getLocalTransform() const;
     void add(BaseObject *ro) { _ch.push_back(ro); }
     unsigned remove(BaseObject *);
     void remove(unsigned idx);

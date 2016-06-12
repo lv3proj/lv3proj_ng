@@ -1,9 +1,13 @@
 #pragma once
 
-#include "glm/glm.hpp"
+#include "glmx.h"
 
 class Image;
 struct SDL_Window;
+class BaseObject;
+class Sprite;
+class GroupObject;
+class RenderLayer;
 
 class Renderer
 {
@@ -21,16 +25,13 @@ public:
     void clear();
     void show();
 
-    unsigned getRenderCallCount();
-    unsigned getFreeVideoMemoryKB();
-
     void destroyTex(unsigned id);
     unsigned loadTex(const Image *);
 
-    void renderObj(const glm::mat4& proj, const BaseObject *obj);
-    void renderSprite(glm::mat4 proj, const Sprite *obj);
-    void renderGroup(glm::mat4 proj, const GroupObject *obj);
-    void renderLayer(const RenderLayer& lr);
+    unsigned renderObj(const glm::mat4& proj, const BaseObject *obj);
+    unsigned renderSprite(glm::mat4 proj, const Sprite *obj);
+    unsigned renderGroup(glm::mat4 proj, const GroupObject *obj);
+    unsigned renderLayer(const RenderLayer& lr);
 
 private:
     SDL_Window *window;

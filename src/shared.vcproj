@@ -171,18 +171,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\shared\interpolator.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\shared\interpolator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\shared\IntervalTimer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\shared\log.cpp"
 				>
 			</File>
@@ -239,74 +227,6 @@
 				</File>
 				<File
 					RelativePath=".\shared\SysDefs.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="memory"
-				>
-				<File
-					RelativePath=".\shared\Arenas.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\Arenas.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryAllocatorDynamicPool.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryAllocatorFixedPool.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryAllocatorMalloc.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryAllocatorNull.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryAllocators.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryAllocatorSmallBlock.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryAllocatorSmallBlock.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryArena.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryBoundsCheckPolicy.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemorySystem.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryTaggingPolicy.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryThreadPolicy.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryTrackingPolicy.h"
-					>
-				</File>
-				<File
-					RelativePath=".\shared\MemoryUtil.h"
 					>
 				</File>
 			</Filter>

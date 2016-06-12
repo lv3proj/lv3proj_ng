@@ -3,6 +3,14 @@
 
 #include "common.h"
 
+#if __clang__ || __GNUC__
+#  define ATTR_NORETURN __attribute__((noreturn))
+#  define ATTR_PRINTF(F,V) __attribute__ ((format (printf, F, V)))
+#else //COMPILER != COMPILER_GNU
+#  define ATTR_NORETURN
+#  define ATTR_PRINTF(F,V)
+#endif //COMPILER == COMPILER_GNU
+
 enum ConsoleColor
 {
     BLACK,
@@ -27,7 +35,7 @@ typedef void (*log_callback_func)(const char *, int, int, void *);
 
 void log_prepare(const char *fn, const char *mode);
 void log_setcallback(log_callback_func f, bool newline, void *user);
-void log_setloglevel(uint8 lvl);
+void log_setloglevel(int lvl);
 void log_setlogtime(bool b);
 void log(const char *str, ...) ATTR_PRINTF(1,2);
 void logdetail(const char *str, ...) ATTR_PRINTF(1,2);
@@ -35,7 +43,7 @@ void logdebug(const char *str, ...) ATTR_PRINTF(1,2);
 void logdev(const char *str, ...) ATTR_PRINTF(1,2);
 void logerror(const char *str, ...) ATTR_PRINTF(1,2);
 void logcritical(const char *str, ...) ATTR_PRINTF(1,2);
-void logcustom(uint8 loglevel, ConsoleColor color, const char *str, ...) ATTR_PRINTF(3,4);
+void logcustom(int loglevel, ConsoleColor color, const char *str, ...) ATTR_PRINTF(3,4);
 void log_close();
 void _log_setcolor(bool, ConsoleColor);
 void _log_resetcolor(bool);

@@ -6,7 +6,7 @@
 // not thread safe!
 static TinyRNG rng;
 
-void rand_seed(uint32 s)
+void rand_seed(unsigned s)
 {
     rng.init(s, 6278291);
 }
@@ -63,7 +63,7 @@ std::string GetTimeString(void)
 }
 
 
-void HexStrToByteArray(uint8 *dst, const char *str)
+void HexStrToByteArray(char *dst, const char *str)
 {
     int l = strlen(str);
     char a, b;

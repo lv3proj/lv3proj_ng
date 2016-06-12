@@ -1,42 +1,61 @@
 #include "SDLMaster.h"
 #include "common.h"
-#include "Bootstrap.h"
-#include "ScriptedEngine.h"
-#include "FileAPI.h"
+//#include "Bootstrap.h"
+//#include "ScriptedEngine.h"
+#include "Engine.h"
+#include "renderer.h"
+#include "Timers.h"
+#include "ResourceMgr.h"
+//#include "FileAPI.h"
 
 int main(int argc, char **argv)
 {
-    if(!ttvfs::checkCompat())
-        return 1;
-
     SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_EVERYTHING);
 
     //Bootstrap::RelocateWorkingDir();
-    Bootstrap::HookSignals();
-    log_prepare("game_log.txt", "w");
+    //Bootstrap::HookSignals();
+    //log_prepare("game_log.txt", "w");
     log_setloglevel(4);
-    Bootstrap::PrintSystemSpecs();
+    //Bootstrap::PrintSystemSpecs();
 
     srand(42); // FIXME: temporary
 
-    ScriptedEngine that;
-    if(!that.Setup())
+    if(!Renderer::StaticInit())
+        return 1;
+    if(!ResourceMgr::StaticInit())
+        return 2;
+
+    SDL_Window *win;
+    SDL_Renderer *sdlr;
+    SDL_CreateWindowAndRenderer(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL, &win, &sdlr);
+    Renderer r(win);
+    r.init();
+    EngineBase eng(&r);
+    if(!eng.Init())
     {
         logerror("Failed to setup engine. Exiting.");
         return 1;
     }
 
 //#ifdef _DEBUG
-    that.InitScreen(800, 600);
+    //that.
 /*#else
     const SDL_VideoInfo *info = SDL_GetVideoInfo();
     that.InitScreen(info->current_w, info->current_h, 0, 0, true);
 #endif*/
-    that.Run();
-    that.Shutdown();
+    Timer tt;
+    while(!eng.IsQuit())
+    {
+        float dt = float(tt.reset()) / 1000.0f;
+        eng.Update(dt);
+    }
 
+    eng.Shutdown();
+
+    ResourceMgr::StaticShutdown();
+    Renderer::StaticShutdown();
 
     SDL_Quit();
-    Bootstrap::UnhookSignals();
+    //Bootstrap::UnhookSignals();
     return 0;
 }

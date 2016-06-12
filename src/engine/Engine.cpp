@@ -2,37 +2,39 @@
 #include "renderer.h"
 //#include "SoundCore.h"
 #include "ResourceMgr.h"
-#include "Quad.h"
 #include "Texture.h"
-#include "ObjectMgr.h"
-#include "Camera.h"
-#include "RenderLayerMgr.h"
-#include "TileMgr.h"
+//#include "ObjectMgr.h"
+//#include "Camera.h"
+//#include "RenderLayerMgr.h"
+//#include "TileMgr.h"
 
 EngineBase *g_engine = NULL;
 
 EngineBase::EngineBase(Renderer *r)
-: camera(NULL)
-, virtualOffX(0)
+//: camera(NULL)
+: virtualOffX(0)
 , virtualOffY(0)
 //, sound(NULL)
-, layers(NULL)
+//, layers(NULL)
 , resmgr(NULL)
-, render(r)
+, _reset(false)
+, _quit(false)
 , _pause(0)
+
 {
     log("Game Engine start.");
     ASSERT(!g_engine);
     g_engine = this;
+    resmgr = new ResourceMgr();
 }
 
 EngineBase::~EngineBase()
 {
-    delete layers;
-    delete camera;
-    delete objmgr;
+    //delete layers;
+    //delete camera;
+    //delete objmgr;
     //delete sound;
-    delete tiles;
+    //delete tiles;
     delete resmgr;
 
     g_engine = NULL;
@@ -45,11 +47,11 @@ bool EngineBase::Init(void)
     //    return false;
     //log_setcallback(&s_OnLog, true, NULL); // TODO: param? newline?
 
-    resmgr = new ResourceMgr();
-    objmgr = new ObjectMgr();
-    layers = new RenderLayerMgr();
-    camera = new Camera();
-    tiles = new TileMgr();
+    
+    //objmgr = new ObjectMgr();
+    //ayers = new RenderLayerMgr();
+    //camera = new Camera();
+    //tiles = new TileMgr();
 
     resmgr->pushFrame();
 
@@ -58,14 +60,16 @@ bool EngineBase::Init(void)
 
 void EngineBase::Shutdown(void)
 {
-    obsgrid.Clear();
-    layers->ClearAll();
-    tiles->DeleteUnused();
-    if(tiles->GetNumTiles())
-        logerror("TileMgr: %u tiles not deleted", tiles->GetNumTiles());
-    objmgr->ClearAll();
+    //obsgrid.Clear();
+    //layers->ClearAll();
+    //tiles->DeleteUnused();
+    //if(tiles->GetNumTiles())
+    //    logerror("TileMgr: %u tiles not deleted", tiles->GetNumTiles());
+    //objmgr->ClearAll();
     //sound->Shutdown();
-    ClearGarbage(true);
+    //ClearGarbage(true);
+
+    resmgr->popFrame();
 
     // be sure we did a clean shutdown
     //resMgr.DbgCheckEmpty();
@@ -73,16 +77,16 @@ void EngineBase::Shutdown(void)
 
 void EngineBase::Update(float dt)
 {
-    camera->update(dt);
-    objmgr->Update(dt);
+    //camera->update(dt);
+    //objmgr->Update(dt);
 
-    ClearGarbage(false);
+    //ClearGarbage(false);
 }
 
 void EngineBase::Render()
 {
-    camera->update(0);
-    layers->Render(render);
+    //camera->update(0);
+    //layers->Render(render);
 }
 
 
@@ -90,11 +94,12 @@ void EngineBase::Reset()
 {
     logdetail("EngineBase: Reset!");
     _reset = false;
-    layers->ClearAll();
-    objmgr->ClearAll();
-    ClearGarbage(true);
+    //layers->ClearAll();
+    //objmgr->ClearAll();
+    //ClearGarbage(true);
 }
 
+/*
 void EngineBase::UnregisterObject(ScriptObject *obj)
 {
     if(obj->isManaged())
@@ -112,3 +117,4 @@ void EngineBase::ClearGarbage(bool deep)
         resmgr->pushFrame();
     }
 }
+*/

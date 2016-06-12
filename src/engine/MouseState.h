@@ -1,17 +1,17 @@
 #ifndef MOUSESTATE_H
 #define MOUSESTATE_H
 
-#include "Vector.h"
+#include "glmx.h"
 
 struct MouseState
 {
     MouseState() : active(true), buttons(0), wheelAbs(0), wheelRel(0) {}
     bool active;
-    Vector worldPos;
-    Vector worldRel;
-    Vector winPos;
-    Vector winRel;
-    unsigned int buttons;
+    glm::vec2 worldPos;
+    glm::vec2 worldRel;
+    glm::vec2 winPos;
+    glm::vec2 winRel;
+    unsigned buttons;
     int wheelAbs;
     int wheelRel;
 

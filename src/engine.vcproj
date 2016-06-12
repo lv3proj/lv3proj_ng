@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(ProjectDir);shared;vfs;include;ui;..\dep\include"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;shared;vfs;include;ui;..\dep\include;engine"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -62,7 +62,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories=""
+				AdditionalDependencies="SDL2.lib"
+				AdditionalLibraryDirectories="$(SolutionDir)\dep\lib\win32"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -110,7 +111,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="$(ProjectDir);shared;vfs;include;ui;..\dep\include"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;shared;vfs;include;ui;..\dep\include;engine"
 				PreprocessorDefinitions="WIN32;_CONSOLE;_HAS_EXCEPTIONS=0;_STATIC_CPPLIB"
 				StringPooling="true"
 				ExceptionHandling="0"
@@ -135,7 +136,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories=""
+				AdditionalDependencies="SDL2.lib"
+				AdditionalLibraryDirectories="$(SolutionDir)\dep\lib\win32"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -163,14 +165,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\engine\Camera.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\Camera.h"
-				>
-			</File>
-			<File
 				RelativePath=".\engine\Engine.cpp"
 				>
 			</File>
@@ -179,83 +173,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\engine\Entity.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\Entity.h"
-				>
-			</File>
-			<File
 				RelativePath=".\engine\MouseState.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\engine\MouseState.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\ObjectMgr.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\ObjectMgr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\ObsGrid.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\ObsGrid.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\ObsRender.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\ObsRender.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\RenderLayer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\RenderLayer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\RenderLayerMgr.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\RenderLayerMgr.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\Tile.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\Tile.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\TileGrid.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\TileGrid.h"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\TileMgr.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\engine\TileMgr.h"
 				>
 			</File>
 			<Filter
@@ -303,46 +225,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="Collision"
-				>
-				<File
-					RelativePath=".\engine\collision\AABB.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\collision\AABB.h"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\collision\Circle.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\collision\Circle.h"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\collision\Collidable.h"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\collision\Collision.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\collision\Collision.h"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\collision\Line.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\engine\collision\Line.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="Objects"
 				>
 				<File
@@ -358,11 +240,47 @@
 				Name="utility"
 				>
 				<File
-					RelativePath=".\engine\types.h"
+					RelativePath=".\engine\interpolator.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\engine\types_impl.cpp"
+					RelativePath=".\engine\interpolator.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\Timers.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\Timers.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\types.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="opengl"
+				>
+				<File
+					RelativePath=".\engine\opengl\glapi.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\opengl\glapi.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\opengl\glstubs.h"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\opengl\imgui_impl_opengl2.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\opengl\renderer.cpp"
 					>
 				</File>
 			</Filter>
@@ -379,6 +297,10 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
+		<File
+			RelativePath=".\ClassDiagram1.cd"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

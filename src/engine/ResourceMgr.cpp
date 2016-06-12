@@ -3,7 +3,7 @@
 #include "ImageResource.h"
 #include "Texture.h"
 #include "io/image.h"
-#include "ui/renderer.h"
+#include "renderer.h"
 
 #define VFS_ENABLE_C_API 1
 #include "vfs/ttvfs_cfileapi/ttvfs_stdio.h"

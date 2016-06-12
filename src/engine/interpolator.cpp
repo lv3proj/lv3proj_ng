@@ -1,6 +1,17 @@
 #include "interpolator.h"
+#include "glmx.h"
+#include "common.h"
 #include <math.h>
 #include <algorithm>
+#include "mathtools.h"
+
+
+template class Interpolated<float>;
+template class Interpolated<glm::vec2>;
+template class Interpolated<glm::vec3>;
+template class Interpolated<glm::vec4>;
+
+
 
 template<typename T>
 inline T interp_linear(const T& a, const T& b, const float t)
@@ -83,12 +94,6 @@ Interpolated<T>::Interpolated(const Interpolated& o)
 }
 
 template<typename T>
-Interpolated<T>::~Interpolated()
-{
-    freeData();
-}
-
-template<typename T>
 Interpolated<T>& Interpolated<T>::operator=(const Interpolated& o)
 {
     v = o.v;
@@ -114,21 +119,23 @@ float Interpolated<T>::interpolateTo(const T& to, float t, int loop, bool pingpo
         return 0;
     }
     if (t < 0)
-        t = length(to - v) / -t;
+    {
+        t = glm::length(to - v) / -t; // HACK: glm thing
+    }
 
-    _interpTo(ensureData(), to, t, loop, pingpong ? INTERP_PINGPONG : INTERP_NOFLAGS, ty);
+    _interpTo(ensureData(), value(), to, t, loop, pingpong ? INTERP_PINGPONG : INTERP_NOFLAGS, ty);
 
     return t;
 }
 
 template<typename T>
-void Interpolated<T>::_interpTo(Data *data, const T& to, float t, int loop, InterpolationFlags flags, InterpolationType ty)
+void Interpolated<T>::_interpTo(Data *data, const T& from, const T& to, float t, int loop, InterpolationFlags flags, InterpolationType ty)
 {
     data->type = ty;
     data->timePassed = 0;
     data->timePeriod = t;
     data->to = to;
-    data->from = (T)*this;
+    data->from = from;
     data->loop = loop;
     data->flags = flags;
 }
@@ -142,7 +149,7 @@ void Interpolated<T>::_interpUpdate(float dt)
     const float period = data->timePeriod;
 
     if(passed < period)
-        v = interp(data->type, data->from, data->to, passed / period);
+        v = interp((InterpolationType)data->type, data->from, data->to, passed / period);
     else if (data->loop)
     {
         data->timePassed = 0;

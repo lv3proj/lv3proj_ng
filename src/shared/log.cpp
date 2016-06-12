@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_DEPRECATE
 
 #ifdef _WIN32
 #include <windows.h>
@@ -9,7 +11,7 @@
 #include "log.h"
 
 static FILE *logfile = NULL;
-static uint8 loglevel = 0;
+static int loglevel = 0;
 static bool logtime = false;
 static log_callback_func callback = NULL;
 static bool callback_newline = false;
@@ -46,7 +48,7 @@ void log_prepare(const char *fn, const char *mode = NULL)
     logfile = fopen(fn,mode);
 }
 
-void log_setloglevel(uint8 lvl)
+void log_setloglevel(int lvl)
 {
     loglevel = lvl;
 }
@@ -246,7 +248,7 @@ void logcritical(const char *str, ...)
     fflush(stdout);
 }
 
-void logcustom(uint8 lvl, ConsoleColor color, const char *str, ...)
+void logcustom(int lvl, ConsoleColor color, const char *str, ...)
 {
     if(!str || loglevel < lvl)
         return;
@@ -336,7 +338,7 @@ void _log_setcolor(bool stdout_stream, ConsoleColor color)
         BG_MAGENTA,  BG_CYAN, BG_WHITE
     };
 
-    static uint8 UnixColorFG[Color_count] =
+    static int UnixColorFG[Color_count] =
     {
         FG_BLACK,                                           // BLACK
             FG_RED,                                             // RED

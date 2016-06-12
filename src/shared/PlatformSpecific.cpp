@@ -17,12 +17,13 @@
 #endif
 
 #include <signal.h>
+#include "log.h"
 
 
 // fix filenames for linux ( '/' instead of windows '\')
 static void _FixFileName(std::string& str)
 {
-    for(uint32 i = 0; i < str.length(); i++)
+    for(size_t i = 0; i < str.length(); i++)
         if(str[i]=='\\')
             str[i]='/';
 }
@@ -31,9 +32,9 @@ static void _FixFileName(std::string& str)
 // taken from a post from http://www.gamedev.net/topic/459511-something-like-getmodulefilename-in-linux/
 std::string GetProgramDir(void)
 {
-#if PLATFORM == PLATFORM_WIN32
+#ifdef _WIN32
     char szPath[1024];
-    uint32 len = GetModuleFileName( NULL, szPath, 1024 );
+    size_t len = GetModuleFileName( NULL, szPath, 1024 );
     if(!len)
         return "";
     std::string path(szPath);
@@ -42,8 +43,21 @@ std::string GetProgramDir(void)
     _FixFileName(path);
     return path;
 
-#elif PLATFORM == PLATFORM_UNIX
+#elif defined(__APPLE_CC__)
 
+    char parentdir[MAXPATHLEN];
+    std::string path;
+    CFURLRef url = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+    CFURLRef url2 = CFURLCreateCopyDeletingLastPathComponent(0, url);
+    if (CFURLGetFileSystemRepresentation(url2, 1, (unsigned char*)parentdir, MAXPATHLEN))
+    {
+        path = parentdir;   /* chdir to the binary app's parent */
+    }
+    CFRelease(url);
+    CFRelease(url2);
+    return path;
+
+#else
     std::stringstream ss;
     ss << "/proc/" << getpid() << "/exe";
     char proc[1024];
@@ -58,29 +72,15 @@ std::string GetProgramDir(void)
     }
     return path;
 
-#elif PLATFORM == PLATFORM_APPLE
-
-    char parentdir[MAXPATHLEN];
-    std::string path;
-    CFURLRef url = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-    CFURLRef url2 = CFURLCreateCopyDeletingLastPathComponent(0, url);
-    if (CFURLGetFileSystemRepresentation(url2, 1, (UInt8 *)parentdir, MAXPATHLEN))
-    {
-        path = parentdir;   /* chdir to the binary app's parent */
-    }
-    CFRelease(url);
-    CFRelease(url2);
-    return path;
-
 #endif
 }
 
-bool SetWorkingDir(std::string d)
+bool SetWorkingDir(const char *d)
 {
-#if PLATFORM == PLATFORM_WIN32
-    return !_chdir(d.c_str());
-#elif PLATFORM == PLATFORM_UNIX || PLATFORM == PLATFORM_APPLE
-    return !chdir(d.c_str());
+#if _WIN32
+    return !_chdir(d);
+#else
+    return !chdir(d);
 #endif
 }
 
@@ -98,7 +98,7 @@ std::string GetWorkingDir(void)
 }
 
 
-uint32 GetConsoleWidth(void)
+unsigned GetConsoleWidth(void)
 {
 #if PLATFORM == PLATFORM_WIN32
     HANDLE hOut;
@@ -126,6 +126,7 @@ void TriggerBreakpoint()
 #endif
 }
 
+// FIXME: move this to engine and use SDL simple message box if not on windows
 void MsgBox(const char *s)
 {
     logerror("%s", s);

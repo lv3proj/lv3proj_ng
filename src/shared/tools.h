@@ -8,10 +8,10 @@ void stringToUpper(std::string s);
 
 bool fileHasExtension(const char *fn, const char *ext);
 
-void rand_seed(uint32);
+void rand_seed(unsigned);
 bool chance(float p); // 0 - 100
 
-void HexStrToByteArray(uint8 *dst, const char *str);
+void HexStrToByteArray(char *dst, const char *str);
 bool WildcardMatch(const char *str, const char *pattern);
 
 

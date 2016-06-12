@@ -1,7 +1,7 @@
 #ifndef LV3_TYPES_H
 #define LV3_TYPES_H
 
-#include "glm/glm.hpp"
+#include "glmx.h"
 #include "interpolator.h"
 
 typedef Interpolated<float> ipfloat;

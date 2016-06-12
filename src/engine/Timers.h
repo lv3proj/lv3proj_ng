@@ -1,5 +1,5 @@
-#ifndef INTERVAL_TIMER_H
-#define INTERVAL_TIMER_H
+#ifndef TIMERS_H
+#define TIMERS_H
 
 class IntervalTimer
 {
@@ -29,6 +29,33 @@ public:
         }
         return false;
     }
+};
+
+class ScopedTimer
+{
+public:
+    ScopedTimer(const char *s = "ScopedTimer");
+    ~ScopedTimer();
+
+private:
+    const char *_s;
+    unsigned _t;
+};
+
+class Timer
+{
+public:
+    Timer();
+
+    unsigned reset();
+    unsigned elapsed() const;
+private:
+    unsigned _t;
+};
+
+
+class DiffTimeTracker
+{
 
 };
 

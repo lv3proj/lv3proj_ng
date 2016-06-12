@@ -62,10 +62,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="SDLmain.lib"
+				AdditionalDependencies="SDL2main.lib"
 				OutputFile="$(OutDir)\lv3proj_debug.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="$(ProjectDir)\lib\win32"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\dep\lib\win32&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -149,7 +149,7 @@
 				Name="VCLinkerTool"
 				OutputFile="$(OutDir)\lv3proj.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories=""
+				AdditionalLibraryDirectories="$(SolutionDir)\dep\lib\win32"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -191,54 +191,6 @@
 				RelativePath=".\game\main.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\game\ScriptedEngine.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\game\ScriptedEngine.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\ScriptedEntity.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\game\ScriptedEntity.h"
-				>
-			</File>
-			<Filter
-				Name="Lua"
-				>
-				<File
-					RelativePath=".\game\LuaConstants.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\game\LuaConstants.h"
-					>
-				</File>
-				<File
-					RelativePath=".\game\LuaDefines.h"
-					>
-				</File>
-				<File
-					RelativePath=".\game\LuaEngine.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\game\LuaEngine.h"
-					>
-				</File>
-				<File
-					RelativePath=".\game\LuaInterface.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\game\LuaInterface.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

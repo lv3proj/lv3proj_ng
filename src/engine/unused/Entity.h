@@ -1,10 +1,10 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "Quad.h"
+#include "Objects.h"
 #include "collision/Collidable.h"
 
-class Entity : public Quad
+class Entity : public GroupObject
 {
 public:
 

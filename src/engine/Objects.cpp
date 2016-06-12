@@ -1,11 +1,14 @@
 #include "Objects.h"
 #include "common.h"
 #include <algorithm>
-#include "glm/ext.hpp"
 
 BaseObject::BaseObject(ObjectType ty)
 : _type(ty)
 , _refcount(0)
+{
+}
+
+BaseObject::~BaseObject()
 {
 }
 
@@ -30,6 +33,15 @@ void BaseObject::decref()
         _Destroy(this);
 }
 
+Sprite::Sprite() : BaseObject(RO_SPRITE)
+{
+}
+
+Sprite::~Sprite()
+{
+}
+
+
 Sprite *Sprite::Create()
 {
     return new Sprite;
@@ -44,6 +56,15 @@ glm::mat4 Sprite::getLocalTransform() const
 {
     return glm::translate(glm::mat4(1.0f), glm::vec3(pos, 0.0f));
 }
+
+GroupObject::GroupObject() : BaseObject(RO_GROUP)
+{
+}
+
+GroupObject::~GroupObject()
+{
+}
+
 
 GroupObject *GroupObject::Create()
 {
@@ -74,8 +95,8 @@ unsigned GroupObject::remove(BaseObject *ro)
 glm::mat4 ObjectInterpolationData::getLocalTransform() const
 {
     glm::mat4 m = glm::mat4(1);
-    m = glm::translate(m, glm::vec3(position, 0.0f));
-    m = glm::rotate(m, rotation, glm::vec3(0,0,1));
+    m = glm::translate(m, glm::vec3(position.value(), 0.0f));
+    m = glm::rotate(m, rotation.value(), glm::vec3(0,0,1));
     return m;
 }
 
@@ -87,7 +108,7 @@ void ObjectInterpolationData::update(float dt)
     color.update(dt);
 }
 
-Quad::Quad()
+Quad::Quad() : BaseObject(RO_QUAD)
 {
 }
 
