@@ -1,7 +1,6 @@
 #include "common.h"
 #include "algorithmx.h"
 #include "MemoryAllocatorSmallBlock.h"
-#include "Arenas.h"
 #include "bithacks.h"
 
 //#define DD(...) logdev(__VA_ARGS__)
@@ -71,11 +70,17 @@ SmallBlockAllocator::Block *SmallBlockAllocator::_AllocBlock(unsigned int elemCo
 
     const unsigned int bitsPerInt = (sizeof(unsigned int) * 8); // 32
     unsigned int bitmapInts = (elemCount + (bitsPerInt - 1)) / bitsPerInt;
-    void *ptr = Arenas::chunkAlloc.Allocate(
+    /*void *ptr = Arenas::chunkAlloc.Allocate(
               (sizeof(Block) - sizeof(unsigned int)) // block header without bitmap[1]
             + (bitmapInts * sizeof(unsigned int))    // actual bitmap size
             + (elemCount * elemSize)                 // data size
-        , sizeof(void*), XMEM_SOURCE_INFO);
+        , sizeof(void*), XMEM_SOURCE_INFO);*/
+
+    void *ptr = malloc(
+              (sizeof(Block) - sizeof(unsigned int)) // block header without bitmap[1]
+            + (bitmapInts * sizeof(unsigned int))    // actual bitmap size
+            + (elemCount * elemSize)                 // data size
+        );
 
     if(!ptr)
         return NULL;
@@ -107,7 +112,8 @@ void SmallBlockAllocator::_FreeBlock(Block *blk)
     if(blk->next)
         blk->next->prev = blk->prev;
 
-    Arenas::chunkAlloc.Free(blk);
+    //Arenas::chunkAlloc.Free(blk);
+    free(blk);
 
     // keeps the vector sorted
     _allblocks.erase(std::remove(_allblocks.begin(), _allblocks.end(), blk), _allblocks.end());
@@ -208,12 +214,14 @@ void SmallBlockAllocator::Block::freeElem(unsigned char *ptr)
 
 void *SmallBlockAllocator::_FallbackAlloc(unsigned int size)
 {
-    return Arenas::fallback.Allocate(size, sizeof(void*), XMEM_SOURCE_INFO);
+    //return Arenas::fallback.Allocate(size, sizeof(void*), XMEM_SOURCE_INFO);
+    return malloc(size);
 }
 
 void SmallBlockAllocator::_FallbackFree(void *ptr)
 {
-    Arenas::fallback.Free(ptr);
+    //Arenas::fallback.Free(ptr);
+    free(ptr);
 }
 
 void *SmallBlockAllocator::_Alloc(unsigned int size)

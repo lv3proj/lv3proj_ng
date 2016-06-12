@@ -230,6 +230,18 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="mem"
+				>
+				<File
+					RelativePath=".\shared\MemoryAllocatorSmallBlock.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\shared\MemoryAllocatorSmallBlock.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

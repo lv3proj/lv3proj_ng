@@ -10,6 +10,7 @@
 #include "event.h"
 //#include "FileAPI.h"
 #include "ImguiDriver.h"
+#include "LuaInterface.h"
 
 
 // TEMP: TEST
@@ -78,6 +79,9 @@ int main(int argc, char **argv)
 
     EngineBasicWindowRecv *er = new EngineBasicWindowRecv(eng, r);
     evr.Add(er);
+
+    LuaInterface lua;
+    lua.Init();
 
     Timer tt;
     while(!er->quit)
