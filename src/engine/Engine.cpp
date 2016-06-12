@@ -17,8 +17,8 @@ EngineBase::EngineBase(Renderer *r)
 //, sound(NULL)
 //, layers(NULL)
 , resmgr(NULL)
+, _r(r)
 , _reset(false)
-, _quit(false)
 , _pause(0)
 
 {

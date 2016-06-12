@@ -3,21 +3,6 @@
 #include <time.h>
 #include <algorithm>
 
-// not thread safe!
-static TinyRNG rng;
-
-void rand_seed(unsigned s)
-{
-    rng.init(s, 6278291);
-}
-
-const float RMULT = 1.0f / float(UINT_MAX);
-bool chance(float p)
-{
-    return ((float)rng() * RMULT) < p;
-}
-
-
 void stringToLower(std::string& s)
 {
     std::transform(s.begin(), s.end(), s.begin(), tolower);

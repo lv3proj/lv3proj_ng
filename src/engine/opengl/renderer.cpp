@@ -10,10 +10,6 @@
 
 using namespace glm;
 
-
-#define GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX  0x9049
-#define TEXTURE_FREE_MEMORY_ATI 0x87FC
-
 bool Renderer::s_symbolsLoaded = false;
 
 

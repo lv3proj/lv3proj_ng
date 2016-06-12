@@ -173,6 +173,30 @@
 				>
 			</File>
 			<File
+				RelativePath=".\engine\EventRecv.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\EventRecv.h"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\imgui_impl_sdl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\imgui_impl_sdl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\ImguiDriver.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\ImguiDriver.h"
+				>
+			</File>
+			<File
 				RelativePath=".\engine\MouseState.cpp"
 				>
 			</File>

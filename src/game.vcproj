@@ -191,6 +191,10 @@
 				RelativePath=".\game\main.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\game\uitest.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

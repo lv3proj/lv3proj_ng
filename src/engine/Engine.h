@@ -44,7 +44,6 @@ public:
     void Update(float dt);
     void Render();
 
-    void SetTitle(const char *title);
     inline void SetReset(bool r = true) { _reset = r; }
     inline bool IsReset(void) { return _reset; }
     void Reset();
@@ -65,15 +64,13 @@ public:
     //virtual void UnregisterObject(ScriptObject *obj);
     //virtual void ClearGarbage(bool deep);
 
-    inline bool IsQuit() const { return _quit; }
     inline bool IsPause(int level = 0) const { return level < _pause; }
     inline void SetPause(int level) { _pause = level; }
     inline int GetPause() const { return _pause; }
 
 protected:
-
+    Renderer *_r;
     bool _reset;
-    bool _quit;
     int _pause;
 };
 
