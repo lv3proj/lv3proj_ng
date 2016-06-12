@@ -1,5 +1,5 @@
 #ifndef INTERPOLATOR_H
-#define INTERNPOLATOR_H
+#define INTERPOLATOR_H
 
 // Explicit instantiations are in the c++ file
 

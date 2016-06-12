@@ -1,7 +1,6 @@
 #include "interpolator.h"
 #include <math.h>
 #include <algorithm>
-#include "mathtools.h"
 
 template<typename T>
 inline T interp_linear(const T& a, const T& b, const float t)
@@ -79,7 +78,7 @@ Interpolated<T>::Interpolated(const T &val)
 
 template<typename T>
 Interpolated<T>::Interpolated(const Interpolated& o)
-: _data(o._data ? new InterpolationData(*o._data) : 0)
+: _data(o._data ? allocData(*o._data) : 0)
 {
 }
 
