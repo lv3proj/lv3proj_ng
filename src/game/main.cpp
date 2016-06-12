@@ -11,7 +11,7 @@
 //#include "FileAPI.h"
 #include "ImguiDriver.h"
 #include "LuaInterface.h"
-
+#include "MemoryEditor.h"
 
 // TEMP: TEST
 void drawTestUI();
@@ -51,8 +51,6 @@ int main(int argc, char **argv)
     log_setloglevel(4);
     //Bootstrap::PrintSystemSpecs();
 
-    srand(42); // FIXME: temporary
-
     if(!Renderer::StaticInit())
         return 1;
     if(!ResourceMgr::StaticInit())
@@ -83,14 +81,20 @@ int main(int argc, char **argv)
     LuaInterface lua;
     lua.Init();
 
+    MemoryEditor medit;
+
     Timer tt;
+    unsigned c = 0;
     while(!er->quit)
     {
+        ++c;
         evr.Update();
         im->beginFrame();
         float dt = float(tt.reset()) / 1000.0f;
         eng.Update(dt);
+
         drawTestUI(); // <-------TEMP--------
+        medit.Draw("Stack memory", (unsigned char*)&win - 1024, 1024); // stack grows downwards
 
         r.beginFrame();
             r.clear();
