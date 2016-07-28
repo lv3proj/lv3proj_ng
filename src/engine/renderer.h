@@ -25,9 +25,6 @@ public:
     void clear();
     void show();
 
-    void destroyTex(unsigned id);
-    unsigned loadTex(const Image *);
-
     unsigned renderObj(const glm::mat4& proj, const BaseObject *obj);
     unsigned renderSprite(glm::mat4 proj, const Sprite *obj);
     unsigned renderGroup(glm::mat4 proj, const GroupObject *obj);
@@ -38,3 +35,5 @@ private:
     void *glctx;
     static bool s_symbolsLoaded;
 };
+
+extern Renderer *g_renderer;

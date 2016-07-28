@@ -6,8 +6,11 @@
 class Texture : public Resource
 {
 public:
-    Texture(ImageResource *img, unsigned id);
+    Texture(ImageResource *img);
     virtual ~Texture();
+
+    bool upload(); // TextureLoad.cpp
+    void bind() const;
 
     inline unsigned getID() const { return id; }
     inline int getWidth() const { return width; }
@@ -21,7 +24,9 @@ protected:
 
     int width, height;
     float halfWidth, halfHeight;
-    CountedPtr<ImageResource> _srcImg;
+    ImageRef _srcImg;
 };
+
+typedef CountedPtr<Texture> TexRef;
 
 #endif

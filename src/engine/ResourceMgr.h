@@ -6,7 +6,6 @@
 #include "Texture.h"
 
 namespace ttvfs { class Root; }
-class Renderer;
 
 class ResourceMgr
 {
@@ -22,10 +21,10 @@ public:
     ResourceMgr();
     ~ResourceMgr();
 
-    void setRenderer(Renderer *r);
-
     void pushFrame();
     void popFrame();
+    unsigned getNumFrames() const;
+    unsigned getEntriesForFrame(unsigned n) const;
 
     void add(Resource *);
 
@@ -37,7 +36,6 @@ private:
     CountedPtr<Resource> *search(const char *, ResourceType ty);
 
     std::vector<Frame> _frames;
-    Renderer *render; // Needs to know the Renderer to transform Image into Texture
 };
 
 

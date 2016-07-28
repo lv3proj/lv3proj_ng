@@ -12,6 +12,8 @@ using namespace glm;
 
 bool Renderer::s_symbolsLoaded = false;
 
+Renderer *g_renderer = NULL;
+
 
 bool Renderer::StaticInit()
 {
@@ -50,10 +52,12 @@ Renderer::Renderer(SDL_Window *win)
 : window(win)
 , glctx(NULL)
 {
+    g_renderer = this;
 }
 
 Renderer::~Renderer()
 {
+    g_renderer = NULL;
     SDL_GL_DeleteContext(glctx);
 }
 
@@ -122,56 +126,6 @@ void Renderer::show()
     SDL_GL_SwapWindow(window);
 }
 
-
-// -----------------------------------------------------------------------------------
-
-void Renderer::destroyTex(unsigned id)
-{
-    glDeleteTextures(1, &id);
-}
-
-unsigned Renderer::loadTex(const Image *img)
-{
-    GLint pack, unpack;
-    glGetIntegerv(GL_PACK_ALIGNMENT, &pack);
-    glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpack);
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-    GLuint texId = 0;
-    glGenTextures(1, &texId);
-    if(!texId)
-        return 0;
-
-    glBindTexture(GL_TEXTURE_2D, texId);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_LINEAR
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    // No mipmapping for now.
-    // TODO: Maybe later?
-    glTexImage2D(GL_TEXTURE_2D, 0, 4, (GLsizei)img->w(), (GLsizei)img->h(), 0, GL_RGBA, GL_FLOAT, img->data());
-
-    glPixelStorei(GL_PACK_ALIGNMENT, pack);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, unpack);
-
-    return texId;
-}
-
-
-// ---------------------------------------------
-static unsigned _lastTex = 0;
-static void bindtex(unsigned tex)
-{
-    if(tex != _lastTex)
-    {
-        _lastTex = tex;
-        glBindTexture(GL_TEXTURE_2D, tex);
-    }
-}
-
 static const vec2 quadVertices[] =
 {
     vec2(-1, -1), // upper left
@@ -208,7 +162,7 @@ unsigned Renderer::renderGroup(mat4 proj, const GroupObject *obj)
 
 unsigned Renderer::renderSprite(mat4 proj, const Sprite *obj)
 {
-    bindtex(obj->tex->getID());
+    obj->tex->bind();
     mat4 mat = proj * obj->getLocalTransform();
     glLoadMatrixf(value_ptr(mat));
     glColor4fv(value_ptr(obj->color));

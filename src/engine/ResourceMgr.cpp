@@ -3,7 +3,6 @@
 #include "ImageResource.h"
 #include "Texture.h"
 #include "io/image.h"
-#include "renderer.h"
 
 #define VFS_ENABLE_C_API 1
 #include "vfs/ttvfs_cfileapi/ttvfs_stdio.h"
@@ -66,7 +65,6 @@ void ResourceMgr::StaticShutdown()
 
 
 ResourceMgr::ResourceMgr()
-: render(NULL)
 {
     ASSERT(vfsroot);
 }
@@ -85,6 +83,16 @@ void ResourceMgr::pushFrame()
 void ResourceMgr::popFrame()
 {
     _frames.pop_back();
+}
+
+unsigned ResourceMgr::getNumFrames() const
+{
+    return unsigned(_frames.size());
+}
+
+unsigned ResourceMgr::getEntriesForFrame(unsigned n) const
+{
+    return unsigned(_frames[n].res.size());
 }
 
 void ResourceMgr::add(Resource *res)
@@ -139,9 +147,9 @@ CountedPtr<Texture> ResourceMgr::getTex(const char *fn)
     if(CountedPtr<Resource> *texr = search(fn, RESOURCE_TEXTURE))
         return dyncast<Texture*>(texr->content());
 
-    CountedPtr<ImageResource> img = getImage(fn);
-    unsigned texid = render->loadTex(img->getImage());
-    Texture *tex = new Texture(img.content(), texid);
+    ImageRef img = getImage(fn);
+    Texture *tex = new Texture(img.content());
     add(tex);
+    tex->upload();
     return tex;
 }

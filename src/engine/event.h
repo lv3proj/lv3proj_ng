@@ -8,6 +8,20 @@ enum WindowEventType
     WEV_QUIT,
 };
 
+/*
+namespace EventRecvType
+{
+    enum Enum
+    {
+        MOUSE       = 0x0001,
+        KEYBOARD    = 0x0002,
+        WINDOW      = 0x0004,
+        JOYSTICK    = 0x0008,
+        RAW         = 0x0010,
+    };
+}
+*/
+
 class MouseEventRecv
 {
 public:

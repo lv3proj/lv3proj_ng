@@ -83,13 +83,13 @@ Interpolated<T>::Interpolated()
 
 template<typename T>
 Interpolated<T>::Interpolated(const T &val)
-: _data(0)
+: v(val), _data(0)
 {
 }
 
 template<typename T>
 Interpolated<T>::Interpolated(const Interpolated& o)
-: _data(o._data ? allocData(*o._data) : 0)
+: v(o.v), _data(o._data ? allocData(*o._data) : 0)
 {
 }
 

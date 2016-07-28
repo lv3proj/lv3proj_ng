@@ -199,18 +199,26 @@
 				RelativePath=".\game\main.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\game\MemoryEditor.cpp"
+			<Filter
+				Name="DevUI"
 				>
-			</File>
-			<File
-				RelativePath=".\game\MemoryEditor.h"
-				>
-			</File>
-			<File
-				RelativePath=".\game\uitest.cpp"
-				>
-			</File>
+				<File
+					RelativePath=".\game\GameDevUI.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\game\GameDevUI.h"
+					>
+				</File>
+				<File
+					RelativePath=".\game\MemoryEditor.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\game\MemoryEditor.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

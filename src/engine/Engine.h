@@ -5,6 +5,7 @@
 //#include "ObsGrid.h"
 #include "MouseState.h"
 #include "refcounted.h"
+#include "types.h"
 
 class Renderer;
 //class SoundCore;
@@ -36,7 +37,7 @@ class EventHandler
 class EngineBase
 {
 public:
-    EngineBase(Renderer *r);
+    EngineBase();
     virtual ~EngineBase();
 
     bool Init(void);
@@ -48,11 +49,11 @@ public:
     inline bool IsReset(void) { return _reset; }
     void Reset();
 
-    MouseState mouse;
-
     //Camera *camera;
     float virtualOffX;
     float virtualOffY;
+
+    ipfloat speedmult;
     
     //ObsGrid obsgrid;
     //SoundCore *sound;
@@ -69,7 +70,6 @@ public:
     inline int GetPause() const { return _pause; }
 
 protected:
-    Renderer *_r;
     bool _reset;
     int _pause;
 };

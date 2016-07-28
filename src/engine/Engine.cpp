@@ -8,17 +8,20 @@
 //#include "RenderLayerMgr.h"
 //#include "TileMgr.h"
 
-EngineBase::EngineBase(Renderer *r)
+EngineBase *g_engine = NULL;
+
+EngineBase::EngineBase()
 //: camera(NULL)
 : virtualOffX(0)
 , virtualOffY(0)
+, speedmult(1.0f)
 //, sound(NULL)
 //, layers(NULL)
 , resmgr(NULL)
-, _r(r)
 , _reset(false)
 , _pause(0)
 {
+    g_engine = this;
     resmgr = new ResourceMgr();
 }
 
@@ -30,6 +33,7 @@ EngineBase::~EngineBase()
     //delete sound;
     //delete tiles;
     delete resmgr;
+    g_engine = NULL;
 }
 
 bool EngineBase::Init(void)

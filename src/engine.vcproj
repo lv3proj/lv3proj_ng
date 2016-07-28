@@ -307,6 +307,10 @@
 					RelativePath=".\engine\opengl\renderer.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\engine\opengl\TextureLoad.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

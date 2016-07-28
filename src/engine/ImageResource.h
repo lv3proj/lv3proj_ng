@@ -20,4 +20,6 @@ protected:
     Image *_img;
 };
 
+typedef CountedPtr<ImageResource> ImageRef;
+
 #endif

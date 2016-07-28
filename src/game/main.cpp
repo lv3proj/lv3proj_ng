@@ -11,16 +11,13 @@
 //#include "FileAPI.h"
 #include "ImguiDriver.h"
 #include "LuaInterface.h"
-#include "MemoryEditor.h"
+#include "GameDevUI.h"
 
-// TEMP: TEST
-void drawTestUI();
+static bool quit = false;
 
 class EngineBasicWindowRecv : public WindowEventRecv
 {
 public:
-    EngineBasicWindowRecv(EngineBase& eng, Renderer& re) : e(eng), r(re), quit(false) {}
-
     virtual void windowEvent(WindowEventType type)
     {
         switch(type)
@@ -29,16 +26,21 @@ public:
                 quit = true;
                 break;
         }
-
     }
 
     virtual void windowResize(unsigned newx, unsigned newy)
     {
     }
+};
 
-    EngineBase& e;
-    Renderer& r;
-    bool quit;
+class EngineBasicKeyRecv : public KeyboardEventRecv
+{
+public:
+    virtual void keyEvent(unsigned key, unsigned mod, unsigned state)
+    {
+        if(key == SDL_SCANCODE_TAB && !state)
+            GameDevUI::toggle();
+    }
 };
 
 int main(int argc, char **argv)
@@ -56,50 +58,54 @@ int main(int argc, char **argv)
     if(!ResourceMgr::StaticInit())
         return 2;
 
-    SDL_Window *win;
-    SDL_Renderer *sdlr;
-    SDL_CreateWindowAndRenderer(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL, &win, &sdlr);
-    Renderer r(win);
-    r.init();
-    EngineBase eng(&r);
+    EngineBase eng;
     if(!eng.Init())
     {
         logerror("Failed to setup engine. Exiting.");
         return 3;
     }
 
+    SDL_Window *win;
+    SDL_Renderer *sdlr;
+    SDL_CreateWindowAndRenderer(800, 600, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL, &win, &sdlr);
+    Renderer r(win);
+    if(!r.init())
+    {
+        logerror("Failed to setup renderer. Exiting.");
+        return 4;
+    }
+
     EventRecv evr;
 
     ImguiDriver *im = new ImguiDriver(win);
-    if(!im->init())
-        return 4;
-    evr.Add(im);
+    if(im->init())
+        evr.Add(im);
+    else
+    {
+        logerror("Failed to init ImGui driver");
+        delete im;
+    }
 
-    EngineBasicWindowRecv *er = new EngineBasicWindowRecv(eng, r);
-    evr.Add(er);
+    evr.Add(new EngineBasicWindowRecv);
+    evr.Add(new EngineBasicKeyRecv);
 
     LuaInterface lua;
     lua.Init();
 
-    MemoryEditor medit;
-
     Timer tt;
-    unsigned c = 0;
-    while(!er->quit)
+    while(!quit)
     {
-        ++c;
         evr.Update();
-        im->beginFrame();
+        if(im) im->beginFrame();
         float dt = float(tt.reset()) / 1000.0f;
         eng.Update(dt);
 
-        drawTestUI(); // <-------TEMP--------
-        medit.Draw("Stack memory", (unsigned char*)&win - 1024, 1024); // stack grows downwards
+        GameDevUI::draw();
 
         r.beginFrame();
             r.clear();
             eng.Render();
-            im->endFrameAndRender();
+            if(im) im->endFrameAndRender();
         r.endFrame();
         r.show();
     }

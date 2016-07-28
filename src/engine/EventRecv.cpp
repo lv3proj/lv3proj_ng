@@ -44,7 +44,7 @@ void EventRecv::Update()
         {
             case SDL_KEYDOWN:
             case SDL_KEYUP:
-                FORALL(kb, keyEvent)(ev.key.keysym.sym, ev.key.keysym.mod, ev.key.state);
+                FORALL(kb, keyEvent)(ev.key.keysym.scancode, ev.key.keysym.mod, ev.key.state);
                 break;
 
             case SDL_JOYAXISMOTION:
