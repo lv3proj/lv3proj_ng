@@ -204,6 +204,26 @@
 				RelativePath=".\engine\MouseState.h"
 				>
 			</File>
+			<File
+				RelativePath=".\engine\SpriteSheet.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\SpriteSheet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\TileMap.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\TileMap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\engine\VertexBuffer.h"
+				>
+			</File>
 			<Filter
 				Name="Resource"
 				>
@@ -259,6 +279,10 @@
 					RelativePath=".\engine\Objects.h"
 					>
 				</File>
+				<File
+					RelativePath=".\engine\TileMapRender.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="utility"
@@ -309,6 +333,14 @@
 				</File>
 				<File
 					RelativePath=".\engine\opengl\TextureLoad.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\opengl\TileMapRender.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\engine\opengl\VertexBuffer.cpp"
 					>
 				</File>
 			</Filter>

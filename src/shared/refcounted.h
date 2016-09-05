@@ -18,11 +18,11 @@ public:
 
     inline unsigned refcount() const { return _refcount; }
 
-    inline void incref()
+    inline void incref() const
     {
         ++_refcount;
     }
-    inline void decref()
+    inline void decref() const
     {
         unsigned oldref = _refcount;
         --_refcount;
@@ -34,7 +34,7 @@ public:
     }
 
 private:
-    unsigned _refcount;
+    mutable unsigned _refcount;
 };
 
 
@@ -67,6 +67,9 @@ public:
 
     const T* operator->() const  { return _p; }
           T* operator->()        { return _p; }
+
+    const T& operator*() const  { return *_p; }
+          T& operator*()        { return *_p; }
 
     bool operator!() const { return !_p; }
 

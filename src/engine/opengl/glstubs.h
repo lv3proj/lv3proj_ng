@@ -96,5 +96,12 @@ GL_FUNC(void,glActiveTexture,(GLenum texture),(texture),)
 //GL_FUNC(void,glTexEnvi,(GLenum target, GLenum pname, GLint param),(target,pname,param),)
 GL_FUNC(void,glCullFace,(GLenum mode),(mode),)
 
+GL_PTR(PFNGLGENBUFFERSARBPROC, glGenBuffersARB)
+GL_PTR(PFNGLDELETEBUFFERSARBPROC, glDeleteBuffersARB)
+GL_PTR(PFNGLBINDBUFFERARBPROC, glBindBufferARB)
+GL_PTR(PFNGLBUFFERDATAARBPROC, glBufferDataARB)
+GL_PTR(PFNGLBUFFERSUBDATAARBPROC, glBufferSubDataARB)
+
+
 #undef GL_PTR
 #undef GL_FUNC

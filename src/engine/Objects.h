@@ -8,10 +8,11 @@
 
 class ObjectMgr;
 
-// NOTE: None of these objects have ANY virtual methods (not even a virtual dtor!)
+// NOTE: No objects except RO_VIRTUAL have ANY virtual methods (not even a virtual dtor!)
 
 enum ObjectType
 {
+    RO_VIRTUAL,
     RO_GROUP,
     RO_SPRITE,
     RO_QUAD,
@@ -118,6 +119,15 @@ private:
     InterpolationData *interp;
 }*/
 
+class VirtualRenderObject
+{
+public:
+    static void _Destroy(VirtualRenderObject *);
+    virtual void render() const = 0;
+protected:
+    inline VirtualRenderObject() {}
+    virtual ~VirtualRenderObject();
+};
 
 
 

@@ -16,6 +16,9 @@ void BaseObject::_Destroy(BaseObject *ro)
 {
     switch(ro->getType())
     {
+        case RO_VIRTUAL:
+            VirtualRenderObject::_Destroy((VirtualRenderObject*)ro);
+            break;
         case RO_GROUP:
             GroupObject::_Destroy((GroupObject*)ro);
             break;
@@ -126,3 +129,11 @@ void Quad::_Destroy(Quad *q)
     delete q;
 }
 
+VirtualRenderObject::~VirtualRenderObject()
+{
+}
+
+void VirtualRenderObject::_Destroy(VirtualRenderObject *ro)
+{
+    delete ro;
+}

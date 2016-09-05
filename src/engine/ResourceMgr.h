@@ -28,8 +28,8 @@ public:
 
     void add(Resource *);
 
-    CountedPtr<ImageResource> getImage(const char *);
-    CountedPtr<Texture> getTex(const char *); // used by engine
+    ImageResource *getImage(const char *);
+    Texture *getTex(const char *); // used by engine
     //CountedPtr<Resource> getSound(const char *);
 
 private:

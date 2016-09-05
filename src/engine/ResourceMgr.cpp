@@ -118,7 +118,7 @@ CountedPtr<Resource> *ResourceMgr::search(const char *fn, ResourceType ty)
 }
 
 
-CountedPtr<ImageResource> ResourceMgr::getImage(const char *fn)
+ImageResource *ResourceMgr::getImage(const char *fn)
 {
     if(CountedPtr<Resource> *imr = search(fn, RESOURCE_IMAGE))
         return dyncast<ImageResource*>(imr->content());
@@ -142,7 +142,7 @@ CountedPtr<ImageResource> ResourceMgr::getImage(const char *fn)
     return res;
 }
 
-CountedPtr<Texture> ResourceMgr::getTex(const char *fn)
+Texture *ResourceMgr::getTex(const char *fn)
 {
     if(CountedPtr<Resource> *texr = search(fn, RESOURCE_TEXTURE))
         return dyncast<Texture*>(texr->content());
