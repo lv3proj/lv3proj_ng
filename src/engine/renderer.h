@@ -7,7 +7,7 @@ struct SDL_Window;
 class BaseObject;
 class Sprite;
 class GroupObject;
-class RenderLayer;
+class VirtualRenderObject;
 
 class Renderer
 {
@@ -26,9 +26,9 @@ public:
     void show();
 
     unsigned renderObj(const glm::mat4& proj, const BaseObject *obj);
-    unsigned renderSprite(glm::mat4 proj, const Sprite *obj);
-    unsigned renderGroup(glm::mat4 proj, const GroupObject *obj);
-    unsigned renderLayer(const RenderLayer& lr);
+    unsigned renderSprite(const glm::mat4& proj, const Sprite *obj);
+    unsigned renderGroup(const glm::mat4& proj, const GroupObject *obj);
+    unsigned renderVirtual(const glm::mat4& proj, const VirtualRenderObject *obj);
 
 private:
     SDL_Window *window;

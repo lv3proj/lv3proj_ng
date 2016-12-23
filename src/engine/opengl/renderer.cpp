@@ -23,7 +23,7 @@ bool Renderer::StaticInit()
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
     SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1); // Share objects between GL contexts
@@ -142,25 +142,27 @@ unsigned Renderer::renderObj(const mat4 &proj, const BaseObject *obj)
         return renderSprite(proj, (Sprite*)obj);
     case RO_GROUP:
         return renderGroup(proj, (GroupObject*)obj);
+    case RO_VIRTUAL:
+        return renderVirtual(proj, (VirtualRenderObject*)obj);
     default:
         ASSERT(false);
     }
     return 0;
 }
 
-unsigned Renderer::renderGroup(mat4 proj, const GroupObject *obj)
+unsigned Renderer::renderGroup(const mat4& proj, const GroupObject *obj)
 {
     const size_t sz = obj->size();
     if(sz)
     {
-        proj *= obj->getLocalTransform();
+        mat4 mat = proj * obj->getLocalTransform();
         for(size_t i = 0; i < sz; ++i)
-            renderObj(proj, obj->child(i));
+            renderObj(mat, obj->child(i));
     }
     return unsigned(sz);
 }
 
-unsigned Renderer::renderSprite(mat4 proj, const Sprite *obj)
+unsigned Renderer::renderSprite(const mat4& proj, const Sprite *obj)
 {
     obj->tex->bind();
     mat4 mat = proj * obj->getLocalTransform();
@@ -172,3 +174,9 @@ unsigned Renderer::renderSprite(mat4 proj, const Sprite *obj)
     return 1;
 }
 
+unsigned Renderer::renderVirtual(const mat4& proj, const VirtualRenderObject *obj)
+{
+    glLoadMatrixf(value_ptr(proj));
+    obj->render();
+    return 1;
+}
